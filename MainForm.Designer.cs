@@ -95,7 +95,7 @@
             this.linkLabel1.Size = new System.Drawing.Size(179, 18);
             this.linkLabel1.TabIndex = 10;
             this.linkLabel1.TabStop = true;
-            this.linkLabel1.Text = "Dynamic Devices Ltd";
+            this.linkLabel1.Text = "dgiot Ltd";
             this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel1LinkClicked);
             // 
             // checkBoxReconnect
