@@ -124,7 +124,24 @@ namespace dgiot_dtu
                     var tmp = config.AppSettings.Settings["bTelnet"].Value;
                     checkBoxTelnet.Checked = bool.Parse(tmp);
                 }
-                
+
+                if (config.AppSettings.Settings["net"] == null)
+                {
+                    config.AppSettings.Settings.Add("net", textNet.Text);
+                }
+                else
+                {
+                    config.AppSettings.Settings["net"].Value = textNet.Text;
+                }
+
+                if (config.AppSettings.Settings["com"] == null)
+                {
+                    config.AppSettings.Settings.Add("com", textCom.Text);
+                }
+                else
+                {
+                    config.AppSettings.Settings["com"].Value = textCom.Text;
+                }
             }
             catch (Exception ex)
             {
@@ -306,7 +323,9 @@ namespace dgiot_dtu
                 }
                 buttonStartStop.Text = @"Stop";
                 _bIsRunning = true;
-
+                String server = "prod.iotn2n.com";
+                MqttHelper mymqtt = MqttHelper.GetInstance();
+                mymqtt.start(server);
                 saveAppConfig();
             }
             else
@@ -482,13 +501,21 @@ end:
 
                 var tcpdata = new byte[1024];
                 _stream.BeginRead(tcpdata, 0, tcpdata.Length, TcpReader, null);
-               
+                 
                 if (_stream.CanWrite)
                 {
                     Thread.Sleep(1000 * 1);
+                    
                     byte[] login = System.Text.Encoding.UTF8.GetBytes(config.AppSettings.Settings["login"].Value);
-                    Log("S->N: login[" + config.AppSettings.Settings["login"].Value+"]");
-                    _stream.Write(login, 0, login.Length);
+                    if (_bDisplayHex) {
+                        byte[] Hex = StringHelper.ToHexBinary(login);
+                        Log("S->N: login[" + StringHelper.ToHexString(Hex) + "]");
+                        _stream.Write(Hex, 0, Hex.Length);
+                    }
+                    else {
+                        Log("S->N: login[" + config.AppSettings.Settings["login"].Value + "]");
+                        _stream.Write(login, 0, login.Length);
+                    }
                 }
 
             } catch(Exception e)
@@ -506,6 +533,8 @@ end:
                 }
             }
         }
+
+ 
 
         void PortDataReceived(object sender, SerialDataReceivedEventArgs e)
         {
@@ -603,7 +632,6 @@ end:
         {
             try
             {
-               
                 var rxbytes = _stream.EndRead(ar);
 
                 if (rxbytes > 0)
@@ -665,7 +693,7 @@ end:
 
         private void LinkLabel1LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Process.Start("http://www.dynamicdevices.co.uk");
+            Process.Start("https://github.com/dgiot/dgiot_dtu");
         }
 
         private void CheckBoxReconnectCheckedChanged(object sender, EventArgs e)
@@ -708,12 +736,79 @@ end:
 
         private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Process.Start("https://github.com/YeLincoln/Serial2Net");
+            Process.Start("https://github.com/dgiot/dgiot_dtu");
         }
 
         private void checkBoxTelnet_CheckedChanged(object sender, EventArgs e)
         {
             _bTelnet = checkBoxTelnet.Checked;
+        }
+
+        private void sendcom_Click(object sender, EventArgs e)
+        {
+            Log("S->N: login[" +  "hello" + "]");
+            if (_stream.CanWrite)
+            {
+                Thread.Sleep(1000 * 1);
+
+                byte[] login = System.Text.Encoding.UTF8.GetBytes(config.AppSettings.Settings["com"].Value);
+                if (_bDisplayHex)
+                {
+                    byte[] Hex = StringHelper.ToHexBinary(login);
+                    Log("S->N: com[" + StringHelper.ToHexString(Hex) + "]");
+                    _stream.Write(Hex, 0, Hex.Length);
+                }
+                else
+                {
+                    Log("S->N: com[" + config.AppSettings.Settings["com"].Value + "]");
+                    _stream.Write(login, 0, login.Length);
+                }
+            }
+        }
+
+        private void sendnet_Click(object sender, EventArgs e)
+        {
+            if (_stream.CanWrite)
+            {
+                Thread.Sleep(1000 * 1);
+
+                byte[] login = System.Text.Encoding.UTF8.GetBytes(config.AppSettings.Settings["net"].Value);
+                if (_bDisplayHex)
+                {
+                    byte[] Hex = StringHelper.ToHexBinary(login);
+                    Log("S->N: net[" + StringHelper.ToHexString(Hex) + "]");
+                    _stream.Write(Hex, 0, Hex.Length);
+                }
+                else
+                {
+                    Log("S->N: net[" + config.AppSettings.Settings["net"].Value + "]");
+                    _stream.Write(login, 0, login.Length);
+                }
+            }
+        }
+
+        private void textNet_TextChanged(object sender, EventArgs e)
+        {
+            if (config.AppSettings.Settings["net"] == null)
+            {
+                config.AppSettings.Settings.Add("net", textNet.Text);
+            }
+            else
+            {
+                config.AppSettings.Settings["net"].Value = textNet.Text;
+            }
+        }
+
+        private void textCom_TextChanged(object sender, EventArgs e)
+        {
+            if (config.AppSettings.Settings["com"] == null)
+            {
+                config.AppSettings.Settings.Add("com", textCom.Text);
+            }
+            else
+            {
+                config.AppSettings.Settings["com"].Value = textCom.Text;
+            }
         }
     }
 }

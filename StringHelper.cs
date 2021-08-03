@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 //using log4net;
 
 namespace PortListener.Core.Utilities
@@ -54,6 +55,30 @@ namespace PortListener.Core.Utilities
         public static string ToHexString(byte data)
         {
             return string.Format("{0:X2}", data);
+        }
+
+        public static byte[] ToHexBinary(byte[] hexString)
+        {
+            if (hexString == null)
+            {
+                return null;
+            }
+            int length = hexString.Length / 2;
+         
+            byte[] bytes = new byte[length];
+            System.String hexDigits = "0123456789abcdef";
+            for (int i = 0; i < length; i++)
+            {
+                int pos = i * 2; // 两个字符对应一个byte
+                int h = hexDigits.IndexOf((char)hexString[pos]) << 4; // 注1
+                int l = hexDigits.IndexOf((char)hexString[pos + 1]); // 注2
+                if (h == -1 || l == -1)
+                { // 非16进制字符
+                    return null;
+                }
+                bytes[i] = (byte)(h | l);
+            }
+            return bytes;
         }
     }
 }

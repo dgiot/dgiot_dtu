@@ -46,6 +46,15 @@
             this.labelSerialPort = new System.Windows.Forms.Label();
             this.comboBoxSerialPort = new System.Windows.Forms.ComboBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.textPubTopic = new System.Windows.Forms.TextBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.textSubTopic = new System.Windows.Forms.TextBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.textPassword = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.textUserName = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.label6 = new System.Windows.Forms.Label();
             this.textlogin = new System.Windows.Forms.TextBox();
             this.textBoxReadOnlyPort = new System.Windows.Forms.TextBox();
@@ -60,13 +69,19 @@
             this.label3 = new System.Windows.Forms.Label();
             this.linkLabel2 = new System.Windows.Forms.LinkLabel();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.textCom = new System.Windows.Forms.TextBox();
+            this.textNet = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.sendcom = new System.Windows.Forms.Button();
+            this.label8 = new System.Windows.Forms.Label();
+            this.sendnet = new System.Windows.Forms.Button();
             this.groupBoxSerialPort.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // buttonStartStop
             // 
-            this.buttonStartStop.Location = new System.Drawing.Point(693, 38);
+            this.buttonStartStop.Location = new System.Drawing.Point(1130, 37);
             this.buttonStartStop.Margin = new System.Windows.Forms.Padding(4);
             this.buttonStartStop.Name = "buttonStartStop";
             this.buttonStartStop.Size = new System.Drawing.Size(112, 32);
@@ -77,22 +92,22 @@
             // 
             // textBoxLog
             // 
-            this.textBoxLog.Location = new System.Drawing.Point(18, 255);
+            this.textBoxLog.Location = new System.Drawing.Point(18, 359);
             this.textBoxLog.Margin = new System.Windows.Forms.Padding(4);
             this.textBoxLog.Multiline = true;
             this.textBoxLog.Name = "textBoxLog";
             this.textBoxLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxLog.Size = new System.Drawing.Size(835, 372);
+            this.textBoxLog.Size = new System.Drawing.Size(1286, 344);
             this.textBoxLog.TabIndex = 9;
             // 
             // linkLabel1
             // 
             this.linkLabel1.AutoSize = true;
             this.linkLabel1.LinkColor = System.Drawing.Color.Silver;
-            this.linkLabel1.Location = new System.Drawing.Point(550, 633);
+            this.linkLabel1.Location = new System.Drawing.Point(550, 721);
             this.linkLabel1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.linkLabel1.Name = "linkLabel1";
-            this.linkLabel1.Size = new System.Drawing.Size(179, 18);
+            this.linkLabel1.Size = new System.Drawing.Size(89, 18);
             this.linkLabel1.TabIndex = 10;
             this.linkLabel1.TabStop = true;
             this.linkLabel1.Text = "dgiot Ltd";
@@ -101,7 +116,7 @@
             // checkBoxReconnect
             // 
             this.checkBoxReconnect.AutoSize = true;
-            this.checkBoxReconnect.Location = new System.Drawing.Point(693, 88);
+            this.checkBoxReconnect.Location = new System.Drawing.Point(1130, 141);
             this.checkBoxReconnect.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxReconnect.Name = "checkBoxReconnect";
             this.checkBoxReconnect.Size = new System.Drawing.Size(160, 22);
@@ -113,18 +128,18 @@
             // checkBoxDisplayHex
             // 
             this.checkBoxDisplayHex.AutoSize = true;
-            this.checkBoxDisplayHex.Location = new System.Drawing.Point(693, 124);
+            this.checkBoxDisplayHex.Location = new System.Drawing.Point(140, 186);
             this.checkBoxDisplayHex.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxDisplayHex.Name = "checkBoxDisplayHex";
-            this.checkBoxDisplayHex.Size = new System.Drawing.Size(133, 22);
+            this.checkBoxDisplayHex.Size = new System.Drawing.Size(106, 22);
             this.checkBoxDisplayHex.TabIndex = 11;
-            this.checkBoxDisplayHex.Text = "Display Hex";
+            this.checkBoxDisplayHex.Text = "十六进制";
             this.checkBoxDisplayHex.UseVisualStyleBackColor = true;
             this.checkBoxDisplayHex.CheckedChanged += new System.EventHandler(this.CheckBoxDisplayHexCheckedChanged);
             // 
             // buttonClear
             // 
-            this.buttonClear.Location = new System.Drawing.Point(693, 178);
+            this.buttonClear.Location = new System.Drawing.Point(1130, 187);
             this.buttonClear.Margin = new System.Windows.Forms.Padding(4);
             this.buttonClear.Name = "buttonClear";
             this.buttonClear.Size = new System.Drawing.Size(112, 32);
@@ -140,6 +155,7 @@
             this.groupBoxSerialPort.Controls.Add(this.label1);
             this.groupBoxSerialPort.Controls.Add(this.comboBoxStopBits);
             this.groupBoxSerialPort.Controls.Add(this.comboBoxDataBits);
+            this.groupBoxSerialPort.Controls.Add(this.checkBoxDisplayHex);
             this.groupBoxSerialPort.Controls.Add(this.comboBoxBaudRate);
             this.groupBoxSerialPort.Controls.Add(this.labelSerialPort);
             this.groupBoxSerialPort.Controls.Add(this.comboBoxSerialPort);
@@ -248,6 +264,15 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.textPubTopic);
+            this.groupBox1.Controls.Add(this.label12);
+            this.groupBox1.Controls.Add(this.textSubTopic);
+            this.groupBox1.Controls.Add(this.label11);
+            this.groupBox1.Controls.Add(this.textPassword);
+            this.groupBox1.Controls.Add(this.label10);
+            this.groupBox1.Controls.Add(this.textUserName);
+            this.groupBox1.Controls.Add(this.label9);
+            this.groupBox1.Controls.Add(this.radioButton1);
             this.groupBox1.Controls.Add(this.label6);
             this.groupBox1.Controls.Add(this.textlogin);
             this.groupBox1.Controls.Add(this.textBoxReadOnlyPort);
@@ -259,14 +284,101 @@
             this.groupBox1.Controls.Add(this.labelTargetIP);
             this.groupBox1.Controls.Add(this.radioButtonServer);
             this.groupBox1.Controls.Add(this.radioButtonClient);
-            this.groupBox1.Location = new System.Drawing.Point(291, 18);
+            this.groupBox1.Location = new System.Drawing.Point(282, 18);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBox1.Size = new System.Drawing.Size(369, 218);
+            this.groupBox1.Size = new System.Drawing.Size(818, 218);
             this.groupBox1.TabIndex = 14;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "TCP/IP";
+            // 
+            // textPubTopic
+            // 
+            this.textPubTopic.Location = new System.Drawing.Point(461, 175);
+            this.textPubTopic.Margin = new System.Windows.Forms.Padding(4);
+            this.textPubTopic.Name = "textPubTopic";
+            this.textPubTopic.Size = new System.Drawing.Size(336, 28);
+            this.textPubTopic.TabIndex = 22;
+            this.textPubTopic.Text = "pub/dgiot";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(358, 182);
+            this.label12.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(80, 18);
+            this.label12.TabIndex = 21;
+            this.label12.Text = "PubTopic";
+            // 
+            // textSubTopic
+            // 
+            this.textSubTopic.Location = new System.Drawing.Point(461, 136);
+            this.textSubTopic.Margin = new System.Windows.Forms.Padding(4);
+            this.textSubTopic.Name = "textSubTopic";
+            this.textSubTopic.Size = new System.Drawing.Size(336, 28);
+            this.textSubTopic.TabIndex = 20;
+            this.textSubTopic.Text = "sub/dgiot";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(358, 141);
+            this.label11.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(80, 18);
+            this.label11.TabIndex = 19;
+            this.label11.Text = "SubTopic";
+            // 
+            // textPassword
+            // 
+            this.textPassword.Location = new System.Drawing.Point(461, 94);
+            this.textPassword.Margin = new System.Windows.Forms.Padding(4);
+            this.textPassword.Name = "textPassword";
+            this.textPassword.Size = new System.Drawing.Size(336, 28);
+            this.textPassword.TabIndex = 18;
+            this.textPassword.Text = "dgiot";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(358, 101);
+            this.label10.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(80, 18);
+            this.label10.TabIndex = 17;
+            this.label10.Text = "PassWord";
+            // 
+            // textUserName
+            // 
+            this.textUserName.Location = new System.Drawing.Point(461, 58);
+            this.textUserName.Margin = new System.Windows.Forms.Padding(4);
+            this.textUserName.Name = "textUserName";
+            this.textUserName.Size = new System.Drawing.Size(336, 28);
+            this.textUserName.TabIndex = 16;
+            this.textUserName.Text = "dgiot";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(358, 65);
+            this.label9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(80, 18);
+            this.label9.TabIndex = 15;
+            this.label9.Text = "UserName";
+            // 
+            // radioButton1
+            // 
+            this.radioButton1.AutoSize = true;
+            this.radioButton1.Location = new System.Drawing.Point(361, 30);
+            this.radioButton1.Margin = new System.Windows.Forms.Padding(4);
+            this.radioButton1.Name = "radioButton1";
+            this.radioButton1.Size = new System.Drawing.Size(69, 22);
+            this.radioButton1.TabIndex = 14;
+            this.radioButton1.Text = "Mqtt";
+            this.radioButton1.UseVisualStyleBackColor = true;
             // 
             // label6
             // 
@@ -274,9 +386,9 @@
             this.label6.Location = new System.Drawing.Point(23, 185);
             this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(125, 18);
+            this.label6.Size = new System.Drawing.Size(134, 18);
             this.label6.TabIndex = 13;
-            this.label6.Text = "login payload";
+            this.label6.Text = "login/clientid";
             // 
             // textlogin
             // 
@@ -393,7 +505,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.ForeColor = System.Drawing.Color.Silver;
-            this.label3.Location = new System.Drawing.Point(471, 633);
+            this.label3.Location = new System.Drawing.Point(471, 721);
             this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(71, 18);
@@ -404,13 +516,13 @@
             // 
             this.linkLabel2.AutoSize = true;
             this.linkLabel2.LinkColor = System.Drawing.Color.Silver;
-            this.linkLabel2.Location = new System.Drawing.Point(740, 633);
+            this.linkLabel2.Location = new System.Drawing.Point(740, 721);
             this.linkLabel2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.linkLabel2.Name = "linkLabel2";
-            this.linkLabel2.Size = new System.Drawing.Size(89, 18);
+            this.linkLabel2.Size = new System.Drawing.Size(62, 18);
             this.linkLabel2.TabIndex = 16;
             this.linkLabel2.TabStop = true;
-            this.linkLabel2.Text = "YeLincoln";
+            this.linkLabel2.Text = "DG-IoT";
             this.linkLabel2.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel2_LinkClicked);
             // 
             // toolTip1
@@ -419,17 +531,88 @@
             this.toolTip1.InitialDelay = 200;
             this.toolTip1.ReshowDelay = 100;
             // 
+            // textCom
+            // 
+            this.textCom.Location = new System.Drawing.Point(143, 265);
+            this.textCom.Margin = new System.Windows.Forms.Padding(4);
+            this.textCom.Name = "textCom";
+            this.textCom.Size = new System.Drawing.Size(987, 28);
+            this.textCom.TabIndex = 14;
+            this.textCom.Text = "12345678";
+            this.toolTip1.SetToolTip(this.textCom, "Connect to this port then you can send and receive data to/from Serial port.\r\nThe" +
+        "re can only be one connection at a time.");
+            this.textCom.TextChanged += new System.EventHandler(this.textCom_TextChanged);
+            // 
+            // textNet
+            // 
+            this.textNet.Location = new System.Drawing.Point(143, 311);
+            this.textNet.Margin = new System.Windows.Forms.Padding(4);
+            this.textNet.Name = "textNet";
+            this.textNet.Size = new System.Drawing.Size(987, 28);
+            this.textNet.TabIndex = 19;
+            this.textNet.Text = "12345678";
+            this.toolTip1.SetToolTip(this.textNet, "Connect to this port then you can send and receive data to/from Serial port.\r\nThe" +
+        "re can only be one connection at a time.");
+            this.textNet.TextChanged += new System.EventHandler(this.textNet_TextChanged);
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(30, 271);
+            this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(80, 18);
+            this.label7.TabIndex = 14;
+            this.label7.Text = "发到串口";
+            // 
+            // sendcom
+            // 
+            this.sendcom.Location = new System.Drawing.Point(1152, 262);
+            this.sendcom.Margin = new System.Windows.Forms.Padding(4);
+            this.sendcom.Name = "sendcom";
+            this.sendcom.Size = new System.Drawing.Size(112, 32);
+            this.sendcom.TabIndex = 17;
+            this.sendcom.Text = "send";
+            this.sendcom.UseVisualStyleBackColor = true;
+            this.sendcom.Click += new System.EventHandler(this.sendcom_Click);
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(32, 316);
+            this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(80, 18);
+            this.label8.TabIndex = 18;
+            this.label8.Text = "发到网络";
+            // 
+            // sendnet
+            // 
+            this.sendnet.Location = new System.Drawing.Point(1152, 308);
+            this.sendnet.Margin = new System.Windows.Forms.Padding(4);
+            this.sendnet.Name = "sendnet";
+            this.sendnet.Size = new System.Drawing.Size(112, 32);
+            this.sendnet.TabIndex = 20;
+            this.sendnet.Text = "send";
+            this.sendnet.UseVisualStyleBackColor = true;
+            this.sendnet.Click += new System.EventHandler(this.sendnet_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(878, 663);
+            this.ClientSize = new System.Drawing.Size(1317, 761);
+            this.Controls.Add(this.sendnet);
+            this.Controls.Add(this.textNet);
+            this.Controls.Add(this.label8);
+            this.Controls.Add(this.sendcom);
+            this.Controls.Add(this.textCom);
+            this.Controls.Add(this.label7);
             this.Controls.Add(this.linkLabel2);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.groupBoxSerialPort);
             this.Controls.Add(this.buttonClear);
-            this.Controls.Add(this.checkBoxDisplayHex);
             this.Controls.Add(this.checkBoxReconnect);
             this.Controls.Add(this.linkLabel1);
             this.Controls.Add(this.textBoxLog);
@@ -481,6 +664,21 @@
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox textlogin;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox textCom;
+        private System.Windows.Forms.Button sendcom;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TextBox textNet;
+        private System.Windows.Forms.Button sendnet;
+        private System.Windows.Forms.RadioButton radioButton1;
+        private System.Windows.Forms.TextBox textPassword;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.TextBox textUserName;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.TextBox textSubTopic;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.TextBox textPubTopic;
     }
 }
 
