@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 using MQTTnet;
 using MQTTnet.Core.Packets;
 using MQTTnet.Core.Protocol;
+using System.IO.Ports;
+using MQTTnet.Core;
+using PortListener.Core.Utilities;
 
 //https://github.com/titanium-as/TitaniumAS.Opc.Client
 //https://github.com/chkr1011/MQTTnet
@@ -20,10 +23,17 @@ namespace dgiot_dtu
         private MqttHelper() { }
 
         private static MqttClient mqttClient = null;
-        private static string mqttserver = "prod.iotn2n.com";
-        private static string subopcda = "dgiot_opc_da";
-
+        private static string _mqttserver = "prod.iotn2n.com";
+        private static string _subopcda = "dgiot_opc_da";
+        private static string _subtopic = "sub/dgiot";
+        private static string _pubtopic = "pub/dgiot";
+        private static string _clientid = Guid.NewGuid().ToString().Substring(0, 5);
+        private static string _username = "dgiot";
+        private static string _password = "dgiot";
+        private static SerialPort _port = null;
         private static MqttHelper Instance;
+        private static MainForm _mainform = null;
+        private static bool _bIsRunning = false;
         public static MqttHelper GetInstance()
         {
             if (Instance == null)
@@ -33,15 +43,43 @@ namespace dgiot_dtu
 
         public void start(string server)
         {
-            mqttserver = server;
+            _mqttserver = server;
+            _bIsRunning = true;
             Task.Run(async () => { await ConnectMqttServerAsync(); });
-            Task.Run(async () => { await ReConnectMqttServerAsync(); });
+      
+        }
+
+        public void start(string server, string clientid, string username, string password, string subtopic, string pubtopic, 
+            SerialPort comport, MainForm mainform)
+        {
+            _mqttserver = server;
+            _clientid = clientid;
+            _username = username;
+            _password = password;
+            _pubtopic = pubtopic;
+            _subtopic = subtopic;
+            _port = comport;
+            _mainform = mainform;
+            _bIsRunning = true;
+            Task.Run(async () => { await ConnectMqttServerAsync(); }); 
+        }
+
+        public void stop()
+        {
+            _bIsRunning = false;
+            Task.Run(async () => { await DisConnectMqttServerAsync(); });
+        }
+
+        public void publish(byte[] payload)
+        {
+            var appMsg = new MqttApplicationMessage(_pubtopic, payload, MqttQualityOfServiceLevel.AtLeastOnce, false);
+            mqttClient.PublishAsync(appMsg);
         }
 
 
         private static async Task ReConnectMqttServerAsync()
         {
-            while (true)
+            while (_bIsRunning)
             {
                 Thread.Sleep(1000 * 10);
                 if (!mqttClient.IsConnected)
@@ -64,19 +102,21 @@ namespace dgiot_dtu
             {
                 var options = new MqttClientTcpOptions
                 {
-                    Server = mqttserver,
-                    ClientId = Guid.NewGuid().ToString().Substring(0, 5),
-                    UserName = "dgiot_opc",
-                    Password = "dgiot_opc",
+                    Server = _mqttserver,
+                    ClientId = _clientid,
+                    UserName = _username,
+                    Password = _password,
                     CleanSession = true
                 };
 
+                await DisConnectMqttServerAsync();
                 await mqttClient.ConnectAsync(options);
+                await ReConnectMqttServerAsync();
 
             }
             catch (Exception ex)
             {
-                Console.WriteLine("{0}", ex.ToString());
+                _mainform.Log(ex.ToString());
             }
         }
 
@@ -89,7 +129,7 @@ namespace dgiot_dtu
             }
             catch (Exception ex)
             {
-                Console.WriteLine("{0}", ex.ToString());
+                _mainform.Log(ex.ToString());
             }
         }
 
@@ -101,8 +141,10 @@ namespace dgiot_dtu
         /// <param name="e"></param>
         private static void MqttClient_Connected(object sender, EventArgs e)
         {
+            _mainform.Log("mqtt:" + _clientid + " connected");
+         
             mqttClient.SubscribeAsync(new List<TopicFilter> {
-                new TopicFilter(subopcda, MqttQualityOfServiceLevel.AtMostOnce)
+                new TopicFilter(_subopcda, MqttQualityOfServiceLevel.AtMostOnce)
             });
         }
 
@@ -113,7 +155,7 @@ namespace dgiot_dtu
         /// <param name="e"></param>
         private static void MqttClient_Disconnected(object sender, EventArgs e)
         {
-
+            _mainform.Log("mqtt:" + _clientid + " disconnected");
         }
 
         /// <summary>
@@ -123,11 +165,17 @@ namespace dgiot_dtu
         /// <param name="e"></param>
         private static void MqttClient_ApplicationMessageReceived(object sender, MqttApplicationMessageReceivedEventArgs e)
         {
-            Dictionary<string, object> json = get_payload(e.ApplicationMessage.Payload);
-
             if ("dgiot_opc_da" == e.ApplicationMessage.Topic)
             {
-                OPCDAHelper.do_opc_da(mqttClient, json);
+                String data = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
+                _mainform.Log("mqtt recv :topic: " + e.ApplicationMessage.Topic.ToString() + " payload: " + data);
+                Dictionary<string, object> json = get_payload(e.ApplicationMessage.Payload);
+                OPCDAHelper.do_opc_da(mqttClient, json, _mainform);
+            }
+            else
+            {
+                _port.Write(e.ApplicationMessage.Payload, 0, e.ApplicationMessage.Payload.Length);
+                _mainform.Log("mqtt recv :topic: " + e.ApplicationMessage.Topic.ToString() + " payload: " + StringHelper.ToHexString(e.ApplicationMessage.Payload));
             }
         }
 

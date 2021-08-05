@@ -54,7 +54,7 @@
             this.label10 = new System.Windows.Forms.Label();
             this.textUserName = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
-            this.radioButton1 = new System.Windows.Forms.RadioButton();
+            this.radioButtonMqtt = new System.Windows.Forms.RadioButton();
             this.label6 = new System.Windows.Forms.Label();
             this.textlogin = new System.Windows.Forms.TextBox();
             this.textBoxReadOnlyPort = new System.Windows.Forms.TextBox();
@@ -272,7 +272,7 @@
             this.groupBox1.Controls.Add(this.label10);
             this.groupBox1.Controls.Add(this.textUserName);
             this.groupBox1.Controls.Add(this.label9);
-            this.groupBox1.Controls.Add(this.radioButton1);
+            this.groupBox1.Controls.Add(this.radioButtonMqtt);
             this.groupBox1.Controls.Add(this.label6);
             this.groupBox1.Controls.Add(this.textlogin);
             this.groupBox1.Controls.Add(this.textBoxReadOnlyPort);
@@ -369,16 +369,17 @@
             this.label9.TabIndex = 15;
             this.label9.Text = "UserName";
             // 
-            // radioButton1
+            // radioButtonMqtt
             // 
-            this.radioButton1.AutoSize = true;
-            this.radioButton1.Location = new System.Drawing.Point(361, 30);
-            this.radioButton1.Margin = new System.Windows.Forms.Padding(4);
-            this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(69, 22);
-            this.radioButton1.TabIndex = 14;
-            this.radioButton1.Text = "Mqtt";
-            this.radioButton1.UseVisualStyleBackColor = true;
+            this.radioButtonMqtt.AutoSize = true;
+            this.radioButtonMqtt.Location = new System.Drawing.Point(361, 30);
+            this.radioButtonMqtt.Margin = new System.Windows.Forms.Padding(4);
+            this.radioButtonMqtt.Name = "radioButtonMqtt";
+            this.radioButtonMqtt.Size = new System.Drawing.Size(69, 22);
+            this.radioButtonMqtt.TabIndex = 14;
+            this.radioButtonMqtt.Text = "Mqtt";
+            this.radioButtonMqtt.UseVisualStyleBackColor = true;
+            this.radioButtonMqtt.CheckedChanged += new System.EventHandler(this.radioButtonMqtt_CheckedChanged);
             // 
             // label6
             // 
@@ -449,7 +450,7 @@
             this.textBoxIPAddress.Name = "textBoxIPAddress";
             this.textBoxIPAddress.Size = new System.Drawing.Size(148, 28);
             this.textBoxIPAddress.TabIndex = 5;
-            this.textBoxIPAddress.Text = "127.0.0.1";
+            this.textBoxIPAddress.Text = "prod.iotn2n.com";
             // 
             // checkBoxTelnet
             // 
@@ -500,6 +501,7 @@
             this.radioButtonClient.TabIndex = 0;
             this.radioButtonClient.Text = "Client";
             this.radioButtonClient.UseVisualStyleBackColor = true;
+            this.radioButtonClient.CheckedChanged += new System.EventHandler(this.radioButtonClient_CheckedChanged);
             // 
             // label3
             // 
@@ -670,7 +672,7 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox textNet;
         private System.Windows.Forms.Button sendnet;
-        private System.Windows.Forms.RadioButton radioButton1;
+        private System.Windows.Forms.RadioButton radioButtonMqtt;
         private System.Windows.Forms.TextBox textPassword;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.TextBox textUserName;

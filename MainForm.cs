@@ -51,7 +51,8 @@ namespace dgiot_dtu
         private TcpListener _server;
         private TcpListener ro_server;
         private List<TcpClient> ro_clientList = new List<TcpClient>();
-       
+        private MqttHelper _mqtt = MqttHelper.GetInstance();
+
         private SerialPort _port;
         private NetworkStream _stream;
         private readonly byte[] _tcpdata = new byte[1024];
@@ -65,7 +66,8 @@ namespace dgiot_dtu
 
         enum ConnectionMode
         {
-            CLIENT,
+            TCPCLIENT,
+            MQTTCLIENT,
             SERVER,
         }
 
@@ -159,7 +161,11 @@ namespace dgiot_dtu
                 buttonStartStop.Text = @"Start";
                 _bIsRunning = false;
 
-                if (_port.IsOpen)
+                if (_eConnectionMode == ConnectionMode.MQTTCLIENT)
+                {
+                    _mqtt.stop();
+                }
+                    if (_port.IsOpen)
                     _port.Close();
 
                 if (_client != null)
@@ -262,7 +268,44 @@ namespace dgiot_dtu
             {
                 config.AppSettings.Settings["bTelnet"].Value = _bTelnet.ToString();
             }
-            
+
+            if (config.AppSettings.Settings["username"] == null)
+            {
+                config.AppSettings.Settings.Add("username", textUserName.ToString());
+            }
+            else
+            {
+                config.AppSettings.Settings["username"].Value = textUserName.ToString();
+            }
+
+            if (config.AppSettings.Settings["password"] == null)
+            {
+                config.AppSettings.Settings.Add("password", textPassword.ToString());
+            }
+            else
+            {
+                config.AppSettings.Settings["password"].Value = textPassword.ToString();
+            }
+
+            if (config.AppSettings.Settings["subtopic"] == null)
+            {
+                config.AppSettings.Settings.Add("subtopic", textSubTopic.ToString());
+            }
+            else
+            {
+                config.AppSettings.Settings["subtopic"].Value = textSubTopic.ToString();
+            }
+
+            if (config.AppSettings.Settings["pubtopic"] == null)
+            {
+                config.AppSettings.Settings.Add("pubtopic", textPubTopic.ToString());
+            }
+            else
+            {
+                config.AppSettings.Settings["pubtopic"].Value = textPubTopic.ToString();
+            }
+
+
             config.Save(ConfigurationSaveMode.Full);
             ConfigurationManager.RefreshSection("appSettings");
         }
@@ -288,13 +331,18 @@ namespace dgiot_dtu
 
                 try
                 {
-                    if (_eConnectionMode == ConnectionMode.CLIENT)
+                    if (_eConnectionMode == ConnectionMode.TCPCLIENT)
                     {
                         Log("Connecting to " + textBoxIPAddress.Text + ":" + textBoxTargetPort.Text);
 
                         _client = new TcpClient();
                         _client.BeginConnect(textBoxIPAddress.Text, int.Parse(textBoxTargetPort.Text), TcpConnectedOut,
                                                  null);
+                    }
+                    else if((_eConnectionMode == ConnectionMode.MQTTCLIENT))
+                    {
+                        _mqtt.start(textBoxIPAddress.Text, textlogin.Text, textUserName.Text, 
+                            textPassword.Text, textSubTopic.Text, textPubTopic.Text,_port,this);
                     }
                     else
                     {
@@ -311,8 +359,10 @@ namespace dgiot_dtu
                 }
                 catch (Exception ex)
                 {
-                    if(_eConnectionMode == ConnectionMode.CLIENT)   
-                        Log("Couldn't connect: " + ex.Message);
+                    if(_eConnectionMode == ConnectionMode.TCPCLIENT)   
+                        Log("Couldn't connect tcp: " + ex.Message);
+                    if (_eConnectionMode == ConnectionMode.MQTTCLIENT)
+                        Log("Couldn't connect mqtt: " + ex.Message);
                     else
                         Log("Couldn't listen: " + ex.Message);
 
@@ -323,9 +373,7 @@ namespace dgiot_dtu
                 }
                 buttonStartStop.Text = @"Stop";
                 _bIsRunning = true;
-                String server = "prod.iotn2n.com";
-                MqttHelper mymqtt = MqttHelper.GetInstance();
-                mymqtt.start(server);
+             
                 saveAppConfig();
             }
             else
@@ -378,7 +426,6 @@ namespace dgiot_dtu
 
                 Log("Client Connected: " + tmp_client.Client.LocalEndPoint + " <==> " + tmp_client.Client.RemoteEndPoint);
 
-                Log("dddd start!");
                 if (_bTelnet) {
                     byte[] willEcho = new byte[] { (byte) TelnetCommand.IAC,
                                            (byte) TelnetCommand.WILL,
@@ -522,7 +569,7 @@ end:
             {
                 Log("Couldn't connect: " + e.Message);
 
-                if (_eConnectionMode == ConnectionMode.CLIENT)
+                if (_eConnectionMode == ConnectionMode.TCPCLIENT)
                 {
                     if (_bAutoReconnect && _bIsRunning)
                     {
@@ -566,35 +613,43 @@ end:
                 }
                 
             }
-            if(_stream != null)
-                if(_stream.CanWrite)
-                {
-                    try
+            if (_eConnectionMode == ConnectionMode.TCPCLIENT)
+            {
+                if (_stream != null)
+                    if (_stream.CanWrite)
                     {
-                        _stream.Write(data, 0, rxlen);
-                    }
-                    catch(Exception ex)
-                    {
-                        Log("Can't write to TCP stream:" + ex.Message);
-
                         try
                         {
-                            _stream.Close();
-                        } catch{}
-
-                        _stream = null;
-                        if (_bAutoReconnect && _bIsRunning)
+                            _stream.Write(data, 0, rxlen);
+                        }
+                        catch (Exception ex)
                         {
-                            if (_eConnectionMode == ConnectionMode.CLIENT)
-                            {
-                                Log("Connecting to " + textBoxIPAddress.Text + ":" + textBoxTargetPort.Text);
+                            Log("Can't write to TCP stream:" + ex.Message);
 
-                                _client.BeginConnect(textBoxIPAddress.Text, int.Parse(textBoxTargetPort.Text),
-                                                         TcpConnectedOut, null);
+                            try
+                            {
+                                _stream.Close();
+                            }
+                            catch { }
+
+                            _stream = null;
+                            if (_bAutoReconnect && _bIsRunning)
+                            {
+                                if (_eConnectionMode == ConnectionMode.TCPCLIENT)
+                                {
+                                    Log("Connecting to " + textBoxIPAddress.Text + ":" + textBoxTargetPort.Text);
+
+                                    _client.BeginConnect(textBoxIPAddress.Text, int.Parse(textBoxTargetPort.Text),
+                                                             TcpConnectedOut, null);
+                                }
                             }
                         }
                     }
-                }
+            }
+            else if (_eConnectionMode == ConnectionMode.MQTTCLIENT)
+            {
+                _mqtt.publish(data);
+            }
         }
 
         private void onConnectClosed()
@@ -610,7 +665,7 @@ end:
             {
                 try
                 {
-                    if (_eConnectionMode == ConnectionMode.CLIENT)
+                    if (_eConnectionMode == ConnectionMode.TCPCLIENT)
                     {
                         Log("Connecting to " + textBoxIPAddress.Text + ":" + textBoxTargetPort.Text);
 
@@ -674,7 +729,7 @@ end:
             }
         }
 
-        void Log(string text)
+        public void Log(string text)
         {
             if(InvokeRequired)
             {
@@ -720,9 +775,15 @@ end:
                 checkBoxReconnect.Enabled = false;
                 textBoxReadOnlyPort.Enabled = true;
             }
-            else
+            else if(radioButtonClient.Checked)
             {
-                _eConnectionMode = ConnectionMode.CLIENT;
+                _eConnectionMode = ConnectionMode.TCPCLIENT;
+                textBoxIPAddress.Enabled = true;
+                checkBoxReconnect.Enabled = true;
+                textBoxReadOnlyPort.Enabled = false;
+            }else
+            {
+                _eConnectionMode = ConnectionMode.MQTTCLIENT;
                 textBoxIPAddress.Enabled = true;
                 checkBoxReconnect.Enabled = true;
                 textBoxReadOnlyPort.Enabled = false;
@@ -730,6 +791,17 @@ end:
         }
 
         private void radioButtonServer_CheckedChanged(object sender, EventArgs e)
+        {
+            radioButtonServer_CheckedChanged_do();
+        }
+
+
+        private void radioButtonClient_CheckedChanged(object sender, EventArgs e)
+        {
+            radioButtonServer_CheckedChanged_do();
+        }
+
+        private void radioButtonMqtt_CheckedChanged(object sender, EventArgs e)
         {
             radioButtonServer_CheckedChanged_do();
         }
@@ -747,44 +819,59 @@ end:
         private void sendcom_Click(object sender, EventArgs e)
         {
             Log("S->N: login[" +  "hello" + "]");
-            if (_stream.CanWrite)
-            {
-                Thread.Sleep(1000 * 1);
+            Thread.Sleep(1000 * 1);
 
-                byte[] login = System.Text.Encoding.UTF8.GetBytes(config.AppSettings.Settings["com"].Value);
-                if (_bDisplayHex)
-                {
-                    byte[] Hex = StringHelper.ToHexBinary(login);
-                    Log("S->N: com[" + StringHelper.ToHexString(Hex) + "]");
-                    _stream.Write(Hex, 0, Hex.Length);
-                }
-                else
-                {
-                    Log("S->N: com[" + config.AppSettings.Settings["com"].Value + "]");
-                    _stream.Write(login, 0, login.Length);
-                }
+            byte[] com = System.Text.Encoding.UTF8.GetBytes(config.AppSettings.Settings["com"].Value);
+            if (_bDisplayHex)
+            {
+                byte[] Hex = StringHelper.ToHexBinary(com);
+                Log("S->N: com[" + StringHelper.ToHexString(Hex) + "]");
+                _port.Write(Hex, 0, Hex.Length);
             }
+            else
+            {
+                Log("S->N: com[" + config.AppSettings.Settings["com"].Value + "]");
+                _port.Write(com, 0, com.Length);
+            }
+            
         }
 
         private void sendnet_Click(object sender, EventArgs e)
         {
-            if (_stream.CanWrite)
+            byte[] net = System.Text.Encoding.UTF8.GetBytes(config.AppSettings.Settings["net"].Value);
+            Thread.Sleep(1000 * 1);
+            if (_eConnectionMode == ConnectionMode.TCPCLIENT)
             {
-                Thread.Sleep(1000 * 1);
-
-                byte[] login = System.Text.Encoding.UTF8.GetBytes(config.AppSettings.Settings["net"].Value);
+                if (_stream.CanWrite)
+                {
+                    if (_bDisplayHex)
+                    {
+                        byte[] Hex = StringHelper.ToHexBinary(net);
+                        Log("S->N: net[" + StringHelper.ToHexString(Hex) + "]");
+                        _stream.Write(Hex, 0, Hex.Length);
+                    }
+                    else
+                    {
+                        Log("S->N: net[" + config.AppSettings.Settings["net"].Value + "]");
+                        _stream.Write(net, 0, net.Length);
+                    }
+                }     
+            }else
+            {
                 if (_bDisplayHex)
                 {
-                    byte[] Hex = StringHelper.ToHexBinary(login);
-                    Log("S->N: net[" + StringHelper.ToHexString(Hex) + "]");
-                    _stream.Write(Hex, 0, Hex.Length);
+                    byte[] Hex = StringHelper.ToHexBinary(net);
+                    Log("S->N: topic:" + textPubTopic.Text + " payload: [" + StringHelper.ToHexString(Hex) + "]");
+                    _mqtt.publish(Hex);
                 }
                 else
                 {
-                    Log("S->N: net[" + config.AppSettings.Settings["net"].Value + "]");
-                    _stream.Write(login, 0, login.Length);
+                    _mqtt.publish(net);
+                    Log("S->N: topic:" + textPubTopic.Text + " payload: [" + config.AppSettings.Settings["net"].Value + "]");
+                    
                 }
             }
+            
         }
 
         private void textNet_TextChanged(object sender, EventArgs e)
