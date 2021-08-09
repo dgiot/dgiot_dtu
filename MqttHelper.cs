@@ -11,6 +11,7 @@ using MQTTnet.Core.Protocol;
 using System.IO.Ports;
 using MQTTnet.Core;
 using PortListener.Core.Utilities;
+using System.Text.RegularExpressions;
 
 //https://github.com/titanium-as/TitaniumAS.Opc.Client
 //https://github.com/chkr1011/MQTTnet
@@ -24,9 +25,10 @@ namespace dgiot_dtu
 
         private static MqttClient mqttClient = null;
         private static string _mqttserver = "prod.iotn2n.com";
-        private static string _subopcda = "dgiot_opc_da";
-        private static string _subtopic = "sub/dgiot";
-        private static string _pubtopic = "pub/dgiot";
+        private static string _subopcda = "thing/opcda/";
+        private static string _submdb =  "thing/mdb/";
+        private static string _subtopic = "thing/com/";
+        private static string _pubtopic = "thing/com/post/";
         private static string _clientid = Guid.NewGuid().ToString().Substring(0, 5);
         private static string _username = "dgiot";
         private static string _password = "dgiot";
@@ -72,7 +74,7 @@ namespace dgiot_dtu
 
         public void publish(byte[] payload)
         {
-            var appMsg = new MqttApplicationMessage(_pubtopic, payload, MqttQualityOfServiceLevel.AtLeastOnce, false);
+            var appMsg = new MqttApplicationMessage(_pubtopic + _clientid, payload, MqttQualityOfServiceLevel.AtLeastOnce, false);
             mqttClient.PublishAsync(appMsg);
         }
 
@@ -142,9 +144,10 @@ namespace dgiot_dtu
         private static void MqttClient_Connected(object sender, EventArgs e)
         {
             _mainform.Log("mqtt:" + _clientid + " connected");
-         
             mqttClient.SubscribeAsync(new List<TopicFilter> {
-                new TopicFilter(_subopcda, MqttQualityOfServiceLevel.AtMostOnce)
+                new TopicFilter(_subopcda + _clientid , MqttQualityOfServiceLevel.AtMostOnce),
+                new TopicFilter(_submdb + _clientid , MqttQualityOfServiceLevel.AtMostOnce),
+                new TopicFilter(_subtopic + _clientid, MqttQualityOfServiceLevel.AtMostOnce)
             });
         }
 
@@ -165,17 +168,32 @@ namespace dgiot_dtu
         /// <param name="e"></param>
         private static void MqttClient_ApplicationMessageReceived(object sender, MqttApplicationMessageReceivedEventArgs e)
         {
-            if ("dgiot_opc_da" == e.ApplicationMessage.Topic)
-            {
-                String data = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
-                _mainform.Log("mqtt recv :topic: " + e.ApplicationMessage.Topic.ToString() + " payload: " + data);
-                Dictionary<string, object> json = get_payload(e.ApplicationMessage.Payload);
-                OPCDAHelper.do_opc_da(mqttClient, json, _mainform);
-            }
-            else
+            Regex r_subtopic = new Regex(MqttHelper._subtopic); // 定义一个Regex对象实例
+            Match m_subtopic = r_subtopic.Match(e.ApplicationMessage.Topic); // 在字符串中匹配
+            if (m_subtopic.Success)
             {
                 _port.Write(e.ApplicationMessage.Payload, 0, e.ApplicationMessage.Payload.Length);
                 _mainform.Log("mqtt recv :topic: " + e.ApplicationMessage.Topic.ToString() + " payload: " + StringHelper.ToHexString(e.ApplicationMessage.Payload));
+            }
+            else
+            {
+                Regex r_subopcda = new Regex(MqttHelper._subopcda); // 定义一个Regex对象实例
+                Match m_subopcda = r_subopcda.Match(e.ApplicationMessage.Topic); // 在字符串中匹配
+                if (m_subopcda.Success)
+                {
+                    String data = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
+                    _mainform.Log("mqtt recv :topic: " + e.ApplicationMessage.Topic.ToString() + " payload: " + data);
+                    Dictionary<string, object> json = get_payload(e.ApplicationMessage.Payload);
+                    OPCDAHelper.do_opc_da(mqttClient, json, _mainform);
+                }else {
+                    Regex r_submdb = new Regex(MqttHelper._submdb); // 定义一个Regex对象实例
+                    Match m_submdb = r_submdb.Match(e.ApplicationMessage.Topic); // 在字符串中匹配
+                    if (m_submdb.Success)
+                    {
+                        Dictionary<string, object> json = get_payload(e.ApplicationMessage.Payload);
+                        AccessHelper.do_mdb(mqttClient, json, _mainform);
+                    }
+                }
             }
         }
 

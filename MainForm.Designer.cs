@@ -300,7 +300,7 @@
             this.textPubTopic.Name = "textPubTopic";
             this.textPubTopic.Size = new System.Drawing.Size(336, 28);
             this.textPubTopic.TabIndex = 22;
-            this.textPubTopic.Text = "pub/dgiot";
+            this.textPubTopic.Text = "thing/dgiot/post/";
             // 
             // label12
             // 
@@ -319,7 +319,7 @@
             this.textSubTopic.Name = "textSubTopic";
             this.textSubTopic.Size = new System.Drawing.Size(336, 28);
             this.textSubTopic.TabIndex = 20;
-            this.textSubTopic.Text = "sub/dgiot";
+            this.textSubTopic.Text = "thing/dgiot/";
             // 
             // label11
             // 

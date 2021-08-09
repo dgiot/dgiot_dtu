@@ -9,6 +9,7 @@ using PortListener.Core.Utilities;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Threading;
+using FFMpegSharp;
 
 namespace dgiot_dtu
 {
@@ -85,13 +86,19 @@ namespace dgiot_dtu
                 comboBoxSerialPort.Items.Add(port);
             if (arrPorts.Length > 0)
                 comboBoxSerialPort.SelectedIndex = 0;
-
             comboBoxBaudRate.SelectedIndex = 7;
             comboBoxDataBits.SelectedIndex = 0;
             comboBoxStopBits.SelectedIndex = 0;
 
             _bAutoReconnect = checkBoxReconnect.Checked;
             _bDisplayHex = checkBoxDisplayHex.Checked;
+
+            string inputFile = "G:\\input.mp4";
+
+            // loaded from configuration
+            var video = new VideoInfo(inputFile);
+
+            string output = video.ToString();
 
             try
             {
@@ -818,7 +825,6 @@ end:
 
         private void sendcom_Click(object sender, EventArgs e)
         {
-            Log("S->N: login[" +  "hello" + "]");
             Thread.Sleep(1000 * 1);
 
             byte[] com = System.Text.Encoding.UTF8.GetBytes(config.AppSettings.Settings["com"].Value);
