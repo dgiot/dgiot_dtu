@@ -1,0 +1,13 @@
+D:\msys64\home\jonhl\dgiot_dtu\bin\Release\dgiot_dtu.exe.config
+D:\msys64\home\jonhl\dgiot_dtu\bin\Release\dgiot_dtu.exe
+D:\msys64\home\jonhl\dgiot_dtu\bin\Release\dgiot_dtu.pdb
+D:\msys64\home\jonhl\dgiot_dtu\bin\Release\Common.Logging.xml
+D:\msys64\home\jonhl\dgiot_dtu\bin\Release\Common.Logging.Core.xml
+D:\msys64\home\jonhl\dgiot_dtu\bin\Release\Newtonsoft.Json.xml
+D:\msys64\home\jonhl\dgiot_dtu\obj\x86\Release\dgiot_dtu.MainForm.resources
+D:\msys64\home\jonhl\dgiot_dtu\obj\x86\Release\dgiot_dtu.Properties.Resources.resources
+D:\msys64\home\jonhl\dgiot_dtu\obj\x86\Release\dgiot_dtu.csproj.GenerateResource.Cache
+D:\msys64\home\jonhl\dgiot_dtu\obj\x86\Release\dgiot_dtu.csproj.Fody.CopyLocal.cache
+D:\msys64\home\jonhl\dgiot_dtu\obj\x86\Release\dgiot_dtu.exe
+D:\msys64\home\jonhl\dgiot_dtu\obj\x86\Release\dgiot_dtu.pdb
+D:\msys64\home\jonhl\dgiot_dtu\obj\x86\Release\dgiot_dtu.csprojResolveAssemblyReference.cache

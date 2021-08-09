@@ -20,9 +20,11 @@ namespace dgiot_dtu
     {
         private static string pubtopic = "dgiot_opc_da_ack";
         private static string scantopic = "dgiot_opc_da_scan";
+        private static MainForm _mainform = null;
 
-        public static void do_opc_da(MqttClient mqttClient, Dictionary<string, object> json)
+        public static void do_opc_da(MqttClient mqttClient, Dictionary<string, object> json, MainForm mainform)
         {
+            _mainform = mainform;
             string cmdType = "read";
             if (json.ContainsKey("cmdtype"))
             {
@@ -65,12 +67,13 @@ namespace dgiot_dtu
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("{0}", ex.ToString());
+                    _mainform.Log(ex.ToString());
                 }
             }
 
             Uri url = UrlBuilder.Build(opcserver);
-            Console.WriteLine("opcserver {0}", opcserver.ToString());
+        
+            _mainform.Log("opcserver " + opcserver.ToString());
             try
             {    
                 using (var server = new OpcDaServer(url))
@@ -81,20 +84,20 @@ namespace dgiot_dtu
                     JsonObject scan = new JsonObject();
                     BrowseChildren(scan, browser);
                     var appMsg = new MqttApplicationMessage(scantopic, Encoding.UTF8.GetBytes(scan.ToString()), MqttQualityOfServiceLevel.AtLeastOnce, false);
-                    Console.WriteLine("appMsg {0}", scan.ToString());
+                    _mainform.Log("appMsg " + scan.ToString());
                     mqttClient.PublishAsync(appMsg);
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine(" error {0} ", ex.GetBaseException().ToString());
+                _mainform.Log(" error  " +  ex.GetBaseException().ToString());
                 JsonObject result = new JsonObject();
                 result.Add("TimeStamp", FromDateTime(DateTime.UtcNow));
                 result.Add("opcserver", opcserver);
                 result.Add("status", ex.GetHashCode());
                 result.Add("err", ex.ToString());
                 var appMsg = new MqttApplicationMessage(pubtopic, Encoding.UTF8.GetBytes(result.ToString()), MqttQualityOfServiceLevel.AtLeastOnce, false);
-                Console.WriteLine("appMsg {0}", appMsg.ToString());
+                _mainform.Log("appMsg  " +  appMsg.ToString());
                 mqttClient.PublishAsync(appMsg);
             }
         }
@@ -138,7 +141,7 @@ namespace dgiot_dtu
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("{0}", ex.ToString());
+                    _mainform.Log( ex.ToString());
                 }
             }
 
@@ -150,7 +153,7 @@ namespace dgiot_dtu
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("{0}", ex.ToString());
+                    _mainform.Log( ex.ToString());
                 }
             }
 
@@ -168,18 +171,18 @@ namespace dgiot_dtu
                         read_group(mqttClient, opcserver, group, arry, data);
                         result.Add("status", 0);
                         result.Add(group, data);
-                        Console.WriteLine("result {0}", result.ToString());
+                        _mainform.Log("result " + result.ToString());
                         var appMsg = new MqttApplicationMessage(pubtopic, Encoding.UTF8.GetBytes(result.ToString()), MqttQualityOfServiceLevel.AtLeastOnce, false);
                         mqttClient.PublishAsync(appMsg);
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine("{0}", ex.ToString());
+                        _mainform.Log(ex.ToString());
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("{0}", ex.ToString());
+                    _mainform.Log(ex.ToString());
                 }
             }
 
@@ -209,7 +212,7 @@ namespace dgiot_dtu
                         OpcDaItemValue[] values = group.Read(group.Items, OpcDaDataSource.Device);
                         foreach (OpcDaItemValue item in values)
                         {
-                            Console.WriteLine(" {0}  {1} {2} {3} {4}", pubtopic, id, item.GetHashCode(), item.Value, item.Timestamp);
+                            _mainform.Log( pubtopic + " " + id.ToString() + " " + item.GetHashCode().ToString() + " " + item.Value.ToString() + "" + item.Timestamp.ToString());
                             items.Add(id, item.Value);
                         }
                         server.Disconnect();
@@ -218,7 +221,7 @@ namespace dgiot_dtu
             }
             catch (Exception ex)
             {
-                Console.WriteLine(" error {0} ", ex.GetBaseException().ToString());
+                _mainform.Log(ex.GetBaseException().ToString());
                 JsonObject result = new JsonObject();
                 result.Add("opcserver", opcserver);
                 result.Add("status", ex.GetHashCode());
@@ -258,12 +261,12 @@ namespace dgiot_dtu
                     JsonObject data = new JsonObject();
                     foreach (OpcDaItemValue item in values)
                     {
-                        Console.WriteLine(" {0}  {1} {2} {3}", pubtopic, item.Item.ItemId, item.Value, item.Timestamp);
+                        _mainform.Log(pubtopic + " "  + item.GetHashCode().ToString() + " " + item.Value.ToString() + "" + item.Timestamp.ToString());
                         data.Add(item.Item.ItemId, item.Value);
                     }
                     items.Add("status", 0);
                     items.Add(group_name, data);
-                    Console.WriteLine("items {0}", items.ToString());
+                    _mainform.Log(items.ToString());
                     var appMsg = new MqttApplicationMessage(pubtopic, Encoding.UTF8.GetBytes(items.ToString()), MqttQualityOfServiceLevel.AtLeastOnce, false);
                     mqttClient.PublishAsync(appMsg);
                     server.Disconnect();
@@ -271,7 +274,7 @@ namespace dgiot_dtu
             }
             catch (Exception ex)
             {
-                Console.WriteLine("ex {0}", ex.ToString());
+                _mainform.Log(ex.ToString());
                 read(mqttClient,opcserver, group_name, arry, items);
             }
         }
@@ -305,7 +308,7 @@ namespace dgiot_dtu
             }
             catch (Exception ex)
             {
-                Console.WriteLine(" error {0} ", ex.GetBaseException().ToString());
+                _mainform.Log(ex.GetBaseException().ToString());
                 JsonObject result = new JsonObject();
                 result.Add("opcserver", opcserver);
                 result.Add("name", name);
@@ -321,8 +324,8 @@ namespace dgiot_dtu
             // Output values.
             foreach (OpcDaItemValue value in args.Values)
             {
-                Console.WriteLine("ItemId: {0}; Value: {1}; Quality: {2}; Timestamp: {3}",
-                    value.Item.ItemId, value.Value, value.Quality, value.Timestamp);
+                _mainform.Log("ItemId: " + value.Item.ItemId.ToString() + "; Value: {1}" + value.Value.ToString() +  
+                    ";Quality: " + value.Quality.ToString() + ";Timestamp: {3}" +  value.Timestamp.ToString());
             }
         }
 
