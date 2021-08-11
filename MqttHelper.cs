@@ -184,7 +184,7 @@ namespace dgiot_dtu
                     String data = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
                     _mainform.Log("mqtt recv :topic: " + e.ApplicationMessage.Topic.ToString() + " payload: " + data);
                     Dictionary<string, object> json = get_payload(e.ApplicationMessage.Payload);
-                    OPCDAHelper.do_opc_da(mqttClient, json, _mainform);
+                    OPCDAHelper.Do_opc_da(mqttClient, json, _mainform);
                 }else {
                     Regex r_submdb = new Regex(MqttHelper._submdb); // 定义一个Regex对象实例
                     Match m_submdb = r_submdb.Match(e.ApplicationMessage.Topic); // 在字符串中匹配

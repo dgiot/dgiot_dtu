@@ -9,7 +9,6 @@ using PortListener.Core.Utilities;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Threading;
-using FFMpegSharp;
 
 namespace dgiot_dtu
 {
@@ -92,13 +91,6 @@ namespace dgiot_dtu
 
             _bAutoReconnect = checkBoxReconnect.Checked;
             _bDisplayHex = checkBoxDisplayHex.Checked;
-
-            string inputFile = "G:\\input.mp4";
-
-            // loaded from configuration
-            var video = new VideoInfo(inputFile);
-
-            string output = video.ToString();
 
             try
             {

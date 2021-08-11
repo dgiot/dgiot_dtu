@@ -36,7 +36,7 @@ namespace dgiot_dtu
 
         public static string ConnectionString =
              @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source='" + Dbq + ";" +
-               "Persist Security Info = False; Jet OLEDB:Database Password = "+ Pwd + ";";
+               "Persist Security Info = False; Jet OLEDB:Database Password = " + Pwd + ";";
 
 
         public static void do_mdb(MqttClient mqttClient, Dictionary<string, object> json, MainForm mainform)
@@ -60,7 +60,7 @@ namespace dgiot_dtu
                         default:
                             read_mdb(mqttClient, json);
                             break;
-                    };
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -72,7 +72,7 @@ namespace dgiot_dtu
 
         public static void scan_mdb(MqttClient mqttClient, Dictionary<string, object> json)
         {
-         
+
             if (json.ContainsKey("dbq"))
             {
                 try
