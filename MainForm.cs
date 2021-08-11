@@ -92,6 +92,7 @@ namespace dgiot_dtu
             _bAutoReconnect = checkBoxReconnect.Checked;
             _bDisplayHex = checkBoxDisplayHex.Checked;
 
+
             try
             {
                 config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
@@ -632,14 +633,11 @@ end:
                             catch { }
 
                             _stream = null;
-                            if (_bAutoReconnect && _bIsRunning)
+                            if (this._bAutoReconnect && _bIsRunning)
                             {
                                 if (_eConnectionMode == ConnectionMode.TCPCLIENT)
                                 {
                                     Log("Connecting to " + textBoxIPAddress.Text + ":" + textBoxTargetPort.Text);
-
-                                    _client.BeginConnect(textBoxIPAddress.Text, int.Parse(textBoxTargetPort.Text),
-                                                             TcpConnectedOut, null);
                                 }
                             }
                         }
@@ -780,7 +778,8 @@ end:
                 textBoxIPAddress.Enabled = true;
                 checkBoxReconnect.Enabled = true;
                 textBoxReadOnlyPort.Enabled = false;
-            }else
+            }
+            else
             {
                 _eConnectionMode = ConnectionMode.MQTTCLIENT;
                 textBoxIPAddress.Enabled = true;

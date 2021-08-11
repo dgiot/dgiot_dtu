@@ -72,7 +72,6 @@ namespace dgiot_dtu
 
         public static void scan_mdb(MqttClient mqttClient, Dictionary<string, object> json)
         {
-
             if (json.ContainsKey("dbq"))
             {
                 try
@@ -130,7 +129,6 @@ namespace dgiot_dtu
             {
                 OdbcconnectionString = "Driver={Microsoft Access Driver (*.mdb, *.accdb)};Dbq=" + Dbq;
             }
-           
 
             Console.WriteLine(OdbcconnectionString);
 

@@ -23,6 +23,7 @@ namespace dgiot_dtu
         private static string scantopic = "dgiot_opc_da_scan";
         private static MainForm _mainform = null;
 
+
         public static void Do_opc_da(MqttClient mqttClient, Dictionary<string, object> json, MainForm mainform)
         {
 
@@ -73,7 +74,6 @@ namespace dgiot_dtu
             }
 
             Uri url = UrlBuilder.Build(opcserver);
-
             _mainform.Log("opcserver " + opcserver.ToString());
             try
             {
