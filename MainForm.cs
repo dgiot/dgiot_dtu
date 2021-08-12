@@ -163,7 +163,7 @@
 
                 if (_eConnectionMode == ConnectionMode.MQTTCLIENT)
                 {
-                    _mqtt.stop();
+                    _mqtt.Stop();
                 }
                     if (_port.IsOpen)
                     _port.Close();
@@ -341,7 +341,7 @@
                     }
                     else if((_eConnectionMode == ConnectionMode.MQTTCLIENT))
                     {
-                        _mqtt.start(textBoxIPAddress.Text, textlogin.Text, textUserName.Text, 
+                        _mqtt.Start(textBoxIPAddress.Text, textlogin.Text, textUserName.Text, 
                             textPassword.Text, textSubTopic.Text, textPubTopic.Text,_port,this);
                     }
                     else
@@ -649,7 +649,7 @@ end:
             }
             else if (this._eConnectionMode == ConnectionMode.MQTTCLIENT)
             {
-                this._mqtt.publish(data);
+                this._mqtt.Publish(data);
             }
         }
 
@@ -865,11 +865,11 @@ end:
                 {
                     byte[] Hex = StringHelper.ToHexBinary(net);
                     this.Log("S->N: topic:" + this.textPubTopic.Text + " payload: [" + StringHelper.ToHexString(Hex) + "]");
-                    this._mqtt.publish(Hex);
+                    this._mqtt.Publish(Hex);
                 }
                 else
                 {
-                    this._mqtt.publish(net);
+                    this._mqtt.Publish(net);
                     this.Log("S->N: topic:" + this.textPubTopic.Text + " payload: [" + this.config.AppSettings.Settings["net"].Value + "]");
                 }
             }

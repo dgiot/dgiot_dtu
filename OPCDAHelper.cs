@@ -125,8 +125,7 @@ namespace Dgiot_dtu
                 if (itemId != null)
                 {
                     json.Add(itemId, array);
-                } 
-
+                }
             }
         }
 
