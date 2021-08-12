@@ -1,18 +1,17 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.IO.Ports;
-using System.Net;
-using System.Windows.Forms;
-using System.Net.Sockets;
-using PortListener.Core.Utilities;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Threading;
-using FFMpegSharp;
-
-namespace dgiot_dtu
+﻿namespace Dgiot_dtu
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Configuration;
+    using System.Diagnostics;
+    using System.IO;
+    using System.IO.Ports;
+    using System.Net;
+    using System.Net.Sockets;
+    using System.Threading;
+    using System.Windows.Forms;
+    using PortListener.Core.Utilities;
+
     public enum TelnetCommand : byte
     {
         SE = 240,               // End of subnegotiation parameters.
@@ -93,12 +92,6 @@ namespace dgiot_dtu
             _bAutoReconnect = checkBoxReconnect.Checked;
             _bDisplayHex = checkBoxDisplayHex.Checked;
 
-            string inputFile = "G:\\input.mp4";
-
-            // loaded from configuration
-            var video = new VideoInfo(inputFile);
-
-            string output = video.ToString();
 
             try
             {
@@ -170,7 +163,7 @@ namespace dgiot_dtu
 
                 if (_eConnectionMode == ConnectionMode.MQTTCLIENT)
                 {
-                    _mqtt.stop();
+                    _mqtt.Stop();
                 }
                     if (_port.IsOpen)
                     _port.Close();
@@ -348,7 +341,7 @@ namespace dgiot_dtu
                     }
                     else if((_eConnectionMode == ConnectionMode.MQTTCLIENT))
                     {
-                        _mqtt.start(textBoxIPAddress.Text, textlogin.Text, textUserName.Text, 
+                        _mqtt.Start(textBoxIPAddress.Text, textlogin.Text, textUserName.Text, 
                             textPassword.Text, textSubTopic.Text, textPubTopic.Text,_port,this);
                     }
                     else
@@ -555,11 +548,11 @@ end:
 
                 var tcpdata = new byte[1024];
                 _stream.BeginRead(tcpdata, 0, tcpdata.Length, TcpReader, null);
-                 
+
                 if (_stream.CanWrite)
                 {
                     Thread.Sleep(1000 * 1);
-                    
+
                     byte[] login = System.Text.Encoding.UTF8.GetBytes(config.AppSettings.Settings["login"].Value);
                     if (_bDisplayHex) {
                         byte[] Hex = StringHelper.ToHexBinary(login);
@@ -576,9 +569,9 @@ end:
             {
                 Log("Couldn't connect: " + e.Message);
 
-                if (_eConnectionMode == ConnectionMode.TCPCLIENT)
+                if (this._eConnectionMode == ConnectionMode.TCPCLIENT)
                 {
-                    if (_bAutoReconnect && _bIsRunning)
+                    if (this._bAutoReconnect && _bIsRunning)
                     {
                         Log("Connecting to " + textBoxIPAddress.Text + ":" + textBoxTargetPort.Text);
                         _client.BeginConnect(textBoxIPAddress.Text, int.Parse(textBoxTargetPort.Text), TcpConnectedOut,
@@ -590,19 +583,21 @@ end:
 
  
 
-        void PortDataReceived(object sender, SerialDataReceivedEventArgs e)
+        private void PortDataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            var rxlen = _port.BytesToRead;
+            var rxlen = this._port.BytesToRead;
             var data = new byte[rxlen];
-            _port.Read(data, 0, rxlen);
+            this._port.Read(data, 0, rxlen);
 
-            var line = _bDisplayHex ? StringHelper.ToHexString(data, 0, rxlen) : System.Text.Encoding.ASCII.GetString(data, 0, rxlen);
+            var line = this._bDisplayHex ? StringHelper.ToHexString(data, 0, rxlen) : System.Text.Encoding.ASCII.GetString(data, 0, rxlen);
             if (line.EndsWith("\r\n"))
+            {
                 line = line.Substring(0, line.Length - 2);
+            }
 
-            Log("S->N: " + line);
+            this.Log("S->N: " + line);
 
-            foreach (var c in ro_clientList)
+            foreach (var c in this.ro_clientList)
             {
                 var stream = c.GetStream();
                 if (stream.CanWrite)
@@ -613,57 +608,56 @@ end:
                     }
                     catch (Exception ex)
                     {
-                        Log("Write to " + c.Client.LocalEndPoint + " exception:" + ex.Message);
+                        this.Log("Write to " + c.Client.LocalEndPoint + " exception:" + ex.Message);
                         c.Close();
-                        ro_clientList.Remove(c);
+                        this.ro_clientList.Remove(c);
                     }
                 }
-                
             }
-            if (_eConnectionMode == ConnectionMode.TCPCLIENT)
+
+            if (this._eConnectionMode == ConnectionMode.TCPCLIENT)
             {
-                if (_stream != null)
-                    if (_stream.CanWrite)
+                if (this._stream != null)
+                {
+                    if (this._stream.CanWrite)
                     {
                         try
                         {
-                            _stream.Write(data, 0, rxlen);
+                            this._stream.Write(data, 0, rxlen);
                         }
                         catch (Exception ex)
                         {
-                            Log("Can't write to TCP stream:" + ex.Message);
+                            this.Log("Can't write to TCP stream:" + ex.Message);
 
                             try
                             {
-                                _stream.Close();
+                                this._stream.Close();
                             }
                             catch { }
 
-                            _stream = null;
-                            if (_bAutoReconnect && _bIsRunning)
+                            this._stream = null;
+                            if (this._bAutoReconnect && this._bIsRunning)
                             {
-                                if (_eConnectionMode == ConnectionMode.TCPCLIENT)
+                                if (this._eConnectionMode == ConnectionMode.TCPCLIENT)
                                 {
-                                    Log("Connecting to " + textBoxIPAddress.Text + ":" + textBoxTargetPort.Text);
-
-                                    _client.BeginConnect(textBoxIPAddress.Text, int.Parse(textBoxTargetPort.Text),
-                                                             TcpConnectedOut, null);
+                                    this.Log("Connecting to " + this.textBoxIPAddress.Text + ":" + this.textBoxTargetPort.Text);
                                 }
                             }
                         }
                     }
+                }
             }
-            else if (_eConnectionMode == ConnectionMode.MQTTCLIENT)
+            else if (this._eConnectionMode == ConnectionMode.MQTTCLIENT)
             {
-                _mqtt.publish(data);
+                this._mqtt.Publish(data);
             }
         }
 
-        private void onConnectClosed()
+        private void OnConnectClosed()
         {
             try
             {
-                _client.Close();
+                this._client.Close();
                 _client = null;
             
             } catch { }
@@ -721,18 +715,20 @@ end:
                 if (rxbytes == 0)
                 {
                     Log("Client closed");
-                    onConnectClosed();
+                    OnConnectClosed();
                 }
             } catch(Exception e)
             {
                 if (e is ObjectDisposedException)
-                    Log("Connection closed");
+                {
+                    this.Log("Connection closed");
+                }
                 else if(e is IOException && e.Message.Contains("closed"))
-                    Log("Connection closed");
+                    this.Log("Connection closed");
                 else
                     Log("Exception: " + e.Message);
 
-                onConnectClosed();
+                OnConnectClosed();
             }
         }
 
@@ -788,7 +784,8 @@ end:
                 textBoxIPAddress.Enabled = true;
                 checkBoxReconnect.Enabled = true;
                 textBoxReadOnlyPort.Enabled = false;
-            }else
+            }
+            else
             {
                 _eConnectionMode = ConnectionMode.MQTTCLIENT;
                 textBoxIPAddress.Enabled = true;
@@ -861,46 +858,44 @@ end:
                         Log("S->N: net[" + config.AppSettings.Settings["net"].Value + "]");
                         _stream.Write(net, 0, net.Length);
                     }
-                }     
+                }
             }else
             {
-                if (_bDisplayHex)
+                if (this._bDisplayHex)
                 {
                     byte[] Hex = StringHelper.ToHexBinary(net);
-                    Log("S->N: topic:" + textPubTopic.Text + " payload: [" + StringHelper.ToHexString(Hex) + "]");
-                    _mqtt.publish(Hex);
+                    this.Log("S->N: topic:" + this.textPubTopic.Text + " payload: [" + StringHelper.ToHexString(Hex) + "]");
+                    this._mqtt.Publish(Hex);
                 }
                 else
                 {
-                    _mqtt.publish(net);
-                    Log("S->N: topic:" + textPubTopic.Text + " payload: [" + config.AppSettings.Settings["net"].Value + "]");
-                    
+                    this._mqtt.Publish(net);
+                    this.Log("S->N: topic:" + this.textPubTopic.Text + " payload: [" + this.config.AppSettings.Settings["net"].Value + "]");
                 }
             }
-            
         }
 
-        private void textNet_TextChanged(object sender, EventArgs e)
+        private void TextNet_TextChanged(object sender, EventArgs e)
         {
-            if (config.AppSettings.Settings["net"] == null)
+            if (this.config.AppSettings.Settings["net"] == null)
             {
-                config.AppSettings.Settings.Add("net", textNet.Text);
+                this.config.AppSettings.Settings.Add("net", this.textNet.Text);
             }
             else
             {
-                config.AppSettings.Settings["net"].Value = textNet.Text;
+                this.config.AppSettings.Settings["net"].Value = this.textNet.Text;
             }
         }
 
-        private void textCom_TextChanged(object sender, EventArgs e)
+        private void TextCom_TextChanged(object sender, EventArgs e)
         {
-            if (config.AppSettings.Settings["com"] == null)
+            if (this.config.AppSettings.Settings["com"] == null)
             {
-                config.AppSettings.Settings.Add("com", textCom.Text);
+                this.config.AppSettings.Settings.Add("com", this.textCom.Text);
             }
             else
             {
-                config.AppSettings.Settings["com"].Value = textCom.Text;
+                this.config.AppSettings.Settings["com"].Value = this.textCom.Text;
             }
         }
     }

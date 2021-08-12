@@ -1,4 +1,4 @@
-﻿namespace dgiot_dtu
+﻿namespace Dgiot_dtu
 {
     partial class MainForm
     {
@@ -543,7 +543,7 @@
             this.textCom.Text = "12345678";
             this.toolTip1.SetToolTip(this.textCom, "Connect to this port then you can send and receive data to/from Serial port.\r\nThe" +
         "re can only be one connection at a time.");
-            this.textCom.TextChanged += new System.EventHandler(this.textCom_TextChanged);
+            this.textCom.TextChanged += new System.EventHandler(this.TextCom_TextChanged);
             // 
             // textNet
             // 
@@ -555,7 +555,7 @@
             this.textNet.Text = "12345678";
             this.toolTip1.SetToolTip(this.textNet, "Connect to this port then you can send and receive data to/from Serial port.\r\nThe" +
         "re can only be one connection at a time.");
-            this.textNet.TextChanged += new System.EventHandler(this.textNet_TextChanged);
+            this.textNet.TextChanged += new System.EventHandler(this.TextNet_TextChanged);
             // 
             // label7
             // 

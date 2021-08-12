@@ -17,7 +17,7 @@
 // <website>https://github.com/facebook-csharp-sdk/simple-json</website>
 //-----------------------------------------------------------------------
 
-// VERSION: 0.36.0
+// VERSION: 0.38.0
 
 // NOTE: uncomment the following line to make SimpleJson class internal.
 //#define SIMPLE_JSON_INTERNAL
@@ -66,12 +66,12 @@ using System.Globalization;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
-using dgiot_dtu.Reflection;
+using Dgiot_dtu.Reflection;
 
 // ReSharper disable LoopCanBeConvertedToQuery
 // ReSharper disable RedundantExplicitArrayCreation
 // ReSharper disable SuggestUseVarKeywordEvident
-namespace dgiot_dtu
+namespace Dgiot_dtu
 {
     /// <summary>
     /// Represents the json array.
@@ -484,7 +484,7 @@ namespace dgiot_dtu
     }
 }
 
-namespace dgiot_dtu
+namespace Dgiot_dtu
 {
     /// <summary>
     /// This class encodes and decodes JSON strings.
@@ -704,6 +704,7 @@ namespace dgiot_dtu
                         success = false;
                         return null;
                     }
+
                     // :
                     token = NextToken(json, ref index);
                     if (token != TOKEN_COLON)
@@ -711,6 +712,7 @@ namespace dgiot_dtu
                         success = false;
                         return null;
                     }
+
                     // value
                     object value = ParseValue(json, ref index, ref success);
                     if (!success)
@@ -718,9 +720,11 @@ namespace dgiot_dtu
                         success = false;
                         return null;
                     }
+
                     table[name] = value;
                 }
             }
+
             return table;
         }
 
@@ -817,7 +821,9 @@ namespace dgiot_dtu
                     else if (c == '\\')
                         s.Append('\\');
                     else if (c == '/')
+                    {
                         s.Append('/');
+                    }
                     else if (c == 'b')
                         s.Append('\b');
                     else if (c == 'f')
@@ -835,20 +841,24 @@ namespace dgiot_dtu
                         {
                             // parse the 32 bit hex into an integer codepoint
                             uint codePoint;
-                            if (!(success = UInt32.TryParse(new string(json, index, 4), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out codePoint)))
-                                return "";
+                            if (!(success = uint.TryParse(new string(json, index, 4), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out codePoint)))
+                            {
+                                return string.Empty;
+                            }
 
                             // convert the integer codepoint to a unicode char and add to string
-                            if (0xD800 <= codePoint && codePoint <= 0xDBFF)  // if high surrogate
+                            // if high surrogate
+                            if (codePoint >= 0xD800 && codePoint <= 0xDBFF) 
                             {
                                 index += 4; // skip 4 chars
                                 remainingLength = json.Length - index;
                                 if (remainingLength >= 6)
                                 {
                                     uint lowCodePoint;
-                                    if (new string(json, index, 2) == "\\u" && UInt32.TryParse(new string(json, index + 2, 4), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out lowCodePoint))
+                                    if (new string(json, index, 2) == "\\u" && uint.TryParse(new string(json, index + 2, 4), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out lowCodePoint))
                                     {
-                                        if (0xDC00 <= lowCodePoint && lowCodePoint <= 0xDFFF)    // if low surrogate
+                                        // if low surrogate
+                                        if (lowCodePoint >= 0xDC00 && lowCodePoint <= 0xDFFF)
                                         {
                                             s.Append((char)codePoint);
                                             s.Append((char)lowCodePoint);
@@ -858,24 +868,32 @@ namespace dgiot_dtu
                                     }
                                 }
                                 success = false;    // invalid surrogate pair
-                                return "";
+                                return string.Empty;
                             }
+
                             s.Append(ConvertFromUtf32((int)codePoint));
+
                             // skip 4 chars
                             index += 4;
                         }
                         else
+                        {
                             break;
+                        }
                     }
                 }
                 else
+                {
                     s.Append(c);
+                }
             }
+
             if (!complete)
             {
                 success = false;
                 return null;
             }
+
             return s.ToString();
         }
 
@@ -883,16 +901,25 @@ namespace dgiot_dtu
         {
             // http://www.java2s.com/Open-Source/CSharp/2.6.4-mono-.net-core/System/System/Char.cs.htm
             if (utf32 < 0 || utf32 > 0x10FFFF)
+            {
                 throw new ArgumentOutOfRangeException("utf32", "The argument must be from 0 to 0x10FFFF.");
-            if (0xD800 <= utf32 && utf32 <= 0xDFFF)
+            }
+
+            if (utf32 >= 0xD800 && utf32 <= 0xDFFF)
+            {
                 throw new ArgumentOutOfRangeException("utf32", "The argument must not be in surrogate pair range.");
+            }
+
             if (utf32 < 0x10000)
+            {
                 return new string((char)utf32, 1);
+            }
+
             utf32 -= 0x10000;
             return new string(new char[] { (char)((utf32 >> 10) + 0xD800), (char)(utf32 % 0x0400 + 0xDC00) });
         }
 
-        static object ParseNumber(char[] json, ref int index, ref bool success)
+        private static object ParseNumber(char[] json, ref int index, ref bool success)
         {
             EatWhitespace(json, ref index);
             int lastIndex = GetLastIndexOfNumber(json, index);
@@ -911,36 +938,45 @@ namespace dgiot_dtu
                 success = long.TryParse(new string(json, index, charLength), NumberStyles.Any, CultureInfo.InvariantCulture, out number);
                 returnNumber = number;
             }
+
             index = lastIndex + 1;
             return returnNumber;
         }
 
-        static int GetLastIndexOfNumber(char[] json, int index)
+        private static int GetLastIndexOfNumber(char[] json, int index)
         {
             int lastIndex;
             for (lastIndex = index; lastIndex < json.Length; lastIndex++)
+            {
                 if ("0123456789+-.eE".IndexOf(json[lastIndex]) == -1) break;
+            }
+
             return lastIndex - 1;
         }
 
-        static void EatWhitespace(char[] json, ref int index)
+        private static void EatWhitespace(char[] json, ref int index)
         {
             for (; index < json.Length; index++)
+            {
                 if (" \t\n\r\b\f".IndexOf(json[index]) == -1) break;
+            }
         }
 
-        static int LookAhead(char[] json, int index)
+        private static int LookAhead(char[] json, int index)
         {
             int saveIndex = index;
             return NextToken(json, ref saveIndex);
         }
 
-        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
-        static int NextToken(char[] json, ref int index)
+        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity", Justification = "<Pending>")]
+        private static int NextToken(char[] json, ref int index)
         {
             EatWhitespace(json, ref index);
             if (index == json.Length)
+            {
                 return TOKEN_NONE;
+            }
+
             char c = json[index];
             index++;
             switch (c)
@@ -972,8 +1008,10 @@ namespace dgiot_dtu
                 case ':':
                     return TOKEN_COLON;
             }
+
             index--;
             int remainingLength = json.Length - index;
+
             // false
             if (remainingLength >= 5)
             {
@@ -983,6 +1021,7 @@ namespace dgiot_dtu
                     return TOKEN_FALSE;
                 }
             }
+
             // true
             if (remainingLength >= 4)
             {
@@ -992,6 +1031,7 @@ namespace dgiot_dtu
                     return TOKEN_TRUE;
                 }
             }
+
             // null
             if (remainingLength >= 4)
             {
@@ -1001,15 +1041,18 @@ namespace dgiot_dtu
                     return TOKEN_NULL;
                 }
             }
+
             return TOKEN_NONE;
         }
 
-        static bool SerializeValue(IJsonSerializerStrategy jsonSerializerStrategy, object value, StringBuilder builder)
+        private static bool SerializeValue(IJsonSerializerStrategy jsonSerializerStrategy, object value, StringBuilder builder)
         {
             bool success = true;
             string stringValue = value as string;
             if (stringValue != null)
+            {
                 success = SerializeString(stringValue, builder);
+            }
             else
             {
                 IDictionary<string, object> dict = value as IDictionary<string, object>;
@@ -1028,23 +1071,34 @@ namespace dgiot_dtu
                     {
                         IEnumerable enumerableValue = value as IEnumerable;
                         if (enumerableValue != null)
+                        {
                             success = SerializeArray(jsonSerializerStrategy, enumerableValue, builder);
+                        }
                         else if (IsNumeric(value))
+                        {
                             success = SerializeNumber(value, builder);
+                        }
                         else if (value is bool)
+                        {
                             builder.Append((bool)value ? "true" : "false");
+                        }
                         else if (value == null)
+                        {
                             builder.Append("null");
+                        }
                         else
                         {
                             object serializedObject;
                             success = jsonSerializerStrategy.TrySerializeNonPrimitiveObject(value, out serializedObject);
                             if (success)
+                            {
                                 SerializeValue(jsonSerializerStrategy, serializedObject, builder);
+                            }
                         }
                     }
                 }
             }
+
             return success;
         }
 
@@ -1192,6 +1246,7 @@ namespace dgiot_dtu
 #endif
 );
             }
+
             set
             {
                 _currentJsonSerializerStrategy = value;
@@ -1199,6 +1254,7 @@ namespace dgiot_dtu
         }
 
         private static PocoJsonSerializerStrategy _pocoJsonSerializerStrategy;
+
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public static PocoJsonSerializerStrategy PocoJsonSerializerStrategy
         {
@@ -1306,36 +1362,52 @@ namespace dgiot_dtu
                 {
                     MethodInfo setMethod = ReflectionUtils.GetSetterMethodInfo(propertyInfo);
                     if (setMethod.IsStatic || !setMethod.IsPublic)
+                    {
                         continue;
-                    result[MapClrMemberNameToJsonFieldName(propertyInfo.Name)] = new KeyValuePair<Type, ReflectionUtils.SetDelegate>(propertyInfo.PropertyType, ReflectionUtils.GetSetMethod(propertyInfo));
+                    }
+
+                    result[this.MapClrMemberNameToJsonFieldName(propertyInfo.Name)] = new KeyValuePair<Type, ReflectionUtils.SetDelegate>(propertyInfo.PropertyType, ReflectionUtils.GetSetMethod(propertyInfo));
                 }
             }
+
             foreach (FieldInfo fieldInfo in ReflectionUtils.GetFields(type))
             {
                 if (fieldInfo.IsInitOnly || fieldInfo.IsStatic || !fieldInfo.IsPublic)
+                {
                     continue;
-                result[MapClrMemberNameToJsonFieldName(fieldInfo.Name)] = new KeyValuePair<Type, ReflectionUtils.SetDelegate>(fieldInfo.FieldType, ReflectionUtils.GetSetMethod(fieldInfo));
+                }
+
+                result[this.MapClrMemberNameToJsonFieldName(fieldInfo.Name)] = new KeyValuePair<Type, ReflectionUtils.SetDelegate>(fieldInfo.FieldType, ReflectionUtils.GetSetMethod(fieldInfo));
             }
+
             return result;
         }
 
         public virtual bool TrySerializeNonPrimitiveObject(object input, out object output)
         {
-            return TrySerializeKnownTypes(input, out output) || TrySerializeUnknownTypes(input, out output);
+            return this.TrySerializeKnownTypes(input, out output) || this.TrySerializeUnknownTypes(input, out output);
         }
 
-        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
+        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity", Justification = "<Pending>")]
         public virtual object DeserializeObject(object value, Type type)
         {
-            if (type == null) throw new ArgumentNullException("type");
+            if (type == null)
+            {
+                throw new ArgumentNullException("type");
+            }
+
             string str = value as string;
 
             if (type == typeof (Guid) && string.IsNullOrEmpty(str))
+            {
                 return default(Guid);
+            }
 
             if (value == null)
+            {
                 return null;
-            
+            }
+
             object obj = null;
 
             if (str != null)
@@ -1343,41 +1415,74 @@ namespace dgiot_dtu
                 if (str.Length != 0) // We know it can't be null now.
                 {
                     if (type == typeof(DateTime) || (ReflectionUtils.IsNullableType(type) && Nullable.GetUnderlyingType(type) == typeof(DateTime)))
+                    {
                         return DateTime.ParseExact(str, Iso8601Format, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
+                    }
+
                     if (type == typeof(DateTimeOffset) || (ReflectionUtils.IsNullableType(type) && Nullable.GetUnderlyingType(type) == typeof(DateTimeOffset)))
+                    {
                         return DateTimeOffset.ParseExact(str, Iso8601Format, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
+                    }
+
                     if (type == typeof(Guid) || (ReflectionUtils.IsNullableType(type) && Nullable.GetUnderlyingType(type) == typeof(Guid)))
+                    {
                         return new Guid(str);
+                    }
+
                     if (type == typeof(Uri))
                     {
                         bool isValid =  Uri.IsWellFormedUriString(str, UriKind.RelativeOrAbsolute);
 
                         Uri result;
                         if (isValid && Uri.TryCreate(str, UriKind.RelativeOrAbsolute, out result))
+                        {
                             return result;
+                        }
+
+                        return null;
                     }
-                    return str;
+
+                    if (type == typeof(string))
+                    {
+                        return str;
+                    }
+
+                    return Convert.ChangeType(str, type, CultureInfo.InvariantCulture);
                 }
                 else
                 {
                     if (type == typeof(Guid))
+                    {
                         obj = default(Guid);
+                    }
                     else if (ReflectionUtils.IsNullableType(type) && Nullable.GetUnderlyingType(type) == typeof(Guid))
+                    {
                         obj = null;
+                    }
                     else
+                    {
                         obj = str;
+                    }
                 }
+
                 // Empty string case
                 if (!ReflectionUtils.IsNullableType(type) && Nullable.GetUnderlyingType(type) == typeof(Guid))
+                {
                     return str;
+                }
             }
             else if (value is bool)
+            {
                 return value;
-            
+            }
+
             bool valueIsLong = value is long;
             bool valueIsDouble = value is double;
             if ((valueIsLong && type == typeof(long)) || (valueIsDouble && type == typeof(double)))
+            {
                 return value;
+            }
+
             if ((valueIsDouble && type != typeof(double)) || (valueIsLong && type != typeof(long)))
             {
                 obj = type == typeof(int) || type == typeof(long) || type == typeof(double) || type == typeof(float) || type == typeof(bool) || type == typeof(decimal) || type == typeof(byte) || type == typeof(short)
@@ -1400,26 +1505,30 @@ namespace dgiot_dtu
 
                         Type genericType = typeof(Dictionary<,>).MakeGenericType(keyType, valueType);
 
-                        IDictionary dict = (IDictionary)ConstructorCache[genericType]();
+                        IDictionary dict = (IDictionary)this.ConstructorCache[genericType]();
 
                         foreach (KeyValuePair<string, object> kvp in jsonObject)
-                            dict.Add(kvp.Key, DeserializeObject(kvp.Value, valueType));
+                        {
+                            dict.Add(kvp.Key, this.DeserializeObject(kvp.Value, valueType));
+                        }
 
                         obj = dict;
                     }
                     else
                     {
                         if (type == typeof(object))
+                        {
                             obj = value;
+                        }
                         else
                         {
-                            obj = ConstructorCache[type]();
-                            foreach (KeyValuePair<string, KeyValuePair<Type, ReflectionUtils.SetDelegate>> setter in SetCache[type])
+                            obj = this.ConstructorCache[type]();
+                            foreach (KeyValuePair<string, KeyValuePair<Type, ReflectionUtils.SetDelegate>> setter in this.SetCache[type])
                             {
                                 object jsonValue;
                                 if (jsonObject.TryGetValue(setter.Key, out jsonValue))
                                 {
-                                    jsonValue = DeserializeObject(jsonValue, setter.Value.Key);
+                                    jsonValue = this.DeserializeObject(jsonValue, setter.Value.Key);
                                     setter.Value.Value(obj, jsonValue);
                                 }
                             }
@@ -1436,25 +1545,35 @@ namespace dgiot_dtu
 
                         if (type.IsArray)
                         {
-                            list = (IList)ConstructorCache[type](jsonObject.Count);
+                            list = (IList)this.ConstructorCache[type](jsonObject.Count);
                             int i = 0;
                             foreach (object o in jsonObject)
-                                list[i++] = DeserializeObject(o, type.GetElementType());
+                            {
+                                list[i++] = this.DeserializeObject(o, type.GetElementType());
+                            }
                         }
                         else if (ReflectionUtils.IsTypeGenericeCollectionInterface(type) || ReflectionUtils.IsAssignableFrom(typeof(IList), type))
                         {
                             Type innerType = ReflectionUtils.GetGenericListElementType(type);
-                            list = (IList)(ConstructorCache[type] ?? ConstructorCache[typeof(List<>).MakeGenericType(innerType)])(jsonObject.Count);
+                            list = (IList)(this.ConstructorCache[type] ?? this.ConstructorCache[typeof(List<>).MakeGenericType(innerType)])(jsonObject.Count);
                             foreach (object o in jsonObject)
-                                list.Add(DeserializeObject(o, innerType));
+                            {
+                                list.Add(this.DeserializeObject(o, innerType));
+                            }
                         }
+
                         obj = list;
                     }
                 }
+
                 return obj;
             }
+
             if (ReflectionUtils.IsNullableType(type))
+            {
                 return ReflectionUtils.ToNullableType(obj, type);
+            }
+
             return obj;
         }
 
@@ -1468,41 +1587,63 @@ namespace dgiot_dtu
         {
             bool returnValue = true;
             if (input is DateTime)
+            {
                 output = ((DateTime)input).ToUniversalTime().ToString(Iso8601Format[0], CultureInfo.InvariantCulture);
+            }
             else if (input is DateTimeOffset)
+            {
                 output = ((DateTimeOffset)input).ToUniversalTime().ToString(Iso8601Format[0], CultureInfo.InvariantCulture);
+            }
             else if (input is Guid)
+            {
                 output = ((Guid)input).ToString("D");
+            }
             else if (input is Uri)
+            {
                 output = input.ToString();
+            }
             else
             {
                 Enum inputEnum = input as Enum;
                 if (inputEnum != null)
-                    output = SerializeEnum(inputEnum);
+                {
+                    output = this.SerializeEnum(inputEnum);
+                }
                 else
                 {
                     returnValue = false;
                     output = null;
                 }
             }
+
             return returnValue;
         }
+
         [SuppressMessage("Microsoft.Design", "CA1007:UseGenericsWhereAppropriate", Justification="Need to support .NET 2")]
         protected virtual bool TrySerializeUnknownTypes(object input, out object output)
         {
-            if (input == null) throw new ArgumentNullException("input");
+            if (input == null)
+            {
+                throw new ArgumentNullException("input");
+            }
+
             output = null;
             Type type = input.GetType();
             if (type.FullName == null)
+            {
                 return false;
+            }
+
             IDictionary<string, object> obj = new JsonObject();
             IDictionary<string, ReflectionUtils.GetDelegate> getters = GetCache[type];
             foreach (KeyValuePair<string, ReflectionUtils.GetDelegate> getter in getters)
             {
                 if (getter.Value != null)
-                    obj.Add(MapClrMemberNameToJsonFieldName(getter.Key), getter.Value(input));
+                {
+                    obj.Add(this.MapClrMemberNameToJsonFieldName(getter.Key), getter.Value(input));
+                }
             }
+
             output = obj;
             return true;
         }
@@ -1773,17 +1914,7 @@ namespace dgiot_dtu
             public static IEnumerable<PropertyInfo> GetProperties(Type type)
             {
 #if SIMPLE_JSON_TYPEINFO
-                var typeInfo = type.GetTypeInfo();
-                var properties = typeInfo.DeclaredProperties;
-
-                if (typeInfo.BaseType == null)
-                    return properties;
-
-                if (typeInfo.BaseType.FullName == typeof (Object).FullName)
-                    return properties;
-
-                var baseProperties = GetProperties(typeInfo.BaseType);
-                return System.Linq.Enumerable.Concat(properties, baseProperties);
+                return type.GetRuntimeProperties();
 #else
                 return type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
 #endif
@@ -1792,7 +1923,7 @@ namespace dgiot_dtu
             public static IEnumerable<FieldInfo> GetFields(Type type)
             {
 #if SIMPLE_JSON_TYPEINFO
-                return type.GetTypeInfo().DeclaredFields;
+                return type.GetRuntimeFields();
 #else
                 return type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
 #endif

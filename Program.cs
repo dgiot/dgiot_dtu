@@ -1,19 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
-
-namespace dgiot_dtu
+﻿namespace Dgiot_dtu
 {
-    static class Program
+    using System;
+    using System.Windows.Forms;
+    using Dgiot_dtu;
+
+    internal static class Program
     {
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        private static void Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+
             Application.Run(new MainForm());
         }
     }
