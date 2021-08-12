@@ -8,17 +8,6 @@ namespace PortListener.Core.Utilities
 
     public class StringHelper
     {
-        #region Fields
-
-        // private static readonly ILog _objLogger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
-        #endregion
-
-        /// <summary>
-        /// Converts an ASCII string to it's string representation as hex bytes
-        /// </summary>
-        /// <param name="s"></param>
-        /// <returns></returns>
         public static string ToHexString(string s)
         {
             return ToHexString(Encoding.ASCII.GetBytes(s));
@@ -29,13 +18,6 @@ namespace PortListener.Core.Utilities
             return ToHexString(arrBytes, 0, arrBytes.Length);
         }
 
-        /// <summary>
-        /// Converts an array of bytes to a string of hex bytes
-        /// </summary>
-        /// <param name="arrBytes"></param>
-        /// <param name="iOffset"></param>
-        /// <param name="iLength"></param>
-        /// <returns></returns>
         public static string ToHexString(byte[] arrBytes, int iOffset, int iLength)
         {
             if (arrBytes.Length == 0)

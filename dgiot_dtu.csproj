@@ -153,7 +153,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccessHelper.cs" />
-    <Compile Include="ControlHelper.cs" />
+    <Compile Include="Control.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -180,43 +180,6 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="app.config" />
-    <None Include="FFMPEG\bin\presets\ffprobe.xsd" />
-    <None Include="FFMPEG\bin\presets\libvpx-1080p.ffpreset" />
-    <None Include="FFMPEG\bin\presets\libvpx-1080p50_60.ffpreset" />
-    <None Include="FFMPEG\bin\presets\libvpx-360p.ffpreset" />
-    <None Include="FFMPEG\bin\presets\libvpx-720p.ffpreset" />
-    <None Include="FFMPEG\bin\presets\libvpx-720p50_60.ffpreset" />
-    <None Include="FFMPEG\bin\presets\libvpx-ultrafast.ffpreset" />
-    <None Include="FFMPEG\bin\presets\libx264-baseline.ffpreset" />
-    <None Include="FFMPEG\bin\presets\libx264-fast.ffpreset" />
-    <None Include="FFMPEG\bin\presets\libx264-faster.ffpreset" />
-    <None Include="FFMPEG\bin\presets\libx264-faster_firstpass.ffpreset" />
-    <None Include="FFMPEG\bin\presets\libx264-fast_firstpass.ffpreset" />
-    <None Include="FFMPEG\bin\presets\libx264-ipod320.ffpreset" />
-    <None Include="FFMPEG\bin\presets\libx264-ipod640.ffpreset" />
-    <None Include="FFMPEG\bin\presets\libx264-lossless_fast.ffpreset" />
-    <None Include="FFMPEG\bin\presets\libx264-lossless_max.ffpreset" />
-    <None Include="FFMPEG\bin\presets\libx264-lossless_medium.ffpreset" />
-    <None Include="FFMPEG\bin\presets\libx264-lossless_slow.ffpreset" />
-    <None Include="FFMPEG\bin\presets\libx264-lossless_slower.ffpreset" />
-    <None Include="FFMPEG\bin\presets\libx264-lossless_ultrafast.ffpreset" />
-    <None Include="FFMPEG\bin\presets\libx264-main.ffpreset" />
-    <None Include="FFMPEG\bin\presets\libx264-medium.ffpreset" />
-    <None Include="FFMPEG\bin\presets\libx264-medium_firstpass.ffpreset" />
-    <None Include="FFMPEG\bin\presets\libx264-placebo.ffpreset" />
-    <None Include="FFMPEG\bin\presets\libx264-placebo_firstpass.ffpreset" />
-    <None Include="FFMPEG\bin\presets\libx264-slow.ffpreset" />
-    <None Include="FFMPEG\bin\presets\libx264-slower.ffpreset" />
-    <None Include="FFMPEG\bin\presets\libx264-slower_firstpass.ffpreset" />
-    <None Include="FFMPEG\bin\presets\libx264-slow_firstpass.ffpreset" />
-    <None Include="FFMPEG\bin\presets\libx264-superfast.ffpreset" />
-    <None Include="FFMPEG\bin\presets\libx264-superfast_firstpass.ffpreset" />
-    <None Include="FFMPEG\bin\presets\libx264-ultrafast.ffpreset" />
-    <None Include="FFMPEG\bin\presets\libx264-ultrafast_firstpass.ffpreset" />
-    <None Include="FFMPEG\bin\presets\libx264-veryfast.ffpreset" />
-    <None Include="FFMPEG\bin\presets\libx264-veryfast_firstpass.ffpreset" />
-    <None Include="FFMPEG\bin\presets\libx264-veryslow.ffpreset" />
-    <None Include="FFMPEG\bin\presets\libx264-veryslow_firstpass.ffpreset" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -230,10 +193,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="DD-All.ico" />
-    <Content Include="FFMPEG\bin\x64\ffmpeg.exe" />
-    <Content Include="FFMPEG\bin\x64\ffprobe.exe" />
-    <Content Include="FFMPEG\bin\x86\ffmpeg.exe" />
-    <Content Include="FFMPEG\bin\x86\ffprobe.exe" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="packages\StyleCop.Analyzers.1.0.2\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />

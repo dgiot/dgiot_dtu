@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace dgiot_dtu.Properties {
+namespace Dgiot_dtu.Properties {
     using System;
     
     

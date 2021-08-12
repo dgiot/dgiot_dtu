@@ -12,11 +12,12 @@ using System.IO.Ports;
 using MQTTnet.Core;
 using PortListener.Core.Utilities;
 using System.Text.RegularExpressions;
+using Dgiot_dtu;
 
 //https://github.com/titanium-as/TitaniumAS.Opc.Client
 //https://github.com/chkr1011/MQTTnet
 
-namespace dgiot_dtu
+namespace Dgiot_dtu
 {
 
     public class MqttHelper
@@ -181,7 +182,7 @@ namespace dgiot_dtu
                 Match m_subopcda = r_subopcda.Match(e.ApplicationMessage.Topic); // ÔÚ×Ö·û´®ÖÐÆ¥Åä
                 if (m_subopcda.Success)
                 {
-                    String data = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
+                    string data = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
                     _mainform.Log("mqtt recv :topic: " + e.ApplicationMessage.Topic.ToString() + " payload: " + data);
                     Dictionary<string, object> json = get_payload(e.ApplicationMessage.Payload);
 
@@ -193,7 +194,7 @@ namespace dgiot_dtu
                     if (m_submdb.Success)
                     {
                         Dictionary<string, object> json = get_payload(e.ApplicationMessage.Payload);
-                        AccessHelper.do_mdb(mqttClient, json, _mainform);
+                        AccessHelper.Do_mdb(mqttClient, json, _mainform);
                     }
                 }
             }

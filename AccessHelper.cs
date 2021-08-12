@@ -1,45 +1,43 @@
-﻿using System;
-using System.Data.OleDb;
-using System.Data;
-using System.Collections.Generic;
-using Newtonsoft.Json;
-using System.Linq;
-using System.IO;
-using System.Data.Odbc;
-using MQTTnet.Core.Client;
-using MQTTnet.Core;
-using MQTTnet.Core.Protocol;
-using System.Text;
-
-namespace dgiot_dtu
+﻿namespace Dgiot_dtu
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Data.Odbc;
+    using System.Data.OleDb;
+    using System.IO;
+    using System.Linq;
+    using System.Text;
+    using MQTTnet.Core;
+    using MQTTnet.Core.Client;
+    using MQTTnet.Core.Protocol;
+    using Newtonsoft.Json;
 
-    class AccessHelper
+    internal class AccessHelper
     {
-        private static  OleDbCommand ole_command = null;
-        private static OleDbDataReader ole_reader = null;
+        private static OleDbCommand oleCommand = null;
+        private static OleDbDataReader oleReader = null;
         private static DataTable dt = null;
 
-        private static string MdbFile = "test.mdb";
-        private static string Dbq = Path.Combine(Environment.CurrentDirectory, MdbFile);
-        private static string Security = "TRUE";
-        private static string Uid = "Admin";
-        private static string Pwd = "123456";
+        private static string mdbFile = "test.mdb";
+        private static string dbq = Path.Combine(Environment.CurrentDirectory, mdbFile);
+        private static string security = "TRUE";
+        private static string uid = "Admin";
+        private static string pwd = "123456";
 
         private static string scantopic = "dgiot_mdb_scan";
 
-        //定义连接字符串
+        // 定义连接字符串
+        private static string odbcconnectionString = 
+            "Driver={Microsoft Access Driver (*.mdb, *.accdb)};Dbq=" + dbq +
+            "; Uid=" + uid + "; Pwd=" + pwd + ";";
 
-        private static string OdbcconnectionString = 
-            "Driver={Microsoft Access Driver (*.mdb, *.accdb)};Dbq=" + Dbq +
-            "; Uid=" + Uid + "; Pwd=" + Pwd + ";";
-
-        public static string ConnectionString =
-             @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source='" + Dbq + ";" +
-               "Persist Security Info = False; Jet OLEDB:Database Password = " + Pwd + ";";
+        private static string connectionString =
+             @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source='" + dbq + ";" +
+               "Persist Security Info = False; Jet OLEDB:Database Password = " + pwd + ";";
 
 
-        public static void do_mdb(MqttClient mqttClient, Dictionary<string, object> json, MainForm mainform)
+        public static void Do_mdb(MqttClient mqttClient, Dictionary<string, object> json, MainForm mainform)
         {
             string cmdType = "read";
             if (json.ContainsKey("cmdtype"))
@@ -76,7 +74,7 @@ namespace dgiot_dtu
             {
                 try
                 {
-                    Dbq = (string)json["dbq"];
+                    dbq = (string)json["dbq"];
                 }
                 catch (Exception ex)
                 {
@@ -88,8 +86,8 @@ namespace dgiot_dtu
             {
                 try
                 {
-                    Security = (string)json["security"];
-                    Security = Security.ToUpper();
+                    security = (string)json["security"];
+                    security = security.ToUpper();
                 }
                 catch (Exception ex)
                 {
@@ -101,7 +99,7 @@ namespace dgiot_dtu
             {
                 try
                 {
-                    Uid = (string)json["uid"];
+                    uid = (string)json["uid"];
                 }
                 catch (Exception ex)
                 {
@@ -113,7 +111,7 @@ namespace dgiot_dtu
             {
                 try
                 {
-                    Pwd = (string)json["pwd"];
+                    pwd = (string)json["pwd"];
                 }
                 catch (Exception ex)
                 {
@@ -122,17 +120,17 @@ namespace dgiot_dtu
             }
 
 
-            if (Security == "TRUE")
+            if (security == "TRUE")
             {
-                OdbcconnectionString = "Driver={Microsoft Access Driver (*.mdb, *.accdb)};Dbq=" + Dbq + "; Uid=" + Uid + "; Pwd=" + Pwd + ";";
+                odbcconnectionString = "Driver={Microsoft Access Driver (*.mdb, *.accdb)};Dbq=" + dbq + "; Uid=" + uid + "; Pwd=" + pwd + ";";
             }else
             {
-                OdbcconnectionString = "Driver={Microsoft Access Driver (*.mdb, *.accdb)};Dbq=" + Dbq;
+                odbcconnectionString = "Driver={Microsoft Access Driver (*.mdb, *.accdb)};Dbq=" + dbq;
             }
 
-            Console.WriteLine(OdbcconnectionString);
+            Console.WriteLine(odbcconnectionString);
 
-            using (var db = new OdbcConnection(OdbcconnectionString))
+            using (var db = new OdbcConnection(odbcconnectionString))
             {
                 db.Open();
                 var schemaTable = db.GetSchema("Tables");
@@ -205,7 +203,7 @@ namespace dgiot_dtu
         public static List<string> GetAllTableNames()
         {
             List<string> result = new List<string>();
-            using (OleDbConnection conn = new OleDbConnection(ConnectionString))
+            using (OleDbConnection conn = new OleDbConnection(connectionString))
             {
                 try
                 {
@@ -235,7 +233,7 @@ namespace dgiot_dtu
             {
                 CreatDBTable(dt, tableName);
             }
-            using (OleDbConnection conn = new OleDbConnection(ConnectionString))
+            using (OleDbConnection conn = new OleDbConnection(connectionString))
             {
                 try
                 {
@@ -288,37 +286,41 @@ namespace dgiot_dtu
             {
                 try
                 {
-                    using (OleDbConnection conn = new OleDbConnection(ConnectionString))
+                    using (OleDbConnection conn = new OleDbConnection(connectionString))
                     {
                         conn.Open();
-                        //构建字段组合
-                        string StableColumn = "";
+
+                        // 构建字段组合
+                        string stableColumn = string.Empty;
                         for (int i = 0; i < dt.Columns.Count; i++)
                         {
                             Type t = dt.Columns[i].DataType;
                             if (t.Name == "String")
                             {
-                                StableColumn += string.Format("{0} varchar", dt.Columns[i].ColumnName);
+                                stableColumn += string.Format("{0} varchar", dt.Columns[i].ColumnName);
                             }
                             else if (t.Name == "Int32" || t.Name == "Double")
                             {
-                                StableColumn += string.Format("{0} int", dt.Columns[i].ColumnName);
+                                stableColumn += string.Format("{0} int", dt.Columns[i].ColumnName);
                             }
+
                             if (i != dt.Columns.Count - 1)
                             {
-                                StableColumn += ",";
+                                stableColumn += ",";
                             }
                         }
-                        string sql = "";
-                        if (StableColumn.Contains("ID int"))
+
+                        string sql = string.Empty;
+                        if (stableColumn.Contains("ID int"))
                         {
-                            StableColumn = StableColumn.Replace("ID int,", "");
-                            sql = $"create table {tableName}(ID autoincrement primary key,{StableColumn}";
+                            stableColumn = stableColumn.Replace("ID int,", string.Empty);
+                            sql = $"create table {tableName}(ID autoincrement primary key,{stableColumn}";
                         }
                         else
                         {
-                            sql = $"create table {tableName}({StableColumn})";
+                            sql = $"create table {tableName}({stableColumn})";
                         }
+
                         OleDbCommand odc = new OleDbCommand(sql, conn);
                         odc.ExecuteNonQuery();
                         odc.Dispose();
@@ -342,7 +344,7 @@ namespace dgiot_dtu
         {
             if (IsTableExist(tableName))
             {
-                using (OleDbConnection conn = new OleDbConnection(ConnectionString))
+                using (OleDbConnection conn = new OleDbConnection(connectionString))
                 {
                     try
                     {
@@ -363,14 +365,9 @@ namespace dgiot_dtu
             else { return false; }
         }
 
-        /// <summary>
-        /// 查询表是否存在
-        /// </summary>
-        /// <param name="tableName"></param>
-        /// <returns></returns>
         public static bool IsTableExist(string tableName)
         {
-            using (OleDbConnection conn = new OleDbConnection(ConnectionString))
+            using (OleDbConnection conn = new OleDbConnection(connectionString))
             {
                 try
                 {
@@ -389,18 +386,13 @@ namespace dgiot_dtu
             }
         }
 
-        /// <summary>
-        /// 获取数据库中表
-        /// </summary>
-        /// <param name="tableName"></param>
-        /// <returns></returns>
         public static DataTable GetDBTable(string tableName)
         {
             if (!IsTableExist(tableName))
             {
                 return null;
             }
-            using (OleDbConnection conn = new OleDbConnection(ConnectionString))
+            using (OleDbConnection conn = new OleDbConnection(connectionString))
             {
                 try
                 {
@@ -420,14 +412,10 @@ namespace dgiot_dtu
             }
         }
 
-        /// <summary>
-        /// 从数据库里面获取数据
-        /// </summary>
-        /// <param name="strSql">查询语句</param>
-        /// <returns>数据列表</returns>
+ 
         public static DataTable GetDataTableFromDB(string strSql)
         {
-            using (OleDbConnection conn = new OleDbConnection(ConnectionString))
+            using (OleDbConnection conn = new OleDbConnection(connectionString))
             {
                 try
                 {
@@ -438,19 +426,19 @@ namespace dgiot_dtu
                         return null;
                     }
 
-                    ole_command.CommandText = strSql;
-                    ole_command.Connection = conn;
+                    oleCommand.CommandText = strSql;
+                    oleCommand.Connection = conn;
 
-                    ole_reader = ole_command.ExecuteReader(CommandBehavior.Default);
+                    oleReader = oleCommand.ExecuteReader(CommandBehavior.Default);
 
-                    dt = ConvertOleDbReaderToDataTable(ref ole_reader);
+                    dt = ConvertOleDbReaderToDataTable(ref oleReader);
 
-                    ole_reader.Close();
-                    ole_reader.Dispose();
+                    oleReader.Close();
+                    oleReader.Dispose();
                 }
                 catch (System.Exception e)
                 {
-                    //Console.WriteLine(e.ToString());
+                    // Console.WriteLine(e.ToString());
                     Console.WriteLine("{0}", e.Message);
                 }
                 finally
