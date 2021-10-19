@@ -19,13 +19,15 @@ namespace Dgiot_dtu
 
     public class OPCDAHelper
     {
-        private static string pubtopic = "dgiot_opc_da_ack";
-        private static string scantopic = "dgiot_opc_da_scan";
+        private static string pubtopic = "thing/opcda/";
         private static MainForm mainform = null;
+        private static string clientid = string.Empty;
 
-        public static void Do_opc_da(MqttClient mqttClient, Dictionary<string, object> json, MainForm mainform)
+        public static void Do_opc_da(MqttClient mqttClient, Dictionary<string, object> json, string clientid, MainForm mainform)
         {
             OPCDAHelper.mainform = mainform;
+            OPCDAHelper.clientid = clientid;
+            OPCDAHelper.pubtopic = "thing/opcda/" + clientid + "/post";
             string cmdType = "read";
             if (json.ContainsKey("cmdtype"))
             {
@@ -56,7 +58,8 @@ namespace Dgiot_dtu
 
         private static void Scan_opc_da(MqttClient mqttClient, Dictionary<string, object> json)
         {
-            string opcserver = "Matrikon.OPC.Simulation.1";
+            //string opcserver = "Matrikon.OPC.Simulation.1";
+            string opcserver = "Kepware.KEPServerEX.V6";
 
             IList<OpcDaItemDefinition> itemlist = new List<OpcDaItemDefinition>();
             if (json.ContainsKey("opcserver"))
@@ -82,7 +85,8 @@ namespace Dgiot_dtu
                     var browser = new OpcDaBrowserAuto(server);
                     JsonObject scan = new JsonObject();
                     BrowseChildren(scan, browser);
-                    var appMsg = new MqttApplicationMessage(scantopic, Encoding.UTF8.GetBytes(scan.ToString()), MqttQualityOfServiceLevel.AtLeastOnce, false);
+                    var appMsg = new MqttApplicationMessage(OPCDAHelper.pubtopic, Encoding.UTF8.GetBytes(scan.ToString()), MqttQualityOfServiceLevel.AtLeastOnce, false);
+                    mainform.Log("scantopic " + OPCDAHelper.pubtopic.ToString());
                     mainform.Log("appMsg " + scan.ToString());
                     mqttClient.PublishAsync(appMsg);
                 }
@@ -95,7 +99,7 @@ namespace Dgiot_dtu
                 result.Add("opcserver", opcserver);
                 result.Add("status", ex.GetHashCode());
                 result.Add("err", ex.ToString());
-                var appMsg = new MqttApplicationMessage(pubtopic, Encoding.UTF8.GetBytes(result.ToString()), MqttQualityOfServiceLevel.AtLeastOnce, false);
+                var appMsg = new MqttApplicationMessage(OPCDAHelper.pubtopic, Encoding.UTF8.GetBytes(result.ToString()), MqttQualityOfServiceLevel.AtLeastOnce, false);
                 mainform.Log("appMsg  " + appMsg.ToString());
                 mqttClient.PublishAsync(appMsg);
             }
@@ -173,7 +177,7 @@ namespace Dgiot_dtu
                         result.Add("status", 0);
                         result.Add(group, data);
                         mainform.Log("result " + result.ToString());
-                        var appMsg = new MqttApplicationMessage(pubtopic, Encoding.UTF8.GetBytes(result.ToString()), MqttQualityOfServiceLevel.AtLeastOnce, false);
+                        var appMsg = new MqttApplicationMessage(OPCDAHelper.pubtopic, Encoding.UTF8.GetBytes(result.ToString()), MqttQualityOfServiceLevel.AtLeastOnce, false);
                         mqttClient.PublishAsync(appMsg);
                     }
                     catch (Exception ex)
@@ -226,7 +230,7 @@ namespace Dgiot_dtu
                 result.Add("opcserver", opcserver);
                 result.Add("status", ex.GetHashCode());
                 result.Add("err", ex.ToString());
-                var appMsg = new MqttApplicationMessage(pubtopic, Encoding.UTF8.GetBytes(result.ToString()), MqttQualityOfServiceLevel.AtLeastOnce, false);
+                var appMsg = new MqttApplicationMessage(OPCDAHelper.pubtopic, Encoding.UTF8.GetBytes(result.ToString()), MqttQualityOfServiceLevel.AtLeastOnce, false);
                 mqttClient.PublishAsync(appMsg);
             }
         }
@@ -263,14 +267,14 @@ namespace Dgiot_dtu
                     JsonObject data = new JsonObject();
                     foreach (OpcDaItemValue item in values)
                     {
-                        mainform.Log(pubtopic + " " + item.GetHashCode().ToString() + " " + item.Value.ToString() + string.Empty + item.Timestamp.ToString());
+                        mainform.Log(OPCDAHelper.pubtopic + " " + item.GetHashCode().ToString() + " " + item.Value.ToString() + string.Empty + item.Timestamp.ToString());
                         data.Add(item.Item.ItemId, item.Value);
                     }
 
                     items.Add("status", 0);
                     items.Add(group_name, data);
                     mainform.Log(items.ToString());
-                    var appMsg = new MqttApplicationMessage(pubtopic, Encoding.UTF8.GetBytes(items.ToString()), MqttQualityOfServiceLevel.AtLeastOnce, false);
+                    var appMsg = new MqttApplicationMessage(OPCDAHelper.pubtopic, Encoding.UTF8.GetBytes(items.ToString()), MqttQualityOfServiceLevel.AtLeastOnce, false);
                     mqttClient.PublishAsync(appMsg);
                     server.Disconnect();
                 }
@@ -318,7 +322,7 @@ namespace Dgiot_dtu
                 result.Add("name", name);
                 result.Add("status", ex.GetHashCode());
                 result.Add("err", ex.ToString());
-                var appMsg = new MqttApplicationMessage(pubtopic, Encoding.UTF8.GetBytes(result.ToString()), MqttQualityOfServiceLevel.AtLeastOnce, false);
+                var appMsg = new MqttApplicationMessage(OPCDAHelper.pubtopic, Encoding.UTF8.GetBytes(result.ToString()), MqttQualityOfServiceLevel.AtLeastOnce, false);
                 mqttClient.PublishAsync(appMsg);
             }
         }

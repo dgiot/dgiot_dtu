@@ -25,7 +25,7 @@
         private static string uid = "Admin";
         private static string pwd = "123456";
 
-        private static string scantopic = "dgiot_mdb_scan";
+        private static string scantopic = "thing/mdb/";
 
         // 定义连接字符串
         private static string odbcconnectionString = 
@@ -37,9 +37,10 @@
                "Persist Security Info = False; Jet OLEDB:Database Password = " + pwd + ";";
 
 
-        public static void Do_mdb(MqttClient mqttClient, Dictionary<string, object> json, MainForm mainform)
+        public static void Do_mdb(MqttClient mqttClient, Dictionary<string, object> json, string clientid, MainForm mainform)
         {
             string cmdType = "read";
+            AccessHelper.scantopic = "thing/mdb/" + clientid + "post";
             if (json.ContainsKey("cmdtype"))
             {
                 try

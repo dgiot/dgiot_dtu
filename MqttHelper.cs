@@ -147,12 +147,15 @@ namespace Dgiot_dtu
         /// <param name="e"></param>
         private static void MqttClient_Connected(object sender, EventArgs e)
         {
-            mainform.Log("mqtt:" + clientid + " connected");
+            mainform.Log("mqtt client:" + clientid + " connected");
             mqttClient.SubscribeAsync(new List<TopicFilter> {
                 new TopicFilter(subopcda + clientid , MqttQualityOfServiceLevel.AtMostOnce),
                 new TopicFilter(submdb + clientid , MqttQualityOfServiceLevel.AtMostOnce),
                 new TopicFilter(subtopic + clientid, MqttQualityOfServiceLevel.AtMostOnce)
             });
+            mainform.Log("mqtt client subscribe topic: " + subopcda + clientid);
+            mainform.Log("mqtt client subscribe topic: " + submdb + clientid);
+            mainform.Log("mqtt client subscribe topic: " + subtopic + clientid);
         }
 
         /// <summary>
@@ -188,16 +191,17 @@ namespace Dgiot_dtu
                     string data = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
                     mainform.Log("mqtt recv :topic: " + e.ApplicationMessage.Topic.ToString() + " payload: " + data);
                     Dictionary<string, object> json = get_payload(e.ApplicationMessage.Payload);
-
-                    OPCDAHelper.Do_opc_da(mqttClient, json, mainform);
+                    OPCDAHelper.Do_opc_da(mqttClient, json, MqttHelper.clientid, mainform);
 
                 }else {
                     Regex r_submdb = new Regex(MqttHelper.submdb); // 定义一个Regex对象实例
                     Match m_submdb = r_submdb.Match(e.ApplicationMessage.Topic); // 在字符串中匹配
                     if (m_submdb.Success)
                     {
+                        string data = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
+                        mainform.Log("mqtt recv :topic: " + e.ApplicationMessage.Topic.ToString() + " payload: " + data);
                         Dictionary<string, object> json = get_payload(e.ApplicationMessage.Payload);
-                        AccessHelper.Do_mdb(mqttClient, json, mainform);
+                        AccessHelper.Do_mdb(mqttClient, json, clientid, mainform);
                     }
                 }
             }

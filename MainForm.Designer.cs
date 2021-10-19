@@ -429,7 +429,7 @@
             this.textBoxTargetPort.Name = "textBoxTargetPort";
             this.textBoxTargetPort.Size = new System.Drawing.Size(148, 28);
             this.textBoxTargetPort.TabIndex = 7;
-            this.textBoxTargetPort.Text = "8067";
+            this.textBoxTargetPort.Text = "1883";
             this.toolTip1.SetToolTip(this.textBoxTargetPort, "Connect to this port then you can send and receive data to/from Serial port.\r\nThe" +
         "re can only be one connection at a time.");
             // 
