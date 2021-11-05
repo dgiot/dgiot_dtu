@@ -1,8 +1,11 @@
-﻿namespace Dgiot_dtu
+﻿// <copyright file="Program.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace Dgiot_dtu
 {
     using System;
     using System.Windows.Forms;
-    using Dgiot_dtu;
 
     internal static class Program
     {

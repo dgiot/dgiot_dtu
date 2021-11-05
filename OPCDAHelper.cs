@@ -8,11 +8,12 @@ namespace Dgiot_dtu
 {
     using System;
     using System.Collections.Generic;
+    using System.Configuration;
     using System.Text;
-    using Dgiot_dtu;
     using MQTTnet.Core;
     using MQTTnet.Core.Client;
     using MQTTnet.Core.Protocol;
+    using PortListener.Core.Utilities;
     using TitaniumAS.Opc.Client.Common;
     using TitaniumAS.Opc.Client.Da;
     using TitaniumAS.Opc.Client.Da.Browsing;
@@ -21,7 +22,41 @@ namespace Dgiot_dtu
     {
         private static string pubtopic = "thing/opcda/";
         private static MainForm mainform = null;
+        private static OPCDAHelper instance = null;
         private static string clientid = string.Empty;
+        private static bool bIsRunning = false;
+        private static bool bIsCheck = false;
+
+        public static OPCDAHelper GetInstance()
+        {
+            if (instance == null)
+            {
+                instance = new OPCDAHelper();
+            }
+
+            return instance;
+        }
+
+        public static void Start(KeyValueConfigurationCollection config, MainForm mainform)
+        {
+            Config(config, mainform);
+            OPCDAHelper.bIsRunning = true;
+        }
+
+        public static void Stop()
+        {
+            OPCDAHelper.bIsRunning = false;
+        }
+
+        public static void Config(KeyValueConfigurationCollection config, MainForm mainform)
+        {
+            if (config["OPCDAIsCheck"] != null)
+            {
+                OPCDAHelper.bIsCheck = StringHelper.StrTobool(config["OPCDAIsCheck"].Value);
+            }
+
+            OPCDAHelper.mainform = mainform;
+        }
 
         public static void Do_opc_da(MqttClient mqttClient, Dictionary<string, object> json, string clientid, MainForm mainform)
         {
@@ -58,7 +93,7 @@ namespace Dgiot_dtu
 
         private static void Scan_opc_da(MqttClient mqttClient, Dictionary<string, object> json)
         {
-            //string opcserver = "Matrikon.OPC.Simulation.1";
+            // string opcserver = "Matrikon.OPC.Simulation.1";
             string opcserver = "Kepware.KEPServerEX.V6";
 
             IList<OpcDaItemDefinition> itemlist = new List<OpcDaItemDefinition>();
@@ -125,7 +160,8 @@ namespace Dgiot_dtu
                 BrowseChildren(json, browser, element.ItemId, indent + 2);
             }
 
-            if (flag) {
+            if (flag)
+            {
                 if (itemId != null)
                 {
                     json.Add(itemId, array);

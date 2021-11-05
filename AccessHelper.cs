@@ -1,7 +1,12 @@
-﻿namespace Dgiot_dtu
+﻿// <copyright file="AccessHelper.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace Dgiot_dtu
 {
     using System;
     using System.Collections.Generic;
+    using System.Configuration;
     using System.Data;
     using System.Data.Odbc;
     using System.Data.OleDb;
@@ -12,13 +17,19 @@
     using MQTTnet.Core.Client;
     using MQTTnet.Core.Protocol;
     using Newtonsoft.Json;
+    using PortListener.Core.Utilities;
 
     internal class AccessHelper
     {
+        private AccessHelper()
+        {
+        }
+
         private static OleDbCommand oleCommand = null;
         private static OleDbDataReader oleReader = null;
         private static DataTable dt = null;
 
+        private static AccessHelper instance = null;
         private static string mdbFile = "test.mdb";
         private static string dbq = Path.Combine(Environment.CurrentDirectory, mdbFile);
         private static string security = "TRUE";
@@ -28,7 +39,7 @@
         private static string scantopic = "thing/mdb/";
 
         // 定义连接字符串
-        private static string odbcconnectionString = 
+        private static string odbcconnectionString =
             "Driver={Microsoft Access Driver (*.mdb, *.accdb)};Dbq=" + dbq +
             "; Uid=" + uid + "; Pwd=" + pwd + ";";
 
@@ -36,6 +47,46 @@
              @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source='" + dbq + ";" +
                "Persist Security Info = False; Jet OLEDB:Database Password = " + pwd + ";";
 
+        private static MainForm mainform = null;
+        private static bool bIsRunning = false;
+        private static bool bIsCheck = false;
+
+        public static AccessHelper GetInstance()
+        {
+            if (instance == null)
+            {
+                instance = new AccessHelper();
+            }
+
+            return instance;
+        }
+
+        public static void Start(KeyValueConfigurationCollection config, bool bIsRunning, MainForm mainform)
+        {
+            Config(config, mainform);
+            AccessHelper.bIsRunning = bIsRunning;
+        }
+
+        public static void Stop()
+        {
+            AccessHelper.bIsRunning = false;
+        }
+
+        public static void Config(KeyValueConfigurationCollection config, MainForm mainform)
+        {
+            if (config["AccessIsCheck"] != null)
+            {
+                AccessHelper.bIsCheck = StringHelper.StrTobool(config["AccessIsCheck"].Value);
+            }
+
+            AccessHelper.mainform = mainform;
+        }
+
+        public static void Check(bool isCheck, MainForm mainform)
+        {
+            AccessHelper.bIsCheck = isCheck;
+            AccessHelper.mainform = mainform;
+        }
 
         public static void Do_mdb(MqttClient mqttClient, Dictionary<string, object> json, string clientid, MainForm mainform)
         {
@@ -49,15 +100,15 @@
                     switch (cmdType)
                     {
                         case "scan":
-                            scan_mdb(mqttClient, json);
+                            Scan_mdb(mqttClient, json);
                             break;
                         case "read":
-                            read_mdb(mqttClient, json);
+                            Read_mdb(mqttClient, json);
                             break;
                         case "write":
                             break;
                         default:
-                            read_mdb(mqttClient, json);
+                            Read_mdb(mqttClient, json);
                             break;
                     }
                 }
@@ -66,10 +117,9 @@
                     Console.WriteLine("{0}", ex.ToString());
                 }
             }
-
         }
 
-        public static void scan_mdb(MqttClient mqttClient, Dictionary<string, object> json)
+        public static void Scan_mdb(MqttClient mqttClient, Dictionary<string, object> json)
         {
             if (json.ContainsKey("dbq"))
             {
@@ -120,11 +170,11 @@
                 }
             }
 
-
             if (security == "TRUE")
             {
                 odbcconnectionString = "Driver={Microsoft Access Driver (*.mdb, *.accdb)};Dbq=" + dbq + "; Uid=" + uid + "; Pwd=" + pwd + ";";
-            }else
+            }
+            else
             {
                 odbcconnectionString = "Driver={Microsoft Access Driver (*.mdb, *.accdb)};Dbq=" + dbq;
             }
@@ -138,7 +188,7 @@
                 var dataSet = new DataSet();
                 for (var i = 0; i < schemaTable.Rows.Count; i++)
                 {
-                    //only source tables
+                    // only source tables
                     if (schemaTable.Rows[i]["TABLE_TYPE"].ToString() == "TABLE")
                     {
                         var tableName = schemaTable.Rows[i]["TABLE_NAME"].ToString();
@@ -152,10 +202,12 @@
                                 adapter.Fill(dataTable);
                             }
                         }
-                        //Console.WriteLine(tableName + "(" + dataTable.Rows.Count + " rows)");
+
+                        // Console.WriteLine(tableName + "(" + dataTable.Rows.Count + " rows)");
                         dataSet.Tables.Add(dataTable);
                     }
                 }
+
                 dataSet.AcceptChanges();
                 var jsonResults = DataSetToJson(dataSet);
                 var appMsg = new MqttApplicationMessage(scantopic, Encoding.UTF8.GetBytes(jsonResults.ToString()), MqttQualityOfServiceLevel.AtLeastOnce, false);
@@ -164,7 +216,7 @@
             }
         }
 
-        public static void read_mdb(MqttClient mqttClient, Dictionary<string, object> json)
+        public static void Read_mdb(MqttClient mqttClient, Dictionary<string, object> json)
         {
         }
 
@@ -173,11 +225,9 @@
             var results = new List<object>();
             foreach (var table in ds.Tables.Cast<DataTable>())
             {
-
                 var parentRows = new List<Dictionary<string, object>>();
                 foreach (var row in table.Rows.Cast<DataRow>())
                 {
-
                     var childRow = new Dictionary<string, object>();
                     foreach (var column in table.Columns.Cast<DataColumn>())
                     {
@@ -200,7 +250,7 @@
         /// <summary>
         /// 获取数据库中所有表名
         /// </summary>
-        /// <returns></returns>
+        /// <returns> List </returns>
         public static List<string> GetAllTableNames()
         {
             List<string> result = new List<string>();
@@ -220,6 +270,7 @@
                     Console.WriteLine(e.Message);
                 }
             }
+
             return result;
         }
 
@@ -234,6 +285,7 @@
             {
                 CreatDBTable(dt, tableName);
             }
+
             using (OleDbConnection conn = new OleDbConnection(connectionString))
             {
                 try
@@ -249,11 +301,13 @@
                         {
                             add_sql += $",'{dt.Rows[i].ItemArray[j]}'";
                         }
+
                         add_sql += ")";
                         odc.CommandText = add_sql;
                         odc.Connection = conn;
                         odc.ExecuteNonQuery();
                     }
+
                     odc.Dispose();
                 }
                 catch (Exception e)
@@ -363,7 +417,10 @@
                     }
                 }
             }
-            else { return false; }
+            else
+            {
+                return false;
+            }
         }
 
         public static bool IsTableExist(string tableName)
@@ -393,6 +450,7 @@
             {
                 return null;
             }
+
             using (OleDbConnection conn = new OleDbConnection(connectionString))
             {
                 try
@@ -413,7 +471,6 @@
             }
         }
 
- 
         public static DataTable GetDataTableFromDB(string strSql)
         {
             using (OleDbConnection conn = new OleDbConnection(connectionString))
@@ -492,22 +549,22 @@
         /// <summary>
         /// 创建并初始化数据列表
         /// </summary>
-        /// <param name="Field_Count">列的个数</param>
+        /// <param name="field_Count">列的个数</param>
         /// <returns>数据列表</returns>
-        private static DataTable BuildAndInitDataTable(int Field_Count)
+        private static DataTable BuildAndInitDataTable(int field_Count)
         {
             DataTable dt_tmp = null;
             DataColumn dc = null;
             int i = 0;
 
-            if (Field_Count <= 0)
+            if (field_Count <= 0)
             {
                 return null;
             }
 
             dt_tmp = new DataTable();
 
-            for (i = 0; i < Field_Count; ++i)
+            for (i = 0; i < field_Count; ++i)
             {
                 dc = new DataColumn(i.ToString());
                 dt_tmp.Columns.Add(dc);
@@ -515,7 +572,5 @@
 
             return dt_tmp;
         }
-
     }
-   
 }

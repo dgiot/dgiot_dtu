@@ -4,6 +4,7 @@
 
 namespace PortListener.Core.Utilities
 {
+    using System.Configuration;
     using System.Text;
 
     public class StringHelper
@@ -68,6 +69,30 @@ namespace PortListener.Core.Utilities
             }
 
             return bytes;
+        }
+
+        public static bool StrTobool(string s)
+        {
+            if (s == "true")
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static string BoolTostr(bool isTrue)
+        {
+            if (isTrue)
+            {
+                return "true";
+            }
+            else
+            {
+                return "false";
+            }
         }
     }
 }

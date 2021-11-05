@@ -1,17 +1,6 @@
 //-----------------------------------------------------------------------
-// <copyright file="SimpleJson.cs" company="The Outercurve Foundation">
-//    Copyright (c) 2011, The Outercurve Foundation.
-//
-//    Licensed under the MIT License (the "License");
-//    you may not use this file except in compliance with the License.
-//    You may obtain a copy of the License at
-//      http://www.opensource.org/licenses/mit-license.php
-//
-//    Unless required by applicable law or agreed to in writing, software
-//    distributed under the License is distributed on an "AS IS" BASIS,
-//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//    See the License for the specific language governing permissions and
-//    limitations under the License.
+// <copyright file="SimpleJson.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 // <author>Nathan Totten (ntotten.com), Jim Zimmerman (jimzimmerman.com) and Prabir Shrestha (prabir.me)</author>
 // <website>https://github.com/facebook-csharp-sdk/simple-json</website>
@@ -20,32 +9,31 @@
 // VERSION: 0.38.0
 
 // NOTE: uncomment the following line to make SimpleJson class internal.
-//#define SIMPLE_JSON_INTERNAL
+// #define SIMPLE_JSON_INTERNAL
 
 // NOTE: uncomment the following line to make JsonArray and JsonObject class internal.
-//#define SIMPLE_JSON_OBJARRAYINTERNAL
+// #define SIMPLE_JSON_OBJARRAYINTERNAL
 
 // NOTE: uncomment the following line to enable dynamic support.
-//#define SIMPLE_JSON_DYNAMIC
+// #define SIMPLE_JSON_DYNAMIC
 
 // NOTE: uncomment the following line to enable DataContract support.
-//#define SIMPLE_JSON_DATACONTRACT
+// #define SIMPLE_JSON_DATACONTRACT
 
 // NOTE: uncomment the following line to enable IReadOnlyCollection<T> and IReadOnlyList<T> support.
-//#define SIMPLE_JSON_READONLY_COLLECTIONS
+// #define SIMPLE_JSON_READONLY_COLLECTIONS
 
 // NOTE: uncomment the following line to disable linq expressions/compiled lambda (better performance) instead of method.invoke().
 // define if you are using .net framework <= 3.0 or < WP7.5
-//#define SIMPLE_JSON_NO_LINQ_EXPRESSION
+// #define SIMPLE_JSON_NO_LINQ_EXPRESSION
 
 // NOTE: uncomment the following line if you are compiling under Window Metro style application/library.
 // usually already defined in properties
-//#define NETFX_CORE;
+// #define NETFX_CORE;
 
 // If you are targetting WinStore, WP8 and NET4.5+ PCL make sure to #define SIMPLE_JSON_TYPEINFO;
 
 // original json parsing code from http://techblog.procurios.nl/k/618/news/view/14605/14863/How-do-I-write-my-own-parser-for-JSON.html
-
 #if NETFX_CORE
 #define SIMPLE_JSON_TYPEINFO
 #endif
@@ -73,415 +61,6 @@ using Dgiot_dtu.Reflection;
 // ReSharper disable SuggestUseVarKeywordEvident
 namespace Dgiot_dtu
 {
-    /// <summary>
-    /// Represents the json array.
-    /// </summary>
-    [GeneratedCode("simple-json", "1.0.0")]
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
-#if SIMPLE_JSON_OBJARRAYINTERNAL
-    internal
-#else
-    public
-#endif
- class JsonArray : List<object>
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="JsonArray"/> class. 
-        /// </summary>
-        public JsonArray() { }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="JsonArray"/> class. 
-        /// </summary>
-        /// <param name="capacity">The capacity of the json array.</param>
-        public JsonArray(int capacity) : base(capacity) { }
-
-        /// <summary>
-        /// The json representation of the array.
-        /// </summary>
-        /// <returns>The json representation of the array.</returns>
-        public override string ToString()
-        {
-            return SimpleJson.SerializeObject(this) ?? string.Empty;
-        }
-    }
-
-    /// <summary>
-    /// Represents the json object.
-    /// </summary>
-    [GeneratedCode("simple-json", "1.0.0")]
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
-#if SIMPLE_JSON_OBJARRAYINTERNAL
-    internal
-#else
-    public
-#endif
- class JsonObject :
-#if SIMPLE_JSON_DYNAMIC
- DynamicObject,
-#endif
- IDictionary<string, object>
-    {
-        /// <summary>
-        /// The internal member dictionary.
-        /// </summary>
-        private readonly Dictionary<string, object> _members;
-
-        /// <summary>
-        /// Initializes a new instance of <see cref="JsonObject"/>.
-        /// </summary>
-        public JsonObject()
-        {
-            _members = new Dictionary<string, object>();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of <see cref="JsonObject"/>.
-        /// </summary>
-        /// <param name="comparer">The <see cref="T:System.Collections.Generic.IEqualityComparer`1"/> implementation to use when comparing keys, or null to use the default <see cref="T:System.Collections.Generic.EqualityComparer`1"/> for the type of the key.</param>
-        public JsonObject(IEqualityComparer<string> comparer)
-        {
-            _members = new Dictionary<string, object>(comparer);
-        }
-
-        /// <summary>
-        /// Gets the <see cref="System.Object"/> at the specified index.
-        /// </summary>
-        /// <value></value>
-        public object this[int index]
-        {
-            get { return GetAtIndex(_members, index); }
-        }
-
-        internal static object GetAtIndex(IDictionary<string, object> obj, int index)
-        {
-            if (obj == null)
-                throw new ArgumentNullException("obj");
-            if (index >= obj.Count)
-                throw new ArgumentOutOfRangeException("index");
-            int i = 0;
-            foreach (KeyValuePair<string, object> o in obj)
-                if (i++ == index) return o.Value;
-            return null;
-        }
-
-        /// <summary>
-        /// Adds the specified key.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The value.</param>
-        public void Add(string key, object value)
-        {
-            _members.Add(key, value);
-        }
-
-        /// <summary>
-        /// Determines whether the specified key contains key.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <returns>
-        ///     <c>true</c> if the specified key contains key; otherwise, <c>false</c>.
-        /// </returns>
-        public bool ContainsKey(string key)
-        {
-            return _members.ContainsKey(key);
-        }
-
-        /// <summary>
-        /// Gets the keys.
-        /// </summary>
-        /// <value>The keys.</value>
-        public ICollection<string> Keys
-        {
-            get { return _members.Keys; }
-        }
-
-        /// <summary>
-        /// Removes the specified key.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <returns></returns>
-        public bool Remove(string key)
-        {
-            return _members.Remove(key);
-        }
-
-        /// <summary>
-        /// Tries the get value.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The value.</param>
-        /// <returns></returns>
-        public bool TryGetValue(string key, out object value)
-        {
-            return _members.TryGetValue(key, out value);
-        }
-
-        /// <summary>
-        /// Gets the values.
-        /// </summary>
-        /// <value>The values.</value>
-        public ICollection<object> Values
-        {
-            get { return _members.Values; }
-        }
-
-        /// <summary>
-        /// Gets or sets the <see cref="System.Object"/> with the specified key.
-        /// </summary>
-        /// <value></value>
-        public object this[string key]
-        {
-            get { return _members[key]; }
-            set { _members[key] = value; }
-        }
-
-        /// <summary>
-        /// Adds the specified item.
-        /// </summary>
-        /// <param name="item">The item.</param>
-        public void Add(KeyValuePair<string, object> item)
-        {
-            _members.Add(item.Key, item.Value);
-        }
-
-        /// <summary>
-        /// Clears this instance.
-        /// </summary>
-        public void Clear()
-        {
-            _members.Clear();
-        }
-
-        /// <summary>
-        /// Determines whether [contains] [the specified item].
-        /// </summary>
-        /// <param name="item">The item.</param>
-        /// <returns>
-        /// 	<c>true</c> if [contains] [the specified item]; otherwise, <c>false</c>.
-        /// </returns>
-        public bool Contains(KeyValuePair<string, object> item)
-        {
-            return _members.ContainsKey(item.Key) && _members[item.Key] == item.Value;
-        }
-
-        /// <summary>
-        /// Copies to.
-        /// </summary>
-        /// <param name="array">The array.</param>
-        /// <param name="arrayIndex">Index of the array.</param>
-        public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
-        {
-            if (array == null) throw new ArgumentNullException("array");
-            int num = Count;
-            foreach (KeyValuePair<string, object> kvp in this)
-            {
-                array[arrayIndex++] = kvp;
-                if (--num <= 0)
-                    return;
-            }
-        }
-
-        /// <summary>
-        /// Gets the count.
-        /// </summary>
-        /// <value>The count.</value>
-        public int Count
-        {
-            get { return _members.Count; }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether this instance is read only.
-        /// </summary>
-        /// <value>
-        /// 	<c>true</c> if this instance is read only; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsReadOnly
-        {
-            get { return false; }
-        }
-
-        /// <summary>
-        /// Removes the specified item.
-        /// </summary>
-        /// <param name="item">The item.</param>
-        /// <returns></returns>
-        public bool Remove(KeyValuePair<string, object> item)
-        {
-            return _members.Remove(item.Key);
-        }
-
-        /// <summary>
-        /// Gets the enumerator.
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
-        {
-            return _members.GetEnumerator();
-        }
-
-        /// <summary>
-        /// Returns an enumerator that iterates through a collection.
-        /// </summary>
-        /// <returns>
-        /// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
-        /// </returns>
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return _members.GetEnumerator();
-        }
-
-        /// <summary>
-        /// Returns a json <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
-        /// </summary>
-        /// <returns>
-        /// A json <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
-        /// </returns>
-        public override string ToString()
-        {
-            return SimpleJson.SerializeObject(this);
-        }
-
-#if SIMPLE_JSON_DYNAMIC
-        /// <summary>
-        /// Provides implementation for type conversion operations. Classes derived from the <see cref="T:System.Dynamic.DynamicObject"/> class can override this method to specify dynamic behavior for operations that convert an object from one type to another.
-        /// </summary>
-        /// <param name="binder">Provides information about the conversion operation. The binder.Type property provides the type to which the object must be converted. For example, for the statement (String)sampleObject in C# (CType(sampleObject, Type) in Visual Basic), where sampleObject is an instance of the class derived from the <see cref="T:System.Dynamic.DynamicObject"/> class, binder.Type returns the <see cref="T:System.String"/> type. The binder.Explicit property provides information about the kind of conversion that occurs. It returns true for explicit conversion and false for implicit conversion.</param>
-        /// <param name="result">The result of the type conversion operation.</param>
-        /// <returns>
-        /// Alwasy returns true.
-        /// </returns>
-        public override bool TryConvert(ConvertBinder binder, out object result)
-        {
-            // <pex>
-            if (binder == null)
-                throw new ArgumentNullException("binder");
-            // </pex>
-            Type targetType = binder.Type;
-
-            if ((targetType == typeof(IEnumerable)) ||
-                (targetType == typeof(IEnumerable<KeyValuePair<string, object>>)) ||
-                (targetType == typeof(IDictionary<string, object>)) ||
-                (targetType == typeof(IDictionary)))
-            {
-                result = this;
-                return true;
-            }
-
-            return base.TryConvert(binder, out result);
-        }
-
-        /// <summary>
-        /// Provides the implementation for operations that delete an object member. This method is not intended for use in C# or Visual Basic.
-        /// </summary>
-        /// <param name="binder">Provides information about the deletion.</param>
-        /// <returns>
-        /// Alwasy returns true.
-        /// </returns>
-        public override bool TryDeleteMember(DeleteMemberBinder binder)
-        {
-            // <pex>
-            if (binder == null)
-                throw new ArgumentNullException("binder");
-            // </pex>
-            return _members.Remove(binder.Name);
-        }
-
-        /// <summary>
-        /// Provides the implementation for operations that get a value by index. Classes derived from the <see cref="T:System.Dynamic.DynamicObject"/> class can override this method to specify dynamic behavior for indexing operations.
-        /// </summary>
-        /// <param name="binder">Provides information about the operation.</param>
-        /// <param name="indexes">The indexes that are used in the operation. For example, for the sampleObject[3] operation in C# (sampleObject(3) in Visual Basic), where sampleObject is derived from the DynamicObject class, <paramref name="indexes"/> is equal to 3.</param>
-        /// <param name="result">The result of the index operation.</param>
-        /// <returns>
-        /// Alwasy returns true.
-        /// </returns>
-        public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object result)
-        {
-            if (indexes == null) throw new ArgumentNullException("indexes");
-            if (indexes.Length == 1)
-            {
-                result = ((IDictionary<string, object>)this)[(string)indexes[0]];
-                return true;
-            }
-            result = null;
-            return true;
-        }
-
-        /// <summary>
-        /// Provides the implementation for operations that get member values. Classes derived from the <see cref="T:System.Dynamic.DynamicObject"/> class can override this method to specify dynamic behavior for operations such as getting a value for a property.
-        /// </summary>
-        /// <param name="binder">Provides information about the object that called the dynamic operation. The binder.Name property provides the name of the member on which the dynamic operation is performed. For example, for the Console.WriteLine(sampleObject.SampleProperty) statement, where sampleObject is an instance of the class derived from the <see cref="T:System.Dynamic.DynamicObject"/> class, binder.Name returns "SampleProperty". The binder.IgnoreCase property specifies whether the member name is case-sensitive.</param>
-        /// <param name="result">The result of the get operation. For example, if the method is called for a property, you can assign the property value to <paramref name="result"/>.</param>
-        /// <returns>
-        /// Alwasy returns true.
-        /// </returns>
-        public override bool TryGetMember(GetMemberBinder binder, out object result)
-        {
-            object value;
-            if (_members.TryGetValue(binder.Name, out value))
-            {
-                result = value;
-                return true;
-            }
-            result = null;
-            return true;
-        }
-
-        /// <summary>
-        /// Provides the implementation for operations that set a value by index. Classes derived from the <see cref="T:System.Dynamic.DynamicObject"/> class can override this method to specify dynamic behavior for operations that access objects by a specified index.
-        /// </summary>
-        /// <param name="binder">Provides information about the operation.</param>
-        /// <param name="indexes">The indexes that are used in the operation. For example, for the sampleObject[3] = 10 operation in C# (sampleObject(3) = 10 in Visual Basic), where sampleObject is derived from the <see cref="T:System.Dynamic.DynamicObject"/> class, <paramref name="indexes"/> is equal to 3.</param>
-        /// <param name="value">The value to set to the object that has the specified index. For example, for the sampleObject[3] = 10 operation in C# (sampleObject(3) = 10 in Visual Basic), where sampleObject is derived from the <see cref="T:System.Dynamic.DynamicObject"/> class, <paramref name="value"/> is equal to 10.</param>
-        /// <returns>
-        /// true if the operation is successful; otherwise, false. If this method returns false, the run-time binder of the language determines the behavior. (In most cases, a language-specific run-time exception is thrown.
-        /// </returns>
-        public override bool TrySetIndex(SetIndexBinder binder, object[] indexes, object value)
-        {
-            if (indexes == null) throw new ArgumentNullException("indexes");
-            if (indexes.Length == 1)
-            {
-                ((IDictionary<string, object>)this)[(string)indexes[0]] = value;
-                return true;
-            }
-            return base.TrySetIndex(binder, indexes, value);
-        }
-
-        /// <summary>
-        /// Provides the implementation for operations that set member values. Classes derived from the <see cref="T:System.Dynamic.DynamicObject"/> class can override this method to specify dynamic behavior for operations such as setting a value for a property.
-        /// </summary>
-        /// <param name="binder">Provides information about the object that called the dynamic operation. The binder.Name property provides the name of the member to which the value is being assigned. For example, for the statement sampleObject.SampleProperty = "Test", where sampleObject is an instance of the class derived from the <see cref="T:System.Dynamic.DynamicObject"/> class, binder.Name returns "SampleProperty". The binder.IgnoreCase property specifies whether the member name is case-sensitive.</param>
-        /// <param name="value">The value to set to the member. For example, for sampleObject.SampleProperty = "Test", where sampleObject is an instance of the class derived from the <see cref="T:System.Dynamic.DynamicObject"/> class, the <paramref name="value"/> is "Test".</param>
-        /// <returns>
-        /// true if the operation is successful; otherwise, false. If this method returns false, the run-time binder of the language determines the behavior. (In most cases, a language-specific run-time exception is thrown.)
-        /// </returns>
-        public override bool TrySetMember(SetMemberBinder binder, object value)
-        {
-            // <pex>
-            if (binder == null)
-                throw new ArgumentNullException("binder");
-            // </pex>
-            _members[binder.Name] = value;
-            return true;
-        }
-
-        /// <summary>
-        /// Returns the enumeration of all dynamic member names.
-        /// </summary>
-        /// <returns>
-        /// A sequence that contains dynamic member names.
-        /// </returns>
-        public override IEnumerable<string> GetDynamicMemberNames()
-        {
-            foreach (var key in Keys)
-                yield return key;
-        }
-#endif
-    }
 }
 
 namespace Dgiot_dtu
@@ -489,7 +68,7 @@ namespace Dgiot_dtu
     /// <summary>
     /// This class encodes and decodes JSON strings.
     /// Spec. details, see http://www.json.org/
-    /// 
+    ///
     /// JSON uses Arrays and Objects. These correspond here to the datatypes JsonArray(IList&lt;object>) and JsonObject(IDictionary&lt;string,object>).
     /// All numbers are parsed to doubles.
     /// </summary>
@@ -501,19 +80,19 @@ namespace Dgiot_dtu
 #endif
  static class SimpleJson
     {
-        private const int TOKEN_NONE = 0;
-        private const int TOKEN_CURLY_OPEN = 1;
-        private const int TOKEN_CURLY_CLOSE = 2;
-        private const int TOKEN_SQUARED_OPEN = 3;
-        private const int TOKEN_SQUARED_CLOSE = 4;
-        private const int TOKEN_COLON = 5;
-        private const int TOKEN_COMMA = 6;
-        private const int TOKEN_STRING = 7;
-        private const int TOKEN_NUMBER = 8;
-        private const int TOKEN_TRUE = 9;
-        private const int TOKEN_FALSE = 10;
-        private const int TOKEN_NULL = 11;
-        private const int BUILDER_CAPACITY = 2000;
+        private const int TOKENNONE = 0;
+        private const int TOKENCURLYOPEN = 1;
+        private const int TOKENCURLYCLOSE = 2;
+        private const int TOKENSQUAREDOPEN = 3;
+        private const int TOKENSQUAREDCLOSE = 4;
+        private const int TOKENCOLON = 5;
+        private const int TOKENCOMMA = 6;
+        private const int TOKENSTRING = 7;
+        private const int TOKENNUMBER = 8;
+        private const int TOKENTRUE = 9;
+        private const int TOKENFALSE = 10;
+        private const int TOKENNULL = 11;
+        private const int BUILDERCAPACITY = 2000;
 
         private static readonly char[] EscapeTable;
         private static readonly char[] EscapeCharacters = new char[] { '"', '\\', '\b', '\f', '\n', '\r', '\t' };
@@ -522,7 +101,7 @@ namespace Dgiot_dtu
         static SimpleJson()
         {
             EscapeTable = new char[93];
-            EscapeTable['"']  = '"';
+            EscapeTable['"'] = '"';
             EscapeTable['\\'] = '\\';
             EscapeTable['\b'] = 'b';
             EscapeTable['\f'] = 'f';
@@ -540,7 +119,10 @@ namespace Dgiot_dtu
         {
             object obj;
             if (TryDeserializeObject(json, out obj))
+            {
                 return obj;
+            }
+
             throw new SerializationException("Invalid JSON string");
         }
 
@@ -567,7 +149,9 @@ namespace Dgiot_dtu
                 obj = ParseValue(charArray, ref index, ref success);
             }
             else
+            {
                 obj = null;
+            }
 
             return success;
         }
@@ -575,7 +159,7 @@ namespace Dgiot_dtu
         public static object DeserializeObject(string json, Type type, IJsonSerializerStrategy jsonSerializerStrategy)
         {
             object jsonObject = DeserializeObject(json);
-            return type == null || jsonObject != null && ReflectionUtils.IsAssignableFrom(jsonObject.GetType(), type)
+            return type == null || (jsonObject != null && ReflectionUtils.IsAssignableFrom(jsonObject.GetType(), type))
                        ? jsonObject
                        : (jsonSerializerStrategy ?? CurrentJsonSerializerStrategy).DeserializeObject(jsonObject, type);
         }
@@ -603,9 +187,9 @@ namespace Dgiot_dtu
         /// <returns>A JSON encoded string, or null if object 'json' is not serializable</returns>
         public static string SerializeObject(object json, IJsonSerializerStrategy jsonSerializerStrategy)
         {
-            StringBuilder builder = new StringBuilder(BUILDER_CAPACITY);
+            StringBuilder builder = new StringBuilder(BUILDERCAPACITY);
             bool success = SerializeValue(jsonSerializerStrategy, json, builder);
-            return (success ? builder.ToString() : null);
+            return success ? builder.ToString() : null;
         }
 
         public static string SerializeObject(object json)
@@ -616,12 +200,14 @@ namespace Dgiot_dtu
         public static string EscapeToJavascriptString(string jsonString)
         {
             if (string.IsNullOrEmpty(jsonString))
+            {
                 return jsonString;
+            }
 
             StringBuilder sb = new StringBuilder();
             char c;
 
-            for (int i = 0; i < jsonString.Length; )
+            for (int i = 0; i < jsonString.Length;)
             {
                 c = jsonString[i++];
 
@@ -668,10 +254,11 @@ namespace Dgiot_dtu
                     sb.Append(c);
                 }
             }
+
             return sb.ToString();
         }
 
-        static IDictionary<string, object> ParseObject(char[] json, ref int index, ref bool success)
+        private static IDictionary<string, object> ParseObject(char[] json, ref int index, ref bool success)
         {
             IDictionary<string, object> table = new JsonObject();
             int token;
@@ -683,14 +270,16 @@ namespace Dgiot_dtu
             while (!done)
             {
                 token = LookAhead(json, index);
-                if (token == TOKEN_NONE)
+                if (token == TOKENNONE)
                 {
                     success = false;
                     return null;
                 }
-                else if (token == TOKEN_COMMA)
+                else if (token == TOKENCOMMA)
+                {
                     NextToken(json, ref index);
-                else if (token == TOKEN_CURLY_CLOSE)
+                }
+                else if (token == TOKENCURLYCLOSE)
                 {
                     NextToken(json, ref index);
                     return table;
@@ -707,7 +296,7 @@ namespace Dgiot_dtu
 
                     // :
                     token = NextToken(json, ref index);
-                    if (token != TOKEN_COLON)
+                    if (token != TOKENCOLON)
                     {
                         success = false;
                         return null;
@@ -728,7 +317,7 @@ namespace Dgiot_dtu
             return table;
         }
 
-        static JsonArray ParseArray(char[] json, ref int index, ref bool success)
+        private static JsonArray ParseArray(char[] json, ref int index, ref bool success)
         {
             JsonArray array = new JsonArray();
 
@@ -739,14 +328,16 @@ namespace Dgiot_dtu
             while (!done)
             {
                 int token = LookAhead(json, index);
-                if (token == TOKEN_NONE)
+                if (token == TOKENNONE)
                 {
                     success = false;
                     return null;
                 }
-                else if (token == TOKEN_COMMA)
+                else if (token == TOKENCOMMA)
+                {
                     NextToken(json, ref index);
-                else if (token == TOKEN_SQUARED_CLOSE)
+                }
+                else if (token == TOKENSQUAREDCLOSE)
                 {
                     NextToken(json, ref index);
                     break;
@@ -755,44 +346,49 @@ namespace Dgiot_dtu
                 {
                     object value = ParseValue(json, ref index, ref success);
                     if (!success)
+                    {
                         return null;
+                    }
+
                     array.Add(value);
                 }
             }
+
             return array;
         }
 
-        static object ParseValue(char[] json, ref int index, ref bool success)
+        private static object ParseValue(char[] json, ref int index, ref bool success)
         {
             switch (LookAhead(json, index))
             {
-                case TOKEN_STRING:
+                case TOKENSTRING:
                     return ParseString(json, ref index, ref success);
-                case TOKEN_NUMBER:
+                case TOKENNUMBER:
                     return ParseNumber(json, ref index, ref success);
-                case TOKEN_CURLY_OPEN:
+                case TOKENCURLYOPEN:
                     return ParseObject(json, ref index, ref success);
-                case TOKEN_SQUARED_OPEN:
+                case TOKENSQUAREDOPEN:
                     return ParseArray(json, ref index, ref success);
-                case TOKEN_TRUE:
+                case TOKENTRUE:
                     NextToken(json, ref index);
                     return true;
-                case TOKEN_FALSE:
+                case TOKENFALSE:
                     NextToken(json, ref index);
                     return false;
-                case TOKEN_NULL:
+                case TOKENNULL:
                     NextToken(json, ref index);
                     return null;
-                case TOKEN_NONE:
+                case TOKENNONE:
                     break;
             }
+
             success = false;
             return null;
         }
 
-        static string ParseString(char[] json, ref int index, ref bool success)
+        private static string ParseString(char[] json, ref int index, ref bool success)
         {
-            StringBuilder s = new StringBuilder(BUILDER_CAPACITY);
+            StringBuilder s = new StringBuilder(BUILDERCAPACITY);
             char c;
 
             EatWhitespace(json, ref index);
@@ -803,7 +399,9 @@ namespace Dgiot_dtu
             while (!complete)
             {
                 if (index == json.Length)
+                {
                     break;
+                }
 
                 c = json[index++];
                 if (c == '"')
@@ -814,26 +412,43 @@ namespace Dgiot_dtu
                 else if (c == '\\')
                 {
                     if (index == json.Length)
+                    {
                         break;
+                    }
+
                     c = json[index++];
                     if (c == '"')
+                    {
                         s.Append('"');
+                    }
                     else if (c == '\\')
+                    {
                         s.Append('\\');
+                    }
                     else if (c == '/')
                     {
                         s.Append('/');
                     }
                     else if (c == 'b')
+                    {
                         s.Append('\b');
+                    }
                     else if (c == 'f')
+                    {
                         s.Append('\f');
+                    }
                     else if (c == 'n')
+                    {
                         s.Append('\n');
+                    }
                     else if (c == 'r')
+                    {
                         s.Append('\r');
+                    }
                     else if (c == 't')
+                    {
                         s.Append('\t');
+                    }
                     else if (c == 'u')
                     {
                         int remainingLength = json.Length - index;
@@ -848,7 +463,7 @@ namespace Dgiot_dtu
 
                             // convert the integer codepoint to a unicode char and add to string
                             // if high surrogate
-                            if (codePoint >= 0xD800 && codePoint <= 0xDBFF) 
+                            if (codePoint >= 0xD800 && codePoint <= 0xDBFF)
                             {
                                 index += 4; // skip 4 chars
                                 remainingLength = json.Length - index;
@@ -867,6 +482,7 @@ namespace Dgiot_dtu
                                         }
                                     }
                                 }
+
                                 success = false;    // invalid surrogate pair
                                 return string.Empty;
                             }
@@ -916,7 +532,7 @@ namespace Dgiot_dtu
             }
 
             utf32 -= 0x10000;
-            return new string(new char[] { (char)((utf32 >> 10) + 0xD800), (char)(utf32 % 0x0400 + 0xDC00) });
+            return new string(new char[] { (char)((utf32 >> 10) + 0xD800), (char)((utf32 % 0x0400) + 0xDC00) });
         }
 
         private static object ParseNumber(char[] json, ref int index, ref bool success)
@@ -948,7 +564,10 @@ namespace Dgiot_dtu
             int lastIndex;
             for (lastIndex = index; lastIndex < json.Length; lastIndex++)
             {
-                if ("0123456789+-.eE".IndexOf(json[lastIndex]) == -1) break;
+                if ("0123456789+-.eE".IndexOf(json[lastIndex]) == -1)
+                {
+                    break;
+                }
             }
 
             return lastIndex - 1;
@@ -958,7 +577,10 @@ namespace Dgiot_dtu
         {
             for (; index < json.Length; index++)
             {
-                if (" \t\n\r\b\f".IndexOf(json[index]) == -1) break;
+                if (" \t\n\r\b\f".IndexOf(json[index]) == -1)
+                {
+                    break;
+                }
             }
         }
 
@@ -968,13 +590,12 @@ namespace Dgiot_dtu
             return NextToken(json, ref saveIndex);
         }
 
-        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity", Justification = "<Pending>")]
         private static int NextToken(char[] json, ref int index)
         {
             EatWhitespace(json, ref index);
             if (index == json.Length)
             {
-                return TOKEN_NONE;
+                return TOKENNONE;
             }
 
             char c = json[index];
@@ -982,17 +603,17 @@ namespace Dgiot_dtu
             switch (c)
             {
                 case '{':
-                    return TOKEN_CURLY_OPEN;
+                    return TOKENCURLYOPEN;
                 case '}':
-                    return TOKEN_CURLY_CLOSE;
+                    return TOKENCURLYCLOSE;
                 case '[':
-                    return TOKEN_SQUARED_OPEN;
+                    return TOKENSQUAREDOPEN;
                 case ']':
-                    return TOKEN_SQUARED_CLOSE;
+                    return TOKENSQUAREDCLOSE;
                 case ',':
-                    return TOKEN_COMMA;
+                    return TOKENCOMMA;
                 case '"':
-                    return TOKEN_STRING;
+                    return TOKENSTRING;
                 case '0':
                 case '1':
                 case '2':
@@ -1004,9 +625,9 @@ namespace Dgiot_dtu
                 case '8':
                 case '9':
                 case '-':
-                    return TOKEN_NUMBER;
+                    return TOKENNUMBER;
                 case ':':
-                    return TOKEN_COLON;
+                    return TOKENCOLON;
             }
 
             index--;
@@ -1018,7 +639,7 @@ namespace Dgiot_dtu
                 if (json[index] == 'f' && json[index + 1] == 'a' && json[index + 2] == 'l' && json[index + 3] == 's' && json[index + 4] == 'e')
                 {
                     index += 5;
-                    return TOKEN_FALSE;
+                    return TOKENFALSE;
                 }
             }
 
@@ -1028,7 +649,7 @@ namespace Dgiot_dtu
                 if (json[index] == 't' && json[index + 1] == 'r' && json[index + 2] == 'u' && json[index + 3] == 'e')
                 {
                     index += 4;
-                    return TOKEN_TRUE;
+                    return TOKENTRUE;
                 }
             }
 
@@ -1038,11 +659,11 @@ namespace Dgiot_dtu
                 if (json[index] == 'n' && json[index + 1] == 'u' && json[index + 2] == 'l' && json[index + 3] == 'l')
                 {
                     index += 4;
-                    return TOKEN_NULL;
+                    return TOKENNULL;
                 }
             }
 
-            return TOKEN_NONE;
+            return TOKENNONE;
         }
 
         private static bool SerializeValue(IJsonSerializerStrategy jsonSerializerStrategy, object value, StringBuilder builder)
@@ -1102,7 +723,7 @@ namespace Dgiot_dtu
             return success;
         }
 
-        static bool SerializeObject(IJsonSerializerStrategy jsonSerializerStrategy, IEnumerable keys, IEnumerable values, StringBuilder builder)
+        private static bool SerializeObject(IJsonSerializerStrategy jsonSerializerStrategy, IEnumerable keys, IEnumerable values, StringBuilder builder)
         {
             builder.Append("{");
             IEnumerator ke = keys.GetEnumerator();
@@ -1113,38 +734,58 @@ namespace Dgiot_dtu
                 object key = ke.Current;
                 object value = ve.Current;
                 if (!first)
+                {
                     builder.Append(",");
+                }
+
                 string stringKey = key as string;
                 if (stringKey != null)
+                {
                     SerializeString(stringKey, builder);
+                }
                 else
-                    if (!SerializeValue(jsonSerializerStrategy, value, builder)) return false;
+                    if (!SerializeValue(jsonSerializerStrategy, value, builder))
+                {
+                    return false;
+                }
+
                 builder.Append(":");
                 if (!SerializeValue(jsonSerializerStrategy, value, builder))
+                {
                     return false;
+                }
+
                 first = false;
             }
+
             builder.Append("}");
             return true;
         }
 
-        static bool SerializeArray(IJsonSerializerStrategy jsonSerializerStrategy, IEnumerable anArray, StringBuilder builder)
+        private static bool SerializeArray(IJsonSerializerStrategy jsonSerializerStrategy, IEnumerable anArray, StringBuilder builder)
         {
             builder.Append("[");
             bool first = true;
             foreach (object value in anArray)
             {
                 if (!first)
+                {
                     builder.Append(",");
+                }
+
                 if (!SerializeValue(jsonSerializerStrategy, value, builder))
+                {
                     return false;
+                }
+
                 first = false;
             }
+
             builder.Append("]");
             return true;
         }
 
-        static bool SerializeString(string aString, StringBuilder builder)
+        private static bool SerializeString(string aString, StringBuilder builder)
         {
             // Happy path if there's nothing to be escaped. IndexOfAny is highly optimized (and unmanaged)
             if (aString.IndexOfAny(EscapeCharacters) == -1)
@@ -1193,22 +834,37 @@ namespace Dgiot_dtu
             return true;
         }
 
-        static bool SerializeNumber(object number, StringBuilder builder)
+        private static bool SerializeNumber(object number, StringBuilder builder)
         {
             if (number is long)
+            {
                 builder.Append(((long)number).ToString(CultureInfo.InvariantCulture));
+            }
             else if (number is ulong)
+            {
                 builder.Append(((ulong)number).ToString(CultureInfo.InvariantCulture));
+            }
             else if (number is int)
+            {
                 builder.Append(((int)number).ToString(CultureInfo.InvariantCulture));
+            }
             else if (number is uint)
+            {
                 builder.Append(((uint)number).ToString(CultureInfo.InvariantCulture));
+            }
             else if (number is decimal)
+            {
                 builder.Append(((decimal)number).ToString(CultureInfo.InvariantCulture));
+            }
             else if (number is float)
+            {
                 builder.Append(((float)number).ToString(CultureInfo.InvariantCulture));
+            }
             else
+            {
                 builder.Append(Convert.ToDouble(number, CultureInfo.InvariantCulture).ToString("r", CultureInfo.InvariantCulture));
+            }
+
             return true;
         }
 
@@ -1216,29 +872,74 @@ namespace Dgiot_dtu
         /// Determines if a given object is numeric in any way
         /// (can be integer, double, null, etc).
         /// </summary>
-        static bool IsNumeric(object value)
+        private static bool IsNumeric(object value)
         {
-            if (value is sbyte) return true;
-            if (value is byte) return true;
-            if (value is short) return true;
-            if (value is ushort) return true;
-            if (value is int) return true;
-            if (value is uint) return true;
-            if (value is long) return true;
-            if (value is ulong) return true;
-            if (value is float) return true;
-            if (value is double) return true;
-            if (value is decimal) return true;
+            if (value is sbyte)
+            {
+                return true;
+            }
+
+            if (value is byte)
+            {
+                return true;
+            }
+
+            if (value is short)
+            {
+                return true;
+            }
+
+            if (value is ushort)
+            {
+                return true;
+            }
+
+            if (value is int)
+            {
+                return true;
+            }
+
+            if (value is uint)
+            {
+                return true;
+            }
+
+            if (value is long)
+            {
+                return true;
+            }
+
+            if (value is ulong)
+            {
+                return true;
+            }
+
+            if (value is float)
+            {
+                return true;
+            }
+
+            if (value is double)
+            {
+                return true;
+            }
+
+            if (value is decimal)
+            {
+                return true;
+            }
+
             return false;
         }
 
-        private static IJsonSerializerStrategy _currentJsonSerializerStrategy;
+        private static IJsonSerializerStrategy currentJsonSerializerStrategy;
+
         public static IJsonSerializerStrategy CurrentJsonSerializerStrategy
         {
             get
             {
-                return _currentJsonSerializerStrategy ??
-                    (_currentJsonSerializerStrategy =
+                return currentJsonSerializerStrategy ??
+                    (currentJsonSerializerStrategy =
 #if SIMPLE_JSON_DATACONTRACT
  DataContractJsonSerializerStrategy
 #else
@@ -1249,18 +950,18 @@ namespace Dgiot_dtu
 
             set
             {
-                _currentJsonSerializerStrategy = value;
+                currentJsonSerializerStrategy = value;
             }
         }
 
-        private static PocoJsonSerializerStrategy _pocoJsonSerializerStrategy;
+        private static PocoJsonSerializerStrategy pocoJsonSerializerStrategy;
 
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public static PocoJsonSerializerStrategy PocoJsonSerializerStrategy
         {
             get
             {
-                return _pocoJsonSerializerStrategy ?? (_pocoJsonSerializerStrategy = new PocoJsonSerializerStrategy());
+                return pocoJsonSerializerStrategy ?? (pocoJsonSerializerStrategy = new PocoJsonSerializerStrategy());
             }
         }
 
@@ -1278,7 +979,7 @@ namespace Dgiot_dtu
 
 #endif
     }
-    
+
     [GeneratedCode("simple-json", "1.0.0")]
 #if SIMPLE_JSON_INTERNAL
     internal
@@ -1289,364 +990,8 @@ namespace Dgiot_dtu
     {
         [SuppressMessage("Microsoft.Design", "CA1007:UseGenericsWhereAppropriate", Justification="Need to support .NET 2")]
         bool TrySerializeNonPrimitiveObject(object input, out object output);
+
         object DeserializeObject(object value, Type type);
-    }
-
-    [GeneratedCode("simple-json", "1.0.0")]
-#if SIMPLE_JSON_INTERNAL
-    internal
-#else
-    public
-#endif
- class PocoJsonSerializerStrategy : IJsonSerializerStrategy
-    {
-        internal IDictionary<Type, ReflectionUtils.ConstructorDelegate> ConstructorCache;
-        internal IDictionary<Type, IDictionary<string, ReflectionUtils.GetDelegate>> GetCache;
-        internal IDictionary<Type, IDictionary<string, KeyValuePair<Type, ReflectionUtils.SetDelegate>>> SetCache;
-
-        internal static readonly Type[] EmptyTypes = new Type[0];
-        internal static readonly Type[] ArrayConstructorParameterTypes = new Type[] { typeof(int) };
-
-        private static readonly string[] Iso8601Format = new string[]
-                                                             {
-                                                                 @"yyyy-MM-dd\THH:mm:ss.FFFFFFF\Z",
-                                                                 @"yyyy-MM-dd\THH:mm:ss\Z",
-                                                                 @"yyyy-MM-dd\THH:mm:ssK"
-                                                             };
-
-        public PocoJsonSerializerStrategy()
-        {
-            ConstructorCache = new ReflectionUtils.ThreadSafeDictionary<Type, ReflectionUtils.ConstructorDelegate>(ContructorDelegateFactory);
-            GetCache = new ReflectionUtils.ThreadSafeDictionary<Type, IDictionary<string, ReflectionUtils.GetDelegate>>(GetterValueFactory);
-            SetCache = new ReflectionUtils.ThreadSafeDictionary<Type, IDictionary<string, KeyValuePair<Type, ReflectionUtils.SetDelegate>>>(SetterValueFactory);
-        }
-
-        protected virtual string MapClrMemberNameToJsonFieldName(string clrPropertyName)
-        {
-            return clrPropertyName;
-        }
-
-        internal virtual ReflectionUtils.ConstructorDelegate ContructorDelegateFactory(Type key)
-        {
-            return ReflectionUtils.GetContructor(key, key.IsArray ? ArrayConstructorParameterTypes : EmptyTypes);
-        }
-
-        internal virtual IDictionary<string, ReflectionUtils.GetDelegate> GetterValueFactory(Type type)
-        {
-            IDictionary<string, ReflectionUtils.GetDelegate> result = new Dictionary<string, ReflectionUtils.GetDelegate>();
-            foreach (PropertyInfo propertyInfo in ReflectionUtils.GetProperties(type))
-            {
-                if (propertyInfo.CanRead)
-                {
-                    MethodInfo getMethod = ReflectionUtils.GetGetterMethodInfo(propertyInfo);
-                    if (getMethod.IsStatic || !getMethod.IsPublic)
-                        continue;
-                    result[MapClrMemberNameToJsonFieldName(propertyInfo.Name)] = ReflectionUtils.GetGetMethod(propertyInfo);
-                }
-            }
-            foreach (FieldInfo fieldInfo in ReflectionUtils.GetFields(type))
-            {
-                if (fieldInfo.IsStatic || !fieldInfo.IsPublic)
-                    continue;
-                result[MapClrMemberNameToJsonFieldName(fieldInfo.Name)] = ReflectionUtils.GetGetMethod(fieldInfo);
-            }
-            return result;
-        }
-
-        internal virtual IDictionary<string, KeyValuePair<Type, ReflectionUtils.SetDelegate>> SetterValueFactory(Type type)
-        {
-            IDictionary<string, KeyValuePair<Type, ReflectionUtils.SetDelegate>> result = new Dictionary<string, KeyValuePair<Type, ReflectionUtils.SetDelegate>>();
-            foreach (PropertyInfo propertyInfo in ReflectionUtils.GetProperties(type))
-            {
-                if (propertyInfo.CanWrite)
-                {
-                    MethodInfo setMethod = ReflectionUtils.GetSetterMethodInfo(propertyInfo);
-                    if (setMethod.IsStatic || !setMethod.IsPublic)
-                    {
-                        continue;
-                    }
-
-                    result[this.MapClrMemberNameToJsonFieldName(propertyInfo.Name)] = new KeyValuePair<Type, ReflectionUtils.SetDelegate>(propertyInfo.PropertyType, ReflectionUtils.GetSetMethod(propertyInfo));
-                }
-            }
-
-            foreach (FieldInfo fieldInfo in ReflectionUtils.GetFields(type))
-            {
-                if (fieldInfo.IsInitOnly || fieldInfo.IsStatic || !fieldInfo.IsPublic)
-                {
-                    continue;
-                }
-
-                result[this.MapClrMemberNameToJsonFieldName(fieldInfo.Name)] = new KeyValuePair<Type, ReflectionUtils.SetDelegate>(fieldInfo.FieldType, ReflectionUtils.GetSetMethod(fieldInfo));
-            }
-
-            return result;
-        }
-
-        public virtual bool TrySerializeNonPrimitiveObject(object input, out object output)
-        {
-            return this.TrySerializeKnownTypes(input, out output) || this.TrySerializeUnknownTypes(input, out output);
-        }
-
-        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity", Justification = "<Pending>")]
-        public virtual object DeserializeObject(object value, Type type)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException("type");
-            }
-
-            string str = value as string;
-
-            if (type == typeof (Guid) && string.IsNullOrEmpty(str))
-            {
-                return default(Guid);
-            }
-
-            if (value == null)
-            {
-                return null;
-            }
-
-            object obj = null;
-
-            if (str != null)
-            {
-                if (str.Length != 0) // We know it can't be null now.
-                {
-                    if (type == typeof(DateTime) || (ReflectionUtils.IsNullableType(type) && Nullable.GetUnderlyingType(type) == typeof(DateTime)))
-                    {
-                        return DateTime.ParseExact(str, Iso8601Format, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
-                    }
-
-                    if (type == typeof(DateTimeOffset) || (ReflectionUtils.IsNullableType(type) && Nullable.GetUnderlyingType(type) == typeof(DateTimeOffset)))
-                    {
-                        return DateTimeOffset.ParseExact(str, Iso8601Format, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
-                    }
-
-                    if (type == typeof(Guid) || (ReflectionUtils.IsNullableType(type) && Nullable.GetUnderlyingType(type) == typeof(Guid)))
-                    {
-                        return new Guid(str);
-                    }
-
-                    if (type == typeof(Uri))
-                    {
-                        bool isValid =  Uri.IsWellFormedUriString(str, UriKind.RelativeOrAbsolute);
-
-                        Uri result;
-                        if (isValid && Uri.TryCreate(str, UriKind.RelativeOrAbsolute, out result))
-                        {
-                            return result;
-                        }
-
-                        return null;
-                    }
-
-                    if (type == typeof(string))
-                    {
-                        return str;
-                    }
-
-                    return Convert.ChangeType(str, type, CultureInfo.InvariantCulture);
-                }
-                else
-                {
-                    if (type == typeof(Guid))
-                    {
-                        obj = default(Guid);
-                    }
-                    else if (ReflectionUtils.IsNullableType(type) && Nullable.GetUnderlyingType(type) == typeof(Guid))
-                    {
-                        obj = null;
-                    }
-                    else
-                    {
-                        obj = str;
-                    }
-                }
-
-                // Empty string case
-                if (!ReflectionUtils.IsNullableType(type) && Nullable.GetUnderlyingType(type) == typeof(Guid))
-                {
-                    return str;
-                }
-            }
-            else if (value is bool)
-            {
-                return value;
-            }
-
-            bool valueIsLong = value is long;
-            bool valueIsDouble = value is double;
-            if ((valueIsLong && type == typeof(long)) || (valueIsDouble && type == typeof(double)))
-            {
-                return value;
-            }
-
-            if ((valueIsDouble && type != typeof(double)) || (valueIsLong && type != typeof(long)))
-            {
-                obj = type == typeof(int) || type == typeof(long) || type == typeof(double) || type == typeof(float) || type == typeof(bool) || type == typeof(decimal) || type == typeof(byte) || type == typeof(short)
-                            ? Convert.ChangeType(value, type, CultureInfo.InvariantCulture)
-                            : value;
-            }
-            else
-            {
-                IDictionary<string, object> objects = value as IDictionary<string, object>;
-                if (objects != null)
-                {
-                    IDictionary<string, object> jsonObject = objects;
-
-                    if (ReflectionUtils.IsTypeDictionary(type))
-                    {
-                        // if dictionary then
-                        Type[] types = ReflectionUtils.GetGenericTypeArguments(type);
-                        Type keyType = types[0];
-                        Type valueType = types[1];
-
-                        Type genericType = typeof(Dictionary<,>).MakeGenericType(keyType, valueType);
-
-                        IDictionary dict = (IDictionary)this.ConstructorCache[genericType]();
-
-                        foreach (KeyValuePair<string, object> kvp in jsonObject)
-                        {
-                            dict.Add(kvp.Key, this.DeserializeObject(kvp.Value, valueType));
-                        }
-
-                        obj = dict;
-                    }
-                    else
-                    {
-                        if (type == typeof(object))
-                        {
-                            obj = value;
-                        }
-                        else
-                        {
-                            obj = this.ConstructorCache[type]();
-                            foreach (KeyValuePair<string, KeyValuePair<Type, ReflectionUtils.SetDelegate>> setter in this.SetCache[type])
-                            {
-                                object jsonValue;
-                                if (jsonObject.TryGetValue(setter.Key, out jsonValue))
-                                {
-                                    jsonValue = this.DeserializeObject(jsonValue, setter.Value.Key);
-                                    setter.Value.Value(obj, jsonValue);
-                                }
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    IList<object> valueAsList = value as IList<object>;
-                    if (valueAsList != null)
-                    {
-                        IList<object> jsonObject = valueAsList;
-                        IList list = null;
-
-                        if (type.IsArray)
-                        {
-                            list = (IList)this.ConstructorCache[type](jsonObject.Count);
-                            int i = 0;
-                            foreach (object o in jsonObject)
-                            {
-                                list[i++] = this.DeserializeObject(o, type.GetElementType());
-                            }
-                        }
-                        else if (ReflectionUtils.IsTypeGenericeCollectionInterface(type) || ReflectionUtils.IsAssignableFrom(typeof(IList), type))
-                        {
-                            Type innerType = ReflectionUtils.GetGenericListElementType(type);
-                            list = (IList)(this.ConstructorCache[type] ?? this.ConstructorCache[typeof(List<>).MakeGenericType(innerType)])(jsonObject.Count);
-                            foreach (object o in jsonObject)
-                            {
-                                list.Add(this.DeserializeObject(o, innerType));
-                            }
-                        }
-
-                        obj = list;
-                    }
-                }
-
-                return obj;
-            }
-
-            if (ReflectionUtils.IsNullableType(type))
-            {
-                return ReflectionUtils.ToNullableType(obj, type);
-            }
-
-            return obj;
-        }
-
-        protected virtual object SerializeEnum(Enum p)
-        {
-            return Convert.ToDouble(p, CultureInfo.InvariantCulture);
-        }
-
-        [SuppressMessage("Microsoft.Design", "CA1007:UseGenericsWhereAppropriate", Justification="Need to support .NET 2")]
-        protected virtual bool TrySerializeKnownTypes(object input, out object output)
-        {
-            bool returnValue = true;
-            if (input is DateTime)
-            {
-                output = ((DateTime)input).ToUniversalTime().ToString(Iso8601Format[0], CultureInfo.InvariantCulture);
-            }
-            else if (input is DateTimeOffset)
-            {
-                output = ((DateTimeOffset)input).ToUniversalTime().ToString(Iso8601Format[0], CultureInfo.InvariantCulture);
-            }
-            else if (input is Guid)
-            {
-                output = ((Guid)input).ToString("D");
-            }
-            else if (input is Uri)
-            {
-                output = input.ToString();
-            }
-            else
-            {
-                Enum inputEnum = input as Enum;
-                if (inputEnum != null)
-                {
-                    output = this.SerializeEnum(inputEnum);
-                }
-                else
-                {
-                    returnValue = false;
-                    output = null;
-                }
-            }
-
-            return returnValue;
-        }
-
-        [SuppressMessage("Microsoft.Design", "CA1007:UseGenericsWhereAppropriate", Justification="Need to support .NET 2")]
-        protected virtual bool TrySerializeUnknownTypes(object input, out object output)
-        {
-            if (input == null)
-            {
-                throw new ArgumentNullException("input");
-            }
-
-            output = null;
-            Type type = input.GetType();
-            if (type.FullName == null)
-            {
-                return false;
-            }
-
-            IDictionary<string, object> obj = new JsonObject();
-            IDictionary<string, ReflectionUtils.GetDelegate> getters = GetCache[type];
-            foreach (KeyValuePair<string, ReflectionUtils.GetDelegate> getter in getters)
-            {
-                if (getter.Value != null)
-                {
-                    obj.Add(this.MapClrMemberNameToJsonFieldName(getter.Key), getter.Value(input));
-                }
-            }
-
-            output = obj;
-            return true;
-        }
     }
 
 #if SIMPLE_JSON_DATACONTRACT
@@ -1730,533 +1075,9 @@ namespace Dgiot_dtu
 
     namespace Reflection
     {
-        // This class is meant to be copied into other libraries. So we want to exclude it from Code Analysis rules
- 	    // that might be in place in the target project.
-        [GeneratedCode("reflection-utils", "1.0.0")]
-#if SIMPLE_JSON_REFLECTION_UTILS_PUBLIC
-        public
-#else
-        internal
-#endif
- class ReflectionUtils
-        {
-            private static readonly object[] EmptyObjects = new object[] { };
-
-            public delegate object GetDelegate(object source);
-            public delegate void SetDelegate(object source, object value);
-            public delegate object ConstructorDelegate(params object[] args);
-
-            public delegate TValue ThreadSafeDictionaryValueFactory<TKey, TValue>(TKey key);
-
-#if SIMPLE_JSON_TYPEINFO
-            public static TypeInfo GetTypeInfo(Type type)
-            {
-                return type.GetTypeInfo();
-            }
-#else
-            public static Type GetTypeInfo(Type type)
-            {
-                return type;
-            }
-#endif
-
-            public static Attribute GetAttribute(MemberInfo info, Type type)
-            {
-#if SIMPLE_JSON_TYPEINFO
-                if (info == null || type == null || !info.IsDefined(type))
-                    return null;
-                return info.GetCustomAttribute(type);
-#else
-                if (info == null || type == null || !Attribute.IsDefined(info, type))
-                    return null;
-                return Attribute.GetCustomAttribute(info, type);
-#endif
-            }
-
-            public static Type GetGenericListElementType(Type type)
-            {
-                IEnumerable<Type> interfaces;
-#if SIMPLE_JSON_TYPEINFO
-                interfaces = type.GetTypeInfo().ImplementedInterfaces;
-#else
-                interfaces = type.GetInterfaces();
-#endif
-                foreach (Type implementedInterface in interfaces)
-                {
-                    if (IsTypeGeneric(implementedInterface) &&
-                        implementedInterface.GetGenericTypeDefinition() == typeof (IList<>))
-                    {
-                        return GetGenericTypeArguments(implementedInterface)[0];
-                    }
-                }
-                return GetGenericTypeArguments(type)[0];
-            }
-
-            public static Attribute GetAttribute(Type objectType, Type attributeType)
-            {
-
-#if SIMPLE_JSON_TYPEINFO
-                if (objectType == null || attributeType == null || !objectType.GetTypeInfo().IsDefined(attributeType))
-                    return null;
-                return objectType.GetTypeInfo().GetCustomAttribute(attributeType);
-#else
-                if (objectType == null || attributeType == null || !Attribute.IsDefined(objectType, attributeType))
-                    return null;
-                return Attribute.GetCustomAttribute(objectType, attributeType);
-#endif
-            }
-
-            public static Type[] GetGenericTypeArguments(Type type)
-            {
-#if SIMPLE_JSON_TYPEINFO
-                return type.GetTypeInfo().GenericTypeArguments;
-#else
-                return type.GetGenericArguments();
-#endif
-            }
-
-            public static bool IsTypeGeneric(Type type)
-            {
-                return GetTypeInfo(type).IsGenericType;
-            }
-
-            public static bool IsTypeGenericeCollectionInterface(Type type)
-            {
-                if (!IsTypeGeneric(type))
-                    return false;
-
-                Type genericDefinition = type.GetGenericTypeDefinition();
-
-                return (genericDefinition == typeof(IList<>)
-                    || genericDefinition == typeof(ICollection<>)
-                    || genericDefinition == typeof(IEnumerable<>)
-#if SIMPLE_JSON_READONLY_COLLECTIONS
-                    || genericDefinition == typeof(IReadOnlyCollection<>)
-                    || genericDefinition == typeof(IReadOnlyList<>)
-#endif
-                    );
-            }
-
-            public static bool IsAssignableFrom(Type type1, Type type2)
-            {
-                return GetTypeInfo(type1).IsAssignableFrom(GetTypeInfo(type2));
-            }
-
-            public static bool IsTypeDictionary(Type type)
-            {
-#if SIMPLE_JSON_TYPEINFO
-                if (typeof(IDictionary<,>).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
-                    return true;
-#else
-                if (typeof(System.Collections.IDictionary).IsAssignableFrom(type))
-                    return true;
-#endif
-                if (!GetTypeInfo(type).IsGenericType)
-                    return false;
-
-                Type genericDefinition = type.GetGenericTypeDefinition();
-                return genericDefinition == typeof(IDictionary<,>);
-            }
-
-            public static bool IsNullableType(Type type)
-            {
-                return GetTypeInfo(type).IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
-            }
-
-            public static object ToNullableType(object obj, Type nullableType)
-            {
-                return obj == null ? null : Convert.ChangeType(obj, Nullable.GetUnderlyingType(nullableType), CultureInfo.InvariantCulture);
-            }
-
-            public static bool IsValueType(Type type)
-            {
-                return GetTypeInfo(type).IsValueType;
-            }
-
-            public static IEnumerable<ConstructorInfo> GetConstructors(Type type)
-            {
-#if SIMPLE_JSON_TYPEINFO
-                return type.GetTypeInfo().DeclaredConstructors;
-#else
-                return type.GetConstructors();
-#endif
-            }
-
-            public static ConstructorInfo GetConstructorInfo(Type type, params Type[] argsType)
-            {
-                IEnumerable<ConstructorInfo> constructorInfos = GetConstructors(type);
-                int i;
-                bool matches;
-                foreach (ConstructorInfo constructorInfo in constructorInfos)
-                {
-                    ParameterInfo[] parameters = constructorInfo.GetParameters();
-                    if (argsType.Length != parameters.Length)
-                        continue;
-
-                    i = 0;
-                    matches = true;
-                    foreach (ParameterInfo parameterInfo in constructorInfo.GetParameters())
-                    {
-                        if (parameterInfo.ParameterType != argsType[i])
-                        {
-                            matches = false;
-                            break;
-                        }
-                    }
-
-                    if (matches)
-                        return constructorInfo;
-                }
-
-                return null;
-            }
-
-            public static IEnumerable<PropertyInfo> GetProperties(Type type)
-            {
-#if SIMPLE_JSON_TYPEINFO
-                return type.GetRuntimeProperties();
-#else
-                return type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
-#endif
-            }
-
-            public static IEnumerable<FieldInfo> GetFields(Type type)
-            {
-#if SIMPLE_JSON_TYPEINFO
-                return type.GetRuntimeFields();
-#else
-                return type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
-#endif
-            }
-
-            public static MethodInfo GetGetterMethodInfo(PropertyInfo propertyInfo)
-            {
-#if SIMPLE_JSON_TYPEINFO
-                return propertyInfo.GetMethod;
-#else
-                return propertyInfo.GetGetMethod(true);
-#endif
-            }
-
-            public static MethodInfo GetSetterMethodInfo(PropertyInfo propertyInfo)
-            {
-#if SIMPLE_JSON_TYPEINFO
-                return propertyInfo.SetMethod;
-#else
-                return propertyInfo.GetSetMethod(true);
-#endif
-            }
-
-            public static ConstructorDelegate GetContructor(ConstructorInfo constructorInfo)
-            {
-#if SIMPLE_JSON_NO_LINQ_EXPRESSION
-                return GetConstructorByReflection(constructorInfo);
-#else
-                return GetConstructorByExpression(constructorInfo);
-#endif
-            }
-
-            public static ConstructorDelegate GetContructor(Type type, params Type[] argsType)
-            {
-#if SIMPLE_JSON_NO_LINQ_EXPRESSION
-                return GetConstructorByReflection(type, argsType);
-#else
-                return GetConstructorByExpression(type, argsType);
-#endif
-            }
-
-            public static ConstructorDelegate GetConstructorByReflection(ConstructorInfo constructorInfo)
-            {
-                return delegate(object[] args) { return constructorInfo.Invoke(args); };
-            }
-
-            public static ConstructorDelegate GetConstructorByReflection(Type type, params Type[] argsType)
-            {
-                ConstructorInfo constructorInfo = GetConstructorInfo(type, argsType);
-                return constructorInfo == null ? null : GetConstructorByReflection(constructorInfo);
-            }
-
-#if !SIMPLE_JSON_NO_LINQ_EXPRESSION
-
-            public static ConstructorDelegate GetConstructorByExpression(ConstructorInfo constructorInfo)
-            {
-                ParameterInfo[] paramsInfo = constructorInfo.GetParameters();
-                ParameterExpression param = Expression.Parameter(typeof(object[]), "args");
-                Expression[] argsExp = new Expression[paramsInfo.Length];
-                for (int i = 0; i < paramsInfo.Length; i++)
-                {
-                    Expression index = Expression.Constant(i);
-                    Type paramType = paramsInfo[i].ParameterType;
-                    Expression paramAccessorExp = Expression.ArrayIndex(param, index);
-                    Expression paramCastExp = Expression.Convert(paramAccessorExp, paramType);
-                    argsExp[i] = paramCastExp;
-                }
-                NewExpression newExp = Expression.New(constructorInfo, argsExp);
-                Expression<Func<object[], object>> lambda = Expression.Lambda<Func<object[], object>>(newExp, param);
-                Func<object[], object> compiledLambda = lambda.Compile();
-                return delegate(object[] args) { return compiledLambda(args); };
-            }
-
-            public static ConstructorDelegate GetConstructorByExpression(Type type, params Type[] argsType)
-            {
-                ConstructorInfo constructorInfo = GetConstructorInfo(type, argsType);
-                return constructorInfo == null ? null : GetConstructorByExpression(constructorInfo);
-            }
-
-#endif
-
-            public static GetDelegate GetGetMethod(PropertyInfo propertyInfo)
-            {
-#if SIMPLE_JSON_NO_LINQ_EXPRESSION
-                return GetGetMethodByReflection(propertyInfo);
-#else
-                return GetGetMethodByExpression(propertyInfo);
-#endif
-            }
-
-            public static GetDelegate GetGetMethod(FieldInfo fieldInfo)
-            {
-#if SIMPLE_JSON_NO_LINQ_EXPRESSION
-                return GetGetMethodByReflection(fieldInfo);
-#else
-                return GetGetMethodByExpression(fieldInfo);
-#endif
-            }
-
-            public static GetDelegate GetGetMethodByReflection(PropertyInfo propertyInfo)
-            {
-                MethodInfo methodInfo = GetGetterMethodInfo(propertyInfo);
-                return delegate(object source) { return methodInfo.Invoke(source, EmptyObjects); };
-            }
-
-            public static GetDelegate GetGetMethodByReflection(FieldInfo fieldInfo)
-            {
-                return delegate(object source) { return fieldInfo.GetValue(source); };
-            }
-
-#if !SIMPLE_JSON_NO_LINQ_EXPRESSION
-
-            public static GetDelegate GetGetMethodByExpression(PropertyInfo propertyInfo)
-            {
-                MethodInfo getMethodInfo = GetGetterMethodInfo(propertyInfo);
-                ParameterExpression instance = Expression.Parameter(typeof(object), "instance");
-                UnaryExpression instanceCast = (!IsValueType(propertyInfo.DeclaringType)) ? Expression.TypeAs(instance, propertyInfo.DeclaringType) : Expression.Convert(instance, propertyInfo.DeclaringType);
-                Func<object, object> compiled = Expression.Lambda<Func<object, object>>(Expression.TypeAs(Expression.Call(instanceCast, getMethodInfo), typeof(object)), instance).Compile();
-                return delegate(object source) { return compiled(source); };
-            }
-
-            public static GetDelegate GetGetMethodByExpression(FieldInfo fieldInfo)
-            {
-                ParameterExpression instance = Expression.Parameter(typeof(object), "instance");
-                MemberExpression member = Expression.Field(Expression.Convert(instance, fieldInfo.DeclaringType), fieldInfo);
-                GetDelegate compiled = Expression.Lambda<GetDelegate>(Expression.Convert(member, typeof(object)), instance).Compile();
-                return delegate(object source) { return compiled(source); };
-            }
-
-#endif
-
-            public static SetDelegate GetSetMethod(PropertyInfo propertyInfo)
-            {
-#if SIMPLE_JSON_NO_LINQ_EXPRESSION
-                return GetSetMethodByReflection(propertyInfo);
-#else
-                return GetSetMethodByExpression(propertyInfo);
-#endif
-            }
-
-            public static SetDelegate GetSetMethod(FieldInfo fieldInfo)
-            {
-#if SIMPLE_JSON_NO_LINQ_EXPRESSION
-                return GetSetMethodByReflection(fieldInfo);
-#else
-                return GetSetMethodByExpression(fieldInfo);
-#endif
-            }
-
-            public static SetDelegate GetSetMethodByReflection(PropertyInfo propertyInfo)
-            {
-                MethodInfo methodInfo = GetSetterMethodInfo(propertyInfo);
-                return delegate(object source, object value) { methodInfo.Invoke(source, new object[] { value }); };
-            }
-
-            public static SetDelegate GetSetMethodByReflection(FieldInfo fieldInfo)
-            {
-                return delegate(object source, object value) { fieldInfo.SetValue(source, value); };
-            }
-
-#if !SIMPLE_JSON_NO_LINQ_EXPRESSION
-
-            public static SetDelegate GetSetMethodByExpression(PropertyInfo propertyInfo)
-            {
-                MethodInfo setMethodInfo = GetSetterMethodInfo(propertyInfo);
-                ParameterExpression instance = Expression.Parameter(typeof(object), "instance");
-                ParameterExpression value = Expression.Parameter(typeof(object), "value");
-                UnaryExpression instanceCast = (!IsValueType(propertyInfo.DeclaringType)) ? Expression.TypeAs(instance, propertyInfo.DeclaringType) : Expression.Convert(instance, propertyInfo.DeclaringType);
-                UnaryExpression valueCast = (!IsValueType(propertyInfo.PropertyType)) ? Expression.TypeAs(value, propertyInfo.PropertyType) : Expression.Convert(value, propertyInfo.PropertyType);
-                Action<object, object> compiled = Expression.Lambda<Action<object, object>>(Expression.Call(instanceCast, setMethodInfo, valueCast), new ParameterExpression[] { instance, value }).Compile();
-                return delegate(object source, object val) { compiled(source, val); };
-            }
-
-            public static SetDelegate GetSetMethodByExpression(FieldInfo fieldInfo)
-            {
-                ParameterExpression instance = Expression.Parameter(typeof(object), "instance");
-                ParameterExpression value = Expression.Parameter(typeof(object), "value");
-                Action<object, object> compiled = Expression.Lambda<Action<object, object>>(
-                    Assign(Expression.Field(Expression.Convert(instance, fieldInfo.DeclaringType), fieldInfo), Expression.Convert(value, fieldInfo.FieldType)), instance, value).Compile();
-                return delegate(object source, object val) { compiled(source, val); };
-            }
-
-            public static BinaryExpression Assign(Expression left, Expression right)
-            {
-#if SIMPLE_JSON_TYPEINFO
-                return Expression.Assign(left, right);
-#else
-                MethodInfo assign = typeof(Assigner<>).MakeGenericType(left.Type).GetMethod("Assign");
-                BinaryExpression assignExpr = Expression.Add(left, right, assign);
-                return assignExpr;
-#endif
-            }
-
-            private static class Assigner<T>
-            {
-                public static T Assign(ref T left, T right)
-                {
-                    return (left = right);
-                }
-            }
-
-#endif
-
-            public sealed class ThreadSafeDictionary<TKey, TValue> : IDictionary<TKey, TValue>
-            {
-                private readonly object _lock = new object();
-                private readonly ThreadSafeDictionaryValueFactory<TKey, TValue> _valueFactory;
-                private Dictionary<TKey, TValue> _dictionary;
-
-                public ThreadSafeDictionary(ThreadSafeDictionaryValueFactory<TKey, TValue> valueFactory)
-                {
-                    _valueFactory = valueFactory;
-                }
-
-                private TValue Get(TKey key)
-                {
-                    if (_dictionary == null)
-                        return AddValue(key);
-                    TValue value;
-                    if (!_dictionary.TryGetValue(key, out value))
-                        return AddValue(key);
-                    return value;
-                }
-
-                private TValue AddValue(TKey key)
-                {
-                    TValue value = _valueFactory(key);
-                    lock (_lock)
-                    {
-                        if (_dictionary == null)
-                        {
-                            _dictionary = new Dictionary<TKey, TValue>();
-                            _dictionary[key] = value;
-                        }
-                        else
-                        {
-                            TValue val;
-                            if (_dictionary.TryGetValue(key, out val))
-                                return val;
-                            Dictionary<TKey, TValue> dict = new Dictionary<TKey, TValue>(_dictionary);
-                            dict[key] = value;
-                            _dictionary = dict;
-                        }
-                    }
-                    return value;
-                }
-
-                public void Add(TKey key, TValue value)
-                {
-                    throw new NotImplementedException();
-                }
-
-                public bool ContainsKey(TKey key)
-                {
-                    return _dictionary.ContainsKey(key);
-                }
-
-                public ICollection<TKey> Keys
-                {
-                    get { return _dictionary.Keys; }
-                }
-
-                public bool Remove(TKey key)
-                {
-                    throw new NotImplementedException();
-                }
-
-                public bool TryGetValue(TKey key, out TValue value)
-                {
-                    value = this[key];
-                    return true;
-                }
-
-                public ICollection<TValue> Values
-                {
-                    get { return _dictionary.Values; }
-                }
-
-                public TValue this[TKey key]
-                {
-                    get { return Get(key); }
-                    set { throw new NotImplementedException(); }
-                }
-
-                public void Add(KeyValuePair<TKey, TValue> item)
-                {
-                    throw new NotImplementedException();
-                }
-
-                public void Clear()
-                {
-                    throw new NotImplementedException();
-                }
-
-                public bool Contains(KeyValuePair<TKey, TValue> item)
-                {
-                    throw new NotImplementedException();
-                }
-
-                public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
-                {
-                    throw new NotImplementedException();
-                }
-
-                public int Count
-                {
-                    get { return _dictionary.Count; }
-                }
-
-                public bool IsReadOnly
-                {
-                    get { throw new NotImplementedException(); }
-                }
-
-                public bool Remove(KeyValuePair<TKey, TValue> item)
-                {
-                    throw new NotImplementedException();
-                }
-
-                public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
-                {
-                    return _dictionary.GetEnumerator();
-                }
-
-                System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-                {
-                    return _dictionary.GetEnumerator();
-                }
-            }
-
-        }
     }
 }
+
 // ReSharper restore LoopCanBeConvertedToQuery
 // ReSharper restore RedundantExplicitArrayCreation
 // ReSharper restore SuggestUseVarKeywordEvident

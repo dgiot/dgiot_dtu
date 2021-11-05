@@ -1,11 +1,12 @@
-//https://github.com/titanium-as/TitaniumAS.Opc.Client
-// https://github.com/chkr1011/MQTTnet
+ï»¿// <copyright file="MqttHelper.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
 
 namespace Dgiot_dtu
 {
     using System;
     using System.Collections.Generic;
-    using System.IO.Ports;
+    using System.Configuration;
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading;
@@ -13,9 +14,11 @@ namespace Dgiot_dtu
     using System.Web.Script.Serialization;
     using MQTTnet;
     using MQTTnet.Core;
+    using MQTTnet.Core.Adapter;
     using MQTTnet.Core.Client;
     using MQTTnet.Core.Packets;
     using MQTTnet.Core.Protocol;
+    using MQTTnet.Core.Server;
     using PortListener.Core.Utilities;
 
     public class MqttHelper
@@ -24,19 +27,22 @@ namespace Dgiot_dtu
         {
         }
 
+        private static MqttServer mqttServer = null;
         private static MqttClient mqttClient = null;
-        private static string mqttserver = "prod.iotn2n.com";
+        private static string server = "prod.iotn2n.com";
+        private static int port = 1883;
         private static string subopcda = "thing/opcda/";
-        private static string submdb =  "thing/mdb/";
+        private static string submdb = "thing/mdb/";
         private static string subtopic = "thing/com/";
         private static string pubtopic = "thing/com/post/";
         private static string clientid = Guid.NewGuid().ToString().Substring(0, 5);
         private static string username = "dgiot";
         private static string password = "dgiot";
-        private static SerialPort port = null;
         private static MqttHelper instance;
         private static MainForm mainform = null;
         private static bool bIsRunning = false;
+        private static bool bIsCheck = false;
+        private static bool bAutoReconnect = false;
 
         public static MqttHelper GetInstance()
         {
@@ -48,32 +54,70 @@ namespace Dgiot_dtu
             return instance;
         }
 
-        public void Start1(string server)
+        public static void Start(KeyValueConfigurationCollection config, bool bAutoReconnect, MainForm mainform)
         {
-            mqttserver = server;
+            Config(config, mainform);
             bIsRunning = true;
-            Task.Run(async () => { await ConnectMqttServerAsync(); });
+            MqttHelper.bAutoReconnect = bAutoReconnect;
+            if (bIsCheck)
+            {
+                Task.Run(async () => { await ConnectMqttServerAsync(); });
+            }
         }
 
-        public void Start(string server, string clientid, string username, string password, string subtopic, string pubtopic,
-            SerialPort comport, MainForm mainform)
-        {
-            mqttserver = server;
-            MqttHelper.clientid = clientid;
-            MqttHelper.username = username;
-            MqttHelper.password = password;
-            MqttHelper.pubtopic = pubtopic;
-            MqttHelper.subtopic = subtopic;
-            port = comport;
-            MqttHelper.mainform = mainform;
-            bIsRunning = true;
-            Task.Run(async () => { await ConnectMqttServerAsync(); }); 
-        }
-
-        public void Stop()
+        public static void Stop()
         {
             bIsRunning = false;
-            Task.Run(async () => { await DisConnectMqttServerAsync(); });
+            if (mqttClient != null)
+            {
+                MqttHelper.bAutoReconnect = false;
+                Task.Run(async () => { await DisConnectMqttServerAsync(); });
+            }
+        }
+
+        public static void Config(KeyValueConfigurationCollection config, MainForm mainform)
+        {
+            if (config["mqttServer"] != null)
+            {
+                MqttHelper.server = (string)config["mqttServer"].Value;
+            }
+
+            if (config["mqttPort"] != null)
+            {
+                MqttHelper.port = int.Parse((string)config["mqttPort"].Value);
+            }
+
+            if (config["mqttClientId"] != null)
+            {
+                MqttHelper.clientid = (string)config["mqttClientId"].Value;
+            }
+
+            if (config["mqttUserName"] != null)
+            {
+                MqttHelper.username = (string)config["mqttUserName"].Value;
+            }
+
+            if (config["mqttPassword"] != null)
+            {
+                MqttHelper.password = (string)config["mqttPassword"].Value;
+            }
+
+            if (config["mqttSubTopic"] != null)
+            {
+                MqttHelper.subtopic = (string)config["mqttSubTopic"].Value;
+            }
+
+            if (config["mqttPubTopic"] != null)
+            {
+                MqttHelper.pubtopic = (string)config["mqttPubTopic"].Value;
+            }
+
+            if (config["mqttIsCheck"] != null)
+            {
+                MqttHelper.bIsCheck = StringHelper.StrTobool(config["mqttIsCheck"].Value);
+            }
+
+            MqttHelper.mainform = mainform;
         }
 
         public void Publish(byte[] payload)
@@ -104,21 +148,37 @@ namespace Dgiot_dtu
                 mqttClient.Disconnected += MqttClient_Disconnected;
             }
 
+            if (mqttServer == null)
+            {
+                var serveroptions = new MqttServerOptions
+                {
+                    DefaultEndpointOptions = { Port = 1883 }
+                };
+                mqttServer = new MqttServerFactory().CreateMqttServer(serveroptions) as MqttServer;
+                mqttServer.ApplicationMessageReceived += MqttServer_ApplicationMessageReceived;
+                mqttServer.ClientConnected += MqttServer_Connected;
+                mqttServer.ClientDisconnected += MqttServer_Disconnected;
+            }
+
             try
             {
+                await MqttHelper.mqttServer.StartAsync();
+
+                Thread.Sleep(1000);
+
                 var options = new MqttClientTcpOptions
                 {
-                    Server = mqttserver,
+                    Server = server,
                     ClientId = clientid,
                     UserName = username,
                     Password = password,
+                    Port = port,
                     CleanSession = true
                 };
 
-                await DisConnectMqttServerAsync();
-                await mqttClient.ConnectAsync(options);
-                await ReConnectMqttServerAsync();
-
+               await DisConnectMqttServerAsync();
+               await mqttClient.ConnectAsync(options);
+               await ReConnectMqttServerAsync();
             }
             catch (Exception ex)
             {
@@ -131,7 +191,6 @@ namespace Dgiot_dtu
             try
             {
                 await mqttClient.DisconnectAsync();
-
             }
             catch (Exception ex)
             {
@@ -139,18 +198,18 @@ namespace Dgiot_dtu
             }
         }
 
-
         /// <summary>
-        /// ·şÎñÆ÷Á¬½Ó³É¹¦
+        /// æœåŠ¡å™¨è¿æ¥æˆåŠŸ
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private static void MqttClient_Connected(object sender, EventArgs e)
         {
             mainform.Log("mqtt client:" + clientid + " connected");
-            mqttClient.SubscribeAsync(new List<TopicFilter> {
-                new TopicFilter(subopcda + clientid , MqttQualityOfServiceLevel.AtMostOnce),
-                new TopicFilter(submdb + clientid , MqttQualityOfServiceLevel.AtMostOnce),
+            mqttClient.SubscribeAsync(new List<TopicFilter>
+            {
+                new TopicFilter(subopcda + clientid, MqttQualityOfServiceLevel.AtMostOnce),
+                new TopicFilter(submdb + clientid, MqttQualityOfServiceLevel.AtMostOnce),
                 new TopicFilter(subtopic + clientid, MqttQualityOfServiceLevel.AtMostOnce)
             });
             mainform.Log("mqtt client subscribe topic: " + subopcda + clientid);
@@ -159,55 +218,104 @@ namespace Dgiot_dtu
         }
 
         /// <summary>
-        /// ¶Ï¿ª·şÎñÆ÷Á¬½Ó
+        /// æ–­å¼€æœåŠ¡å™¨è¿æ¥
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private static void MqttClient_Disconnected(object sender, EventArgs e)
         {
-            mainform.Log("mqtt:" + clientid + " disconnected");
+            if (MqttHelper.bAutoReconnect)
+            {
+                Task task = ReConnectMqttServerAsync();
+            }
+            else
+            {
+                mainform.Log("mqtt:" + clientid + " disconnected");
+            }
         }
 
         /// <summary>
-        /// ½ÓÊÕµ½ÏûÏ¢
+        /// æ¥æ”¶åˆ°æ¶ˆæ¯
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private static void MqttClient_ApplicationMessageReceived(object sender, MqttApplicationMessageReceivedEventArgs e)
+        private static void MqttClient_ApplicationMessageReceived(object sender, MQTTnet.Core.Client.MqttApplicationMessageReceivedEventArgs e)
         {
-            Regex r_subtopic = new Regex(MqttHelper.subtopic); // ¶¨ÒåÒ»¸öRegex¶ÔÏóÊµÀı
-            Match m_subtopic = r_subtopic.Match(e.ApplicationMessage.Topic); // ÔÚ×Ö·û´®ÖĞÆ¥Åä
+            Regex r_subtopic = new Regex(MqttHelper.subtopic); // å®šä¹‰ä¸€ä¸ªRegexå¯¹è±¡å®ä¾‹
+            Match m_subtopic = r_subtopic.Match(e.ApplicationMessage.Topic); // åœ¨å­—ç¬¦ä¸²ä¸­åŒ¹é…
             if (m_subtopic.Success)
             {
-                port.Write(e.ApplicationMessage.Payload, 0, e.ApplicationMessage.Payload.Length);
+                SerialPortHelper.Write(e.ApplicationMessage.Payload, 0, e.ApplicationMessage.Payload.Length);
                 mainform.Log("mqtt recv :topic: " + e.ApplicationMessage.Topic.ToString() + " payload: " + StringHelper.ToHexString(e.ApplicationMessage.Payload));
             }
             else
             {
-                Regex r_subopcda = new Regex(MqttHelper.subopcda); // ¶¨ÒåÒ»¸öRegex¶ÔÏóÊµÀı
-                Match m_subopcda = r_subopcda.Match(e.ApplicationMessage.Topic); // ÔÚ×Ö·û´®ÖĞÆ¥Åä
+                Regex r_subopcda = new Regex(MqttHelper.subopcda); // å®šä¹‰ä¸€ä¸ªRegexå¯¹è±¡å®ä¾‹
+                Match m_subopcda = r_subopcda.Match(e.ApplicationMessage.Topic); // åœ¨å­—ç¬¦ä¸²ä¸­åŒ¹é…
                 if (m_subopcda.Success)
                 {
                     string data = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
                     mainform.Log("mqtt recv :topic: " + e.ApplicationMessage.Topic.ToString() + " payload: " + data);
-                    Dictionary<string, object> json = get_payload(e.ApplicationMessage.Payload);
+                    Dictionary<string, object> json = Get_payload(e.ApplicationMessage.Payload);
                     OPCDAHelper.Do_opc_da(mqttClient, json, MqttHelper.clientid, mainform);
-
-                }else {
-                    Regex r_submdb = new Regex(MqttHelper.submdb); // ¶¨ÒåÒ»¸öRegex¶ÔÏóÊµÀı
-                    Match m_submdb = r_submdb.Match(e.ApplicationMessage.Topic); // ÔÚ×Ö·û´®ÖĞÆ¥Åä
+                }
+                else
+                {
+                    Regex r_submdb = new Regex(MqttHelper.submdb); // å®šä¹‰ä¸€ä¸ªRegexå¯¹è±¡å®ä¾‹
+                    Match m_submdb = r_submdb.Match(e.ApplicationMessage.Topic); // åœ¨å­—ç¬¦ä¸²ä¸­åŒ¹é…
                     if (m_submdb.Success)
                     {
                         string data = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
                         mainform.Log("mqtt recv :topic: " + e.ApplicationMessage.Topic.ToString() + " payload: " + data);
-                        Dictionary<string, object> json = get_payload(e.ApplicationMessage.Payload);
+                        Dictionary<string, object> json = Get_payload(e.ApplicationMessage.Payload);
                         AccessHelper.Do_mdb(mqttClient, json, clientid, mainform);
                     }
                 }
             }
         }
 
-        private static Dictionary<string, object> get_payload(byte[] payload)
+        /// <summary>
+        /// æœåŠ¡å™¨è¿æ¥æˆåŠŸ
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private static void MqttServer_Connected(object sender, EventArgs e)
+        {
+            mainform.Log("mqtt server:" + clientid + " connected");
+        }
+
+        /// <summary>
+        /// æ–­å¼€æœåŠ¡å™¨è¿æ¥
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private static void MqttServer_Disconnected(object sender, EventArgs e)
+        {
+              mainform.Log("mqtt server:" + clientid + " disconnected");
+        }
+
+        /// <summary>
+        /// æ¥æ”¶åˆ°æ¶ˆæ¯
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private static void MqttServer_ApplicationMessageReceived(object sender, MQTTnet.Core.Server.MqttApplicationMessageReceivedEventArgs e)
+        {
+            string data = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
+            mainform.Log("mqtt server recv :topic: " + e.ApplicationMessage.Topic.ToString() + " payload: " + data);
+        }
+
+        public static void Write(byte[] data, int offset, int len)
+        {
+            if (bIsCheck)
+            {
+                var appMsg = new MqttApplicationMessage(pubtopic, Encoding.UTF8.GetBytes(mainform.Logdata(data, offset, len)), MqttQualityOfServiceLevel.AtLeastOnce, false);
+                mainform.Log("mqtt publish:" + mainform.Logdata(data, offset, len));
+                mqttClient.PublishAsync(appMsg);
+           }
+        }
+
+        private static Dictionary<string, object> Get_payload(byte[] payload)
         {
             string data = Encoding.UTF8.GetString(payload);
             JavaScriptSerializer serializer = new JavaScriptSerializer();
@@ -215,23 +323,31 @@ namespace Dgiot_dtu
             return json;
         }
 
-        private static DateTime BaseTime = new DateTime(1970, 1, 1);
-
-        /// <summary>   
-        /// ½«unixtime×ª»»Îª.NETµÄDateTime   
-        /// </summary>   
-        /// <param name="timeStamp">ÃëÊı</param>   
-        /// <returns>×ª»»ºóµÄÊ±¼ä</returns>   
-        public static DateTime FromUnixTime(long timeStamp)
+        private static Dictionary<string, object> Get_payload(byte[] payload, int offset, int len)
         {
-            return TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(timeStamp * 10000000 + BaseTime.Ticks));
+            string data = Encoding.UTF8.GetString(payload, offset, len);
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+            Dictionary<string, object> json = (Dictionary<string, object>)serializer.DeserializeObject(data);
+            return json;
         }
 
-        /// <summary>   
-        /// ½«.NETµÄDateTime×ª»»Îªunix time   
-        /// </summary>   
-        /// <param name="dateTime">´ı×ª»»µÄÊ±¼ä</param>   
-        /// <returns>×ª»»ºóµÄunix time</returns>   
+        private static readonly DateTime BaseTime = new DateTime(1970, 1, 1);
+
+        /// <summary>
+        /// å°†unixtimeè½¬æ¢ä¸º.NETçš„DateTime
+        /// </summary>
+        /// <param name="timeStamp">ç§’æ•°</param>
+        /// <returns>è½¬æ¢åçš„æ—¶é—´</returns>
+        public static DateTime FromUnixTime(long timeStamp)
+        {
+            return TimeZone.CurrentTimeZone.ToLocalTime(new DateTime((timeStamp * 10000000) + BaseTime.Ticks));
+        }
+
+        /// <summary>
+        /// å°†.NETçš„DateTimeè½¬æ¢ä¸ºunix time
+        /// </summary>
+        /// <param name="dateTime">å¾…è½¬æ¢çš„æ—¶é—´</param>
+        /// <returns>è½¬æ¢åçš„unix time</returns>
         public static long FromDateTime(DateTime dateTime)
         {
             return (TimeZone.CurrentTimeZone.ToUniversalTime(dateTime).Ticks - BaseTime.Ticks) / 10000000;
