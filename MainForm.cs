@@ -109,6 +109,17 @@ namespace Dgiot_dtu
 
             comboBoxDevAddr.SelectedIndex = 0;
 
+            List<string> opcservers = OPCDAHelper.GetServer();
+            foreach (var opcserver in opcservers)
+            {
+                comboBoxOpcServer.Items.Add(opcserver);
+            }
+
+            if (opcservers.Count > 0)
+            {
+                comboBoxOpcServer.SelectedIndex = 0;
+            }
+
             try
             {
                 ResotreConfig(config);
@@ -370,7 +381,8 @@ namespace Dgiot_dtu
             textBoxMqttSubTopic.Text = "/" + productid + "/" + devaddr;
             textBoxMqttPubTopic.Text = "/" + productid + "/" + devaddr + "/properties/read/reply";
             textBoxAccessTopic.Text = "/" + productid + "/" + devaddr + "/child/mdb";
-            textBoxOPCDATopic.Text = "/" + productid + "/" + devaddr + "/child/opcda";
+
+            // textBoxOPCDATopic.Text = "/" + productid + "/" + devaddr + "/child/opcda";
             textBoxOPCUATopic.Text = "/" + productid + "/" + devaddr + "/child/opcua";
             textBoxPLCTopic.Text = "/" + productid + "/" + devaddr + "/child/plc";
             textBoxBACnetTopic.Text = "/" + productid + "/" + devaddr + "/child/bacnet";
@@ -457,24 +469,6 @@ namespace Dgiot_dtu
                 config.AppSettings.Settings["tcpServerIsCheck"].Value = StringHelper.BoolTostr(this.checkBoxTcpServer.Checked);
             }
 
-            if (config.AppSettings.Settings["serialPortIsCheck"] == null)
-            {
-                config.AppSettings.Settings.Add("serialPortIsCheck", StringHelper.BoolTostr(this.checkBoxSerialPort.Checked));
-            }
-            else
-            {
-                config.AppSettings.Settings["serialPortIsCheck"].Value = StringHelper.BoolTostr(this.checkBoxSerialPort.Checked);
-            }
-
-            if (config.AppSettings.Settings["PLCIsCheck"] == null)
-            {
-                config.AppSettings.Settings.Add("PLCIsCheck", StringHelper.BoolTostr(this.checkBoxPLC.Checked));
-            }
-            else
-            {
-                config.AppSettings.Settings["PLCIsCheck"].Value = StringHelper.BoolTostr(this.checkBoxPLC.Checked);
-            }
-
             if (config.AppSettings.Settings["PLCTopic"] == null)
             {
                 config.AppSettings.Settings.Add("PLCTopic", textBoxPLCTopic.Text);
@@ -484,31 +478,13 @@ namespace Dgiot_dtu
                 config.AppSettings.Settings["PLCTopic"].Value = textBoxPLCTopic.Text;
             }
 
-            if (config.AppSettings.Settings["OPCDAIsCheck"] == null)
+            if (config.AppSettings.Settings["OpcServer"] == null)
             {
-                config.AppSettings.Settings.Add("OPCDAIsCheck", StringHelper.BoolTostr(this.checkBoxOPCDA.Checked));
+                config.AppSettings.Settings.Add("OpcServer", textBoxOpcServer.Text);
             }
             else
             {
-                config.AppSettings.Settings["OPCDAIsCheck"].Value = StringHelper.BoolTostr(this.checkBoxOPCDA.Checked);
-            }
-
-            if (config.AppSettings.Settings["OPCDATopic"] == null)
-            {
-                config.AppSettings.Settings.Add("OPCDATopic", textBoxOPCDATopic.Text);
-            }
-            else
-            {
-                config.AppSettings.Settings["OPCDATopic"].Value = textBoxOPCDATopic.Text;
-            }
-
-            if (config.AppSettings.Settings["OPCUAIsCheck"] == null)
-            {
-                config.AppSettings.Settings.Add("OPCUAIsCheck", StringHelper.BoolTostr(this.checkBoxOPCUA.Checked));
-            }
-            else
-            {
-                config.AppSettings.Settings["OPCUAIsCheck"].Value = StringHelper.BoolTostr(this.checkBoxOPCUA.Checked);
+                config.AppSettings.Settings["OpcServer"].Value = textBoxOpcServer.Text;
             }
 
             if (config.AppSettings.Settings["OPCUATopic"] == null)
@@ -520,15 +496,6 @@ namespace Dgiot_dtu
                 config.AppSettings.Settings["OPCUATopic"].Value = textBoxOPCUATopic.Text;
             }
 
-            if (config.AppSettings.Settings["BACnetIsCheck"] == null)
-            {
-                config.AppSettings.Settings.Add("BACnetIsCheck", StringHelper.BoolTostr(this.checkBoxBACnet.Checked));
-            }
-            else
-            {
-                config.AppSettings.Settings["BACnetIsCheck"].Value = StringHelper.BoolTostr(this.checkBoxBACnet.Checked);
-            }
-
             if (config.AppSettings.Settings["BACnetTopic"] == null)
             {
                 config.AppSettings.Settings.Add("BACnetTopic", textBoxBACnetTopic.Text);
@@ -536,15 +503,6 @@ namespace Dgiot_dtu
             else
             {
                 config.AppSettings.Settings["BACnetTopic"].Value = textBoxBACnetTopic.Text;
-            }
-
-            if (config.AppSettings.Settings["ControlIsCheck"] == null)
-            {
-                config.AppSettings.Settings.Add("ControlIsCheck", StringHelper.BoolTostr(this.checkBoxControl.Checked));
-            }
-            else
-            {
-                config.AppSettings.Settings["ControlIsCheck"].Value = StringHelper.BoolTostr(this.checkBoxControl.Checked);
             }
 
             if (config.AppSettings.Settings["ControlTopic"] == null)
@@ -556,15 +514,6 @@ namespace Dgiot_dtu
                 config.AppSettings.Settings["ControlTopic"].Value = textBoxControlTopic.Text;
             }
 
-            if (config.AppSettings.Settings["AccessIsCheck"] == null)
-            {
-                config.AppSettings.Settings.Add("AccessIsCheck", StringHelper.BoolTostr(this.checkBoxAccess.Checked));
-            }
-            else
-            {
-                config.AppSettings.Settings["AccessIsCheck"].Value = StringHelper.BoolTostr(this.checkBoxAccess.Checked);
-            }
-
             if (config.AppSettings.Settings["AccessTopic"] == null)
             {
                 config.AppSettings.Settings.Add("AccessTopic", textBoxAccessTopic.Text);
@@ -572,15 +521,6 @@ namespace Dgiot_dtu
             else
             {
                 config.AppSettings.Settings["AccessTopic"].Value = textBoxAccessTopic.Text;
-            }
-
-            if (config.AppSettings.Settings["SqlServerIsCheck"] == null)
-            {
-                config.AppSettings.Settings.Add("SqlServerIsCheck", StringHelper.BoolTostr(this.checkBoxSqlServer.Checked));
-            }
-            else
-            {
-                config.AppSettings.Settings["SqlServerIsCheck"].Value = StringHelper.BoolTostr(this.checkBoxSqlServer.Checked);
             }
 
             if (config.AppSettings.Settings["SqlServerTopic"] == null)
@@ -789,118 +729,6 @@ namespace Dgiot_dtu
             }
 
             TcpServerHelper.Config(config.AppSettings.Settings, this);
-        }
-
-        private void CheckBoxSerialPort_CheckedChanged(object sender, EventArgs e)
-        {
-            if (config.AppSettings.Settings["serialPortIsCheck"] == null)
-            {
-                config.AppSettings.Settings.Add("serialPortIsCheck", StringHelper.BoolTostr(this.checkBoxSerialPort.Checked));
-            }
-            else
-            {
-                config.AppSettings.Settings["serialPortIsCheck"].Value = StringHelper.BoolTostr(this.checkBoxSerialPort.Checked);
-            }
-
-            SerialPortHelper.Config(config.AppSettings.Settings, this);
-        }
-
-        private void CheckBoxPLC_CheckedChanged(object sender, EventArgs e)
-        {
-            if (config.AppSettings.Settings["PLCIsCheck"] == null)
-            {
-                config.AppSettings.Settings.Add("PLCIsCheck", StringHelper.BoolTostr(this.checkBoxPLC.Checked));
-            }
-            else
-            {
-                config.AppSettings.Settings["PLCIsCheck"].Value = StringHelper.BoolTostr(this.checkBoxPLC.Checked);
-            }
-
-            PLCHelper.Config(config.AppSettings.Settings, this);
-        }
-
-        private void CheckBoxOPCDA_CheckedChanged(object sender, EventArgs e)
-        {
-            if (config.AppSettings.Settings["OPCDAIsCheck"] == null)
-            {
-                config.AppSettings.Settings.Add("OPCDAIsCheck", StringHelper.BoolTostr(this.checkBoxOPCDA.Checked));
-            }
-            else
-            {
-                config.AppSettings.Settings["OPCDAIsCheck"].Value = StringHelper.BoolTostr(this.checkBoxOPCDA.Checked);
-            }
-
-            OPCDAHelper.Config(config.AppSettings.Settings, this);
-        }
-
-        private void CheckBoxOPCUA_CheckedChanged(object sender, EventArgs e)
-        {
-            if (config.AppSettings.Settings["OPCUAIsCheck"] == null)
-            {
-                config.AppSettings.Settings.Add("OPCUAIsCheck", StringHelper.BoolTostr(this.checkBoxOPCUA.Checked));
-            }
-            else
-            {
-                config.AppSettings.Settings["OPCUAIsCheck"].Value = StringHelper.BoolTostr(this.checkBoxOPCUA.Checked);
-            }
-
-            OPCUAHelper.Config(config.AppSettings.Settings, this);
-        }
-
-        private void CheckBoxBAnet_CheckedChanged(object sender, EventArgs e)
-        {
-            if (config.AppSettings.Settings["BACnetIsCheck"] == null)
-            {
-                config.AppSettings.Settings.Add("BACnetIsCheck", StringHelper.BoolTostr(this.checkBoxBACnet.Checked));
-            }
-            else
-            {
-                config.AppSettings.Settings["BACnetIsCheck"].Value = StringHelper.BoolTostr(this.checkBoxBACnet.Checked);
-            }
-
-            BACnetHelper.Config(config.AppSettings.Settings, this);
-        }
-
-        private void CheckBoxControl_CheckedChanged(object sender, EventArgs e)
-        {
-            if (config.AppSettings.Settings["ControlIsCheck"] == null)
-            {
-                config.AppSettings.Settings.Add("ControlIsCheck", StringHelper.BoolTostr(this.checkBoxControl.Checked));
-            }
-            else
-            {
-                config.AppSettings.Settings["ControlIsCheck"].Value = StringHelper.BoolTostr(this.checkBoxControl.Checked);
-            }
-
-            ControlHelper.Config(config.AppSettings.Settings, this);
-        }
-
-        private void CheckBoxSqlServer_CheckedChanged(object sender, EventArgs e)
-        {
-            if (config.AppSettings.Settings["SqlServerIsCheck"] == null)
-            {
-                config.AppSettings.Settings.Add("SqlServerIsCheck", StringHelper.BoolTostr(this.checkBoxSqlServer.Checked));
-            }
-            else
-            {
-                config.AppSettings.Settings["SqlServerIsCheck"].Value = StringHelper.BoolTostr(this.checkBoxSqlServer.Checked);
-            }
-
-            SqlServerHelper.Config(config.AppSettings.Settings, this);
-        }
-
-        private void CheckBoxAccess_CheckedChanged(object sender, EventArgs e)
-        {
-            if (config.AppSettings.Settings["AccessIsCheck"] == null)
-            {
-               config.AppSettings.Settings.Add("AccessIsCheck", StringHelper.BoolTostr(this.checkBoxAccess.Checked));
-            }
-            else
-            {
-                config.AppSettings.Settings["AccessIsCheck"].Value = StringHelper.BoolTostr(this.checkBoxAccess.Checked);
-            }
-
-            AccessHelper.Config(config.AppSettings.Settings, this);
         }
 
         private void CheckBoxMqttBridge_CheckedChanged(object sender, EventArgs e)
@@ -1230,6 +1058,7 @@ namespace Dgiot_dtu
             }
             else if (bridges[this.comboBoxBridge.SelectedIndex] == "OPCDA")
             {
+                OPCDAHelper.GetServer();
             }
             else if (bridges[this.comboBoxBridge.SelectedIndex] == "OPCUA")
             {
@@ -1313,21 +1142,6 @@ namespace Dgiot_dtu
             Resh_topic();
         }
 
-        private void TextBoxOPCDATopic_TextChanged(object sender, EventArgs e)
-        {
-            if (config.AppSettings.Settings["OPCDATopic"] == null)
-            {
-                config.AppSettings.Settings.Add("OPCDATopic", textBoxOPCDATopic.Text);
-            }
-            else
-            {
-                config.AppSettings.Settings["OPCDATopic"].Value = textBoxOPCDATopic.Text;
-            }
-
-            MqttClientHelper.Config(config.AppSettings.Settings, this);
-            Resh_topic();
-        }
-
         private void TextBoxOPCUATopic_TextChanged(object sender, EventArgs e)
         {
             if (config.AppSettings.Settings["OPCUATopic"] == null)
@@ -1401,6 +1215,24 @@ namespace Dgiot_dtu
 
             MqttClientHelper.Config(config.AppSettings.Settings, this);
             Resh_topic();
+        }
+
+        private void TextBoxOpcServer_TextChanged(object sender, EventArgs e)
+        {
+            if (config.AppSettings.Settings["OpcServer"] == null)
+            {
+                config.AppSettings.Settings.Add("OpcServer", textBoxOpcServer.Text);
+            }
+            else
+            {
+                config.AppSettings.Settings["OpcServer"].Value = textBoxOpcServer.Text;
+            }
+
+            OPCDAHelper.Config(config.AppSettings.Settings, this);
+        }
+
+        private void ComboBoxOpcServer_SelectedIndexChanged(object sender, EventArgs e)
+        {
         }
     }
 }

@@ -299,7 +299,7 @@ namespace Da
             ProcessRequest(session, requestInfo);
         }
 
-        private void ProcessRequest(AppSession session, StringRequestInfo requestInfo)
+        public void ProcessRequest(AppSession session, StringRequestInfo requestInfo)
         {
             int cmd = int.Parse(requestInfo.Parameters[0]);
             if (Interlocked.CompareExchange(ref exchanging, 1, 0) == 0)
@@ -477,7 +477,7 @@ namespace Da
             string json = JsonConvert.SerializeObject(entity);
             byte[] bufferList = StructUtility.Package(new Header() { Id = 0, Cmd = (int)Command.Notify_Nodes_Values_Ex, ContentSize = json.Length }, json);
 
-            // _sessionDic[group].Send(bufferList, 0, bufferList.Length);
+            sessionDic[group].Send(bufferList, 0, bufferList.Length);
         }
     }
 }

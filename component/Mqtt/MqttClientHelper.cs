@@ -172,6 +172,12 @@ namespace Dgiot_dtu
             mqttClient.PublishAsync(appMsg);
         }
 
+        public static void Publish(string pubtopic, byte[] payload)
+        {
+            var appMsg = new MqttApplicationMessage(pubtopic, payload, MqttQualityOfServiceLevel.AtLeastOnce, false);
+            mqttClient.PublishAsync(appMsg);
+        }
+
         private static async Task ReConnectMqttServerAsync()
         {
             while (bIsRunning)

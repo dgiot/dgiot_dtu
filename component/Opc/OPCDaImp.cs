@@ -136,7 +136,7 @@ namespace Da
             return nodes;
         }
 
-        private void BrowseChildren(IOpcDaBrowser browser, IList<TreeNode> items, string itemId = null, int indent = 0)
+        public void BrowseChildren(IOpcDaBrowser browser, IList<TreeNode> items, string itemId = null, int indent = 0)
         {
             OpcDaBrowseElement[] elements = browser.GetElements(itemId);
 

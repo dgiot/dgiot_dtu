@@ -13,11 +13,12 @@ namespace Dgiot_dtu
 
     public class UDPServerHelper
     {
+        private const bool V = false;
         private static UDPServerHelper instance;
         private static NetManager server = null;
         private static MainForm mainform = null;
         private static int port;
-        private static bool bIsRun = false;
+        private static bool bIsRun = V;
         private static bool bIsCheck = false;
 
         public static UDPServerHelper Instance

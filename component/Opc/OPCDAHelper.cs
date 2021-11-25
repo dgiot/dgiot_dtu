@@ -24,12 +24,14 @@ namespace Dgiot_dtu
     {
         private const bool V = false;
         private static string topic = "thing/opcda/";
+        private static string opcserver = "127.0.0.1";
+        private static List<string> serverlist = new List<string> { };
         private static MainForm mainform = null;
         private static OPCDAHelper instance = null;
         private static string clientid = string.Empty;
         private static bool bIsRun = V;
         private static bool bIsCheck = false;
-        private static SocketService server = new SocketService();
+        private static SocketService socketserver = new SocketService();
         private static List<TreeNode> dataList = null;
 
         public static OPCDAHelper GetInstance()
@@ -45,39 +47,14 @@ namespace Dgiot_dtu
         public static void Start(KeyValueConfigurationCollection config, MainForm mainform)
         {
             Config(config, mainform);
-            server.Start();
-            List<string> addresses = new List<string> { "127.0.0.1" };
-            dataList = server.ScanOPCClassicServer(addresses);
-            foreach (TreeNode node in dataList)
-            {
-                if (node.Children.Any())
-                {
-                    foreach (TreeNode childnode in node.Children)
-                    {
-                        Recursion(childnode);
-                    }
-                }
-            }
-
+            socketserver.Start();
             bIsRun = true;
         }
 
         public static void Stop()
         {
+            socketserver.Stop();
             bIsRun = false;
-        }
-
-        private static void Recursion(TreeNode childNode)
-        {
-            mainform.Log("viewItem: " + childNode.Name);
-            if (childNode.Children.Any())
-            {
-                var children = childNode.Children.ToList();
-                children.ForEach((child) =>
-                {
-                    Recursion(child);
-                });
-            }
         }
 
         public static void Config(KeyValueConfigurationCollection config, MainForm mainform)
@@ -90,6 +67,11 @@ namespace Dgiot_dtu
             if (config["OPCDATopic"] != null)
             {
                 topic = config["OPCDATopic"].Value;
+            }
+
+            if (config["OpcServer"] != null)
+            {
+                opcserver = config["OpcServer"].Value;
             }
 
             OPCDAHelper.mainform = mainform;
@@ -118,15 +100,15 @@ namespace Dgiot_dtu
                     switch (cmdType)
                     {
                         case "scan":
-                            Scan_opc_da(mqttClient, json);
+                            Scan_opc_da(json);
                             break;
                         case "read":
-                            Read_opc_da(mqttClient, json);
+                            Read_opc_da(json);
                             break;
                         case "write":
                             break;
                         default:
-                            Read_opc_da(mqttClient, json);
+                            Read_opc_da(json);
                             break;
                     }
                 }
@@ -137,7 +119,39 @@ namespace Dgiot_dtu
             }
         }
 
-        private static void Scan_opc_da(MqttClient mqttClient, Dictionary<string, object> json)
+        public static List<string> GetServer()
+        {
+            List<string> addresses = new List<string> { opcserver };
+            dataList = socketserver.ScanOPCClassicServer(addresses);
+            serverlist.Clear();
+            foreach (TreeNode node in dataList)
+            {
+                if (node.Children.Any())
+                {
+                    foreach (TreeNode childnode in node.Children)
+                    {
+                        serverlist.Add(childnode.Name);
+                        Recursion(childnode);
+                    }
+                }
+            }
+
+            return serverlist;
+        }
+
+        private static void Recursion(TreeNode childNode)
+        {
+            if (childNode.Children.Any())
+            {
+                var children = childNode.Children.ToList();
+                children.ForEach((child) =>
+                {
+                    Recursion(child);
+                });
+            }
+        }
+
+        private static void Scan_opc_da(Dictionary<string, object> json)
         {
             // string opcserver = "Matrikon.OPC.Simulation.1";
             string opcserver = "Kepware.KEPServerEX.V6";
@@ -156,7 +170,6 @@ namespace Dgiot_dtu
             }
 
             Uri url = UrlBuilder.Build(opcserver);
-            mainform.Log("opcserver " + opcserver.ToString());
             try
             {
                 using (var server = new OpcDaServer(url))
@@ -166,10 +179,7 @@ namespace Dgiot_dtu
                     var browser = new OpcDaBrowserAuto(server);
                     JsonObject scan = new JsonObject();
                     BrowseChildren(scan, browser);
-                    var appMsg = new MqttApplicationMessage(topic + "/metadata/derived", Encoding.UTF8.GetBytes(scan.ToString()), MqttQualityOfServiceLevel.AtLeastOnce, false);
-                    mainform.Log("scantopic: " + topic + "/metadata/derived");
-                    mainform.Log("appMsg " + scan.ToString());
-                    mqttClient.PublishAsync(appMsg);
+                    MqttClientHelper.Publish(topic + "/metadata/derived", Encoding.UTF8.GetBytes(scan.ToString()));
                 }
             }
             catch (Exception ex)
@@ -180,9 +190,7 @@ namespace Dgiot_dtu
                 result.Add("opcserver", opcserver);
                 result.Add("status", ex.GetHashCode());
                 result.Add("err", ex.ToString());
-                var appMsg = new MqttApplicationMessage(topic + "/event/scanfailed", Encoding.UTF8.GetBytes(result.ToString()), MqttQualityOfServiceLevel.AtLeastOnce, false);
-                mainform.Log("appMsg  " + appMsg.ToString());
-                mqttClient.PublishAsync(appMsg);
+                MqttClientHelper.Publish(topic + "/event/scanfailed", Encoding.UTF8.GetBytes(result.ToString()));
             }
         }
 
@@ -215,7 +223,7 @@ namespace Dgiot_dtu
             }
         }
 
-        private static void Read_opc_da(MqttClient mqttClient, Dictionary<string, object> json)
+        private static void Read_opc_da(Dictionary<string, object> json)
         {
             string opcserver = "Matrikon.OPC.Simulation.1";
             string group = "addr";
@@ -249,18 +257,16 @@ namespace Dgiot_dtu
                 try
                 {
                     string items = (string)json["items"];
-                    Console.WriteLine(" from task {0} {1} {2} ", opcserver, group, items);
                     string[] arry = items.Split(',');
                     JsonObject data = new JsonObject();
                     try
                     {
                         JsonObject result = new JsonObject();
-                        Read_group(mqttClient, opcserver, group, arry, data);
+                        Read_group(opcserver, group, arry, data);
                         result.Add("status", 0);
                         result.Add(group, data);
                         mainform.Log("result " + result.ToString());
-                        var appMsg = new MqttApplicationMessage(topic + "/properties/read/reply", Encoding.UTF8.GetBytes(result.ToString()), MqttQualityOfServiceLevel.AtLeastOnce, false);
-                        mqttClient.PublishAsync(appMsg);
+                        MqttClientHelper.Publish(topic + "/properties/read/reply", Encoding.UTF8.GetBytes(result.ToString()));
                     }
                     catch (Exception ex)
                     {
@@ -274,7 +280,7 @@ namespace Dgiot_dtu
             }
         }
 
-        private static void Read(MqttClient mqttClient, string opcserver, string group_name, string[] arry, JsonObject items)
+        private static void Read(string opcserver, string group_name, string[] arry, JsonObject items)
         {
             Uri url = UrlBuilder.Build(opcserver);
             try
@@ -312,12 +318,11 @@ namespace Dgiot_dtu
                 result.Add("opcserver", opcserver);
                 result.Add("status", ex.GetHashCode());
                 result.Add("err", ex.ToString());
-                var appMsg = new MqttApplicationMessage(topic + "/event/readfailed", Encoding.UTF8.GetBytes(result.ToString()), MqttQualityOfServiceLevel.AtLeastOnce, false);
-                mqttClient.PublishAsync(appMsg);
+                MqttClientHelper.Publish(topic + "/event/readfailed", Encoding.UTF8.GetBytes(items.ToString()));
             }
         }
 
-        private static void Read_group(MqttClient mqttClient, string opcserver, string group_name, string[] arry, JsonObject items)
+        private static void Read_group(string opcserver, string group_name, string[] arry, JsonObject items)
         {
             Uri url = UrlBuilder.Build(opcserver);
             try
@@ -356,19 +361,18 @@ namespace Dgiot_dtu
                     items.Add("status", 0);
                     items.Add(group_name, data);
                     mainform.Log(items.ToString());
-                    var appMsg = new MqttApplicationMessage(topic + "/properties/read/reply", Encoding.UTF8.GetBytes(items.ToString()), MqttQualityOfServiceLevel.AtLeastOnce, false);
-                    mqttClient.PublishAsync(appMsg);
+                    MqttClientHelper.Publish(topic + "/properties/read/reply", Encoding.UTF8.GetBytes(items.ToString()));
                     server.Disconnect();
                 }
             }
             catch (Exception ex)
             {
                 mainform.Log(ex.ToString());
-                Read(mqttClient, opcserver, group_name, arry, items);
+                Read(opcserver, group_name, arry, items);
             }
         }
 
-        private static void Subscription_opc_da(MqttClient mqttClient, string opcserver, string name)
+        private static void Subscription_opc_da(string opcserver, string name)
         {
             Uri url = UrlBuilder.Build(opcserver);
             try
@@ -404,8 +408,7 @@ namespace Dgiot_dtu
                 result.Add("name", name);
                 result.Add("status", ex.GetHashCode());
                 result.Add("err", ex.ToString());
-                var appMsg = new MqttApplicationMessage(topic + "/properties/read/reply", Encoding.UTF8.GetBytes(result.ToString()), MqttQualityOfServiceLevel.AtLeastOnce, false);
-                mqttClient.PublishAsync(appMsg);
+                MqttClientHelper.Publish(topic + "/properties/read/reply", Encoding.UTF8.GetBytes(result.ToString()));
             }
         }
 
