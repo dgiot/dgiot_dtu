@@ -10,8 +10,6 @@ namespace Dgiot_dtu
     using System.Runtime.InteropServices;
     using System.Text;
     using System.Windows.Automation;
-    using MQTTnet.Core.Client;
-    using PortListener.Core.Utilities;
 
     public class ControlHelper
     {

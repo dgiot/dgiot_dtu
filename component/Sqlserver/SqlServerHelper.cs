@@ -2,9 +2,6 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-// https://github.com/titanium-as/TitaniumAS.Opc.Client
-// https://github.com/chkr1011/MQTTnet
-using PortListener.Core.Utilities;
 using System.Configuration;
 
 namespace Dgiot_dtu
@@ -15,9 +12,10 @@ namespace Dgiot_dtu
         {
         }
 
+        private const bool V = false;
         private static SqlServerHelper instance;
         private static MainForm mainform = null;
-        private static bool bIsRunning = false;
+        private static bool bIsRun = V;
         private static bool bIsCheck = false;
 
         public static SqlServerHelper GetInstance()
@@ -32,14 +30,14 @@ namespace Dgiot_dtu
 
         public static void Start(KeyValueConfigurationCollection config,  MainForm mainform)
         {
-            SqlServerHelper.bIsRunning = true;
+            bIsRun = true;
             Config(config, mainform);
             SqlServerHelper.mainform = mainform;
         }
 
         public static void Stop()
         {
-            SqlServerHelper.bIsRunning = false;
+            bIsRun = false;
         }
 
         public static void Config(KeyValueConfigurationCollection config, MainForm mainform)

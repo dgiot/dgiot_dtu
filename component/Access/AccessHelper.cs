@@ -13,11 +13,11 @@ namespace Dgiot_dtu
     using System.IO;
     using System.Linq;
     using System.Text;
+    using System.Text.RegularExpressions;
     using MQTTnet.Core;
     using MQTTnet.Core.Client;
     using MQTTnet.Core.Protocol;
     using Newtonsoft.Json;
-    using PortListener.Core.Utilities;
 
     internal class AccessHelper
     {
@@ -88,8 +88,15 @@ namespace Dgiot_dtu
             AccessHelper.mainform = mainform;
         }
 
-        public static void Do_mdb(MqttClient mqttClient, Dictionary<string, object> json, string clientid, MainForm mainform)
+        public static void Do_mdb(MqttClient mqttClient, string topic, Dictionary<string, object> json, string clientid, MainForm mainform)
         {
+            Regex r_submdb = new Regex(topic); // 定义一个Regex对象实例
+            Match m_submdb = r_submdb.Match(topic); // 在字符串中匹配
+            if (!m_submdb.Success)
+            {
+                return;
+            }
+
             string cmdType = "read";
             AccessHelper.scantopic = "thing/mdb/" + clientid + "post";
             if (json.ContainsKey("cmdtype"))

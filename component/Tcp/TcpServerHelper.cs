@@ -4,7 +4,6 @@
 
 namespace Dgiot_dtu
 {
-    using PortListener.Core.Utilities;
     using System;
     using System.Configuration;
     using System.IO;

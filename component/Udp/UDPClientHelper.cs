@@ -2,24 +2,22 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-// https://github.com/titanium-as/TitaniumAS.Opc.Client
-// https://github.com/chkr1011/MQTTnet
-using LiteNetLib;
-using PortListener.Core.Utilities;
-using System;
-using System.Configuration;
-using System.Threading;
-
 namespace Dgiot_dtu
 {
+    using System;
+    using System.Configuration;
+    using System.Threading;
+    using LiteNetLib;
+
     public class UDPClientHelper
     {
+        private const bool V = false;
         private static UDPClientHelper instance;
         private static MainForm mainform = null;
         private static NetManager client = null;
         private static string server = "prod.iotn2n.com";
-        private static int port;
-        private static bool bIsRunning = false;
+        private static int port = 9050;
+        private static bool bIsRun = V;
         private static bool bIsCheck = false;
         private static bool bAutoReconnect = false;
 
@@ -36,7 +34,7 @@ namespace Dgiot_dtu
         public static void Start(KeyValueConfigurationCollection config, bool bAutoReconnect, MainForm mainform)
         {
             UDPClientHelper.bAutoReconnect = bAutoReconnect;
-            bIsRunning = true;
+            bIsRun = true;
             Config(config, mainform);
 
             if (bIsCheck)
@@ -46,7 +44,7 @@ namespace Dgiot_dtu
                     EventBasedNetListener listener = new EventBasedNetListener();
                     client = new NetManager(listener);
                     client.Start();
-                    client.Connect(server /* host ip or name */, 9050 /* port */, "SomeConnectionKey" /* text key or NetDataWriter */);
+                    client.Connect(server /* host ip or name */, port /* port */, "SomeConnectionKey" /* text key or NetDataWriter */);
                     listener.NetworkReceiveEvent += (fromPeer, dataReader, deliveryMethod) =>
                     {
                         Console.WriteLine("We got: {0}", dataReader.GetString(100 /* max length of string */));
@@ -72,7 +70,7 @@ namespace Dgiot_dtu
                 }
             }
 
-            UDPClientHelper.bIsRunning = false;
+            bIsRun = false;
         }
 
         public static void Config(KeyValueConfigurationCollection config, MainForm mainform)

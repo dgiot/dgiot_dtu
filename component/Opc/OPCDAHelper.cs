@@ -9,23 +9,28 @@ namespace Dgiot_dtu
     using System;
     using System.Collections.Generic;
     using System.Configuration;
+    using System.Linq;
     using System.Text;
+    using System.Text.RegularExpressions;
+    using Da;
     using MQTTnet.Core;
     using MQTTnet.Core.Client;
     using MQTTnet.Core.Protocol;
-    using PortListener.Core.Utilities;
     using TitaniumAS.Opc.Client.Common;
     using TitaniumAS.Opc.Client.Da;
     using TitaniumAS.Opc.Client.Da.Browsing;
 
     public class OPCDAHelper
     {
-        private static string pubtopic = "thing/opcda/";
+        private const bool V = false;
+        private static string topic = "thing/opcda/";
         private static MainForm mainform = null;
         private static OPCDAHelper instance = null;
         private static string clientid = string.Empty;
-        private static bool bIsRunning = false;
+        private static bool bIsRun = V;
         private static bool bIsCheck = false;
+        private static SocketService server = new SocketService();
+        private static List<TreeNode> dataList = null;
 
         public static OPCDAHelper GetInstance()
         {
@@ -34,35 +39,76 @@ namespace Dgiot_dtu
                 instance = new OPCDAHelper();
             }
 
-            return instance;
+         return instance;
         }
 
         public static void Start(KeyValueConfigurationCollection config, MainForm mainform)
         {
             Config(config, mainform);
-            OPCDAHelper.bIsRunning = true;
+            server.Start();
+            List<string> addresses = new List<string> { "127.0.0.1" };
+            dataList = server.ScanOPCClassicServer(addresses);
+            foreach (TreeNode node in dataList)
+            {
+                if (node.Children.Any())
+                {
+                    foreach (TreeNode childnode in node.Children)
+                    {
+                        Recursion(childnode);
+                    }
+                }
+            }
+
+            bIsRun = true;
         }
 
         public static void Stop()
         {
-            OPCDAHelper.bIsRunning = false;
+            bIsRun = false;
+        }
+
+        private static void Recursion(TreeNode childNode)
+        {
+            mainform.Log("viewItem: " + childNode.Name);
+            if (childNode.Children.Any())
+            {
+                var children = childNode.Children.ToList();
+                children.ForEach((child) =>
+                {
+                    Recursion(child);
+                });
+            }
         }
 
         public static void Config(KeyValueConfigurationCollection config, MainForm mainform)
         {
             if (config["OPCDAIsCheck"] != null)
             {
-                OPCDAHelper.bIsCheck = StringHelper.StrTobool(config["OPCDAIsCheck"].Value);
+                bIsCheck = StringHelper.StrTobool(config["OPCDAIsCheck"].Value);
+            }
+
+            if (config["OPCDATopic"] != null)
+            {
+                topic = config["OPCDATopic"].Value;
             }
 
             OPCDAHelper.mainform = mainform;
         }
 
-        public static void Do_opc_da(MqttClient mqttClient, Dictionary<string, object> json, string clientid, MainForm mainform)
+        public static void Do_opc_da(MqttClient mqttClient, string topic, Dictionary<string, object> json, string clientid, MainForm mainform)
         {
+            Regex r_subopcda = new Regex(OPCDAHelper.topic); // 定义一个Regex对象实例
+            Match m_subopcda = r_subopcda.Match(topic); // 在字符串中匹配
+
+            if (!m_subopcda.Success)
+            {
+                return;
+            }
+
+            mainform.Log(topic);
+
             OPCDAHelper.mainform = mainform;
             OPCDAHelper.clientid = clientid;
-            OPCDAHelper.pubtopic = "thing/opcda/" + clientid + "/post";
             string cmdType = "read";
             if (json.ContainsKey("cmdtype"))
             {
@@ -86,7 +132,7 @@ namespace Dgiot_dtu
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("{0}", ex.ToString());
+                    mainform.Log(ex.ToString());
                 }
             }
         }
@@ -120,21 +166,21 @@ namespace Dgiot_dtu
                     var browser = new OpcDaBrowserAuto(server);
                     JsonObject scan = new JsonObject();
                     BrowseChildren(scan, browser);
-                    var appMsg = new MqttApplicationMessage(OPCDAHelper.pubtopic, Encoding.UTF8.GetBytes(scan.ToString()), MqttQualityOfServiceLevel.AtLeastOnce, false);
-                    mainform.Log("scantopic " + OPCDAHelper.pubtopic.ToString());
+                    var appMsg = new MqttApplicationMessage(topic + "/metadata/derived", Encoding.UTF8.GetBytes(scan.ToString()), MqttQualityOfServiceLevel.AtLeastOnce, false);
+                    mainform.Log("scantopic: " + topic + "/metadata/derived");
                     mainform.Log("appMsg " + scan.ToString());
                     mqttClient.PublishAsync(appMsg);
                 }
             }
             catch (Exception ex)
             {
-                mainform.Log(" error  " + ex.GetBaseException().ToString());
+                mainform.Log("error  " + ex.GetBaseException().ToString());
                 JsonObject result = new JsonObject();
                 result.Add("TimeStamp", FromDateTime(DateTime.UtcNow));
                 result.Add("opcserver", opcserver);
                 result.Add("status", ex.GetHashCode());
                 result.Add("err", ex.ToString());
-                var appMsg = new MqttApplicationMessage(OPCDAHelper.pubtopic, Encoding.UTF8.GetBytes(result.ToString()), MqttQualityOfServiceLevel.AtLeastOnce, false);
+                var appMsg = new MqttApplicationMessage(topic + "/event/scanfailed", Encoding.UTF8.GetBytes(result.ToString()), MqttQualityOfServiceLevel.AtLeastOnce, false);
                 mainform.Log("appMsg  " + appMsg.ToString());
                 mqttClient.PublishAsync(appMsg);
             }
@@ -213,7 +259,7 @@ namespace Dgiot_dtu
                         result.Add("status", 0);
                         result.Add(group, data);
                         mainform.Log("result " + result.ToString());
-                        var appMsg = new MqttApplicationMessage(OPCDAHelper.pubtopic, Encoding.UTF8.GetBytes(result.ToString()), MqttQualityOfServiceLevel.AtLeastOnce, false);
+                        var appMsg = new MqttApplicationMessage(topic + "/properties/read/reply", Encoding.UTF8.GetBytes(result.ToString()), MqttQualityOfServiceLevel.AtLeastOnce, false);
                         mqttClient.PublishAsync(appMsg);
                     }
                     catch (Exception ex)
@@ -251,7 +297,7 @@ namespace Dgiot_dtu
                         OpcDaItemValue[] values = group.Read(group.Items, OpcDaDataSource.Device);
                         foreach (OpcDaItemValue item in values)
                         {
-                            mainform.Log(pubtopic + " " + id.ToString() + " " + item.GetHashCode().ToString() + " " + item.Value.ToString() + " " + item.Timestamp.ToString());
+                            mainform.Log(topic + "/properties/read/reply" + " " + id.ToString() + " " + item.GetHashCode().ToString() + " " + item.Value.ToString() + " " + item.Timestamp.ToString());
                             items.Add(id, item.Value);
                         }
 
@@ -266,7 +312,7 @@ namespace Dgiot_dtu
                 result.Add("opcserver", opcserver);
                 result.Add("status", ex.GetHashCode());
                 result.Add("err", ex.ToString());
-                var appMsg = new MqttApplicationMessage(OPCDAHelper.pubtopic, Encoding.UTF8.GetBytes(result.ToString()), MqttQualityOfServiceLevel.AtLeastOnce, false);
+                var appMsg = new MqttApplicationMessage(topic + "/event/readfailed", Encoding.UTF8.GetBytes(result.ToString()), MqttQualityOfServiceLevel.AtLeastOnce, false);
                 mqttClient.PublishAsync(appMsg);
             }
         }
@@ -303,14 +349,14 @@ namespace Dgiot_dtu
                     JsonObject data = new JsonObject();
                     foreach (OpcDaItemValue item in values)
                     {
-                        mainform.Log(OPCDAHelper.pubtopic + " " + item.GetHashCode().ToString() + " " + item.Value.ToString() + string.Empty + item.Timestamp.ToString());
+                        mainform.Log(topic + "/properties/read/reply" + " " + item.GetHashCode().ToString() + " " + item.Value.ToString() + string.Empty + item.Timestamp.ToString());
                         data.Add(item.Item.ItemId, item.Value);
                     }
 
                     items.Add("status", 0);
                     items.Add(group_name, data);
                     mainform.Log(items.ToString());
-                    var appMsg = new MqttApplicationMessage(OPCDAHelper.pubtopic, Encoding.UTF8.GetBytes(items.ToString()), MqttQualityOfServiceLevel.AtLeastOnce, false);
+                    var appMsg = new MqttApplicationMessage(topic + "/properties/read/reply", Encoding.UTF8.GetBytes(items.ToString()), MqttQualityOfServiceLevel.AtLeastOnce, false);
                     mqttClient.PublishAsync(appMsg);
                     server.Disconnect();
                 }
@@ -358,7 +404,7 @@ namespace Dgiot_dtu
                 result.Add("name", name);
                 result.Add("status", ex.GetHashCode());
                 result.Add("err", ex.ToString());
-                var appMsg = new MqttApplicationMessage(OPCDAHelper.pubtopic, Encoding.UTF8.GetBytes(result.ToString()), MqttQualityOfServiceLevel.AtLeastOnce, false);
+                var appMsg = new MqttApplicationMessage(topic + "/properties/read/reply", Encoding.UTF8.GetBytes(result.ToString()), MqttQualityOfServiceLevel.AtLeastOnce, false);
                 mqttClient.PublishAsync(appMsg);
             }
         }

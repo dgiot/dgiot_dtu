@@ -7,7 +7,6 @@ namespace Dgiot_dtu
     using System;
     using System.Configuration;
     using System.IO.Ports;
-    using PortListener.Core.Utilities;
 
     public class SerialPortHelper
     {

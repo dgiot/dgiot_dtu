@@ -43,4 +43,7 @@ dotnet_diagnostic.SA1009.severity = silent
 dotnet_diagnostic.SA1214.severity = silent
 
 # IDE0052: 删除未读的私有成员
-dotnet_diagnostic.IDE0052.severity = silent
+dotnet_diagnostic.IDE0052.severity = none
+
+# Default severity for analyzer diagnostics with category 'CodeQuality'
+dotnet_analyzer_diagnostic.category-CodeQuality.severity = none

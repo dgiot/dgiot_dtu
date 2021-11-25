@@ -2,9 +2,8 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace PortListener.Core.Utilities
+namespace Dgiot_dtu
 {
-    using System.Configuration;
     using System.Text;
 
     public class StringHelper

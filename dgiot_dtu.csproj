@@ -58,8 +58,14 @@
       <HintPath>packages\Costura.Fody.3.3.3\lib\net40\Costura.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="INIFileParser, Version=2.5.2.0, Culture=neutral, PublicKeyToken=79af7b307b65cf3c, processorArchitecture=MSIL">
+      <HintPath>packages\ini-parser.2.5.2\lib\net20\INIFileParser.dll</HintPath>
+    </Reference>
     <Reference Include="LiteNetLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\LiteNetLib.0.9.5.2\lib\net35\LiteNetLib.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Extensions.Configuration, Version=1.1.2.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
@@ -84,11 +90,9 @@
     </Reference>
     <Reference Include="MQTTnet, Version=2.4.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\MQTTnet.2.4.0\lib\net45\MQTTnet.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="MQTTnet.Core, Version=2.4.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\MQTTnet.2.4.0\lib\net45\MQTTnet.Core.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -99,6 +103,21 @@
     </Reference>
     <Reference Include="SharpPcap, Version=4.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\SharpPcap.4.2.0\lib\net\SharpPcap.dll</HintPath>
+    </Reference>
+    <Reference Include="SuperSocket.Common, Version=1.6.6.1, Culture=neutral, PublicKeyToken=6c80000676988ebb, processorArchitecture=MSIL">
+      <HintPath>packages\SuperSocket.1.6.6.1\lib\net45\SuperSocket.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="SuperSocket.Facility, Version=1.6.6.1, Culture=neutral, PublicKeyToken=6c80000676988ebb, processorArchitecture=MSIL">
+      <HintPath>packages\SuperSocket.1.6.6.1\lib\net45\SuperSocket.Facility.dll</HintPath>
+    </Reference>
+    <Reference Include="SuperSocket.SocketBase, Version=1.6.6.1, Culture=neutral, PublicKeyToken=6c80000676988ebb, processorArchitecture=MSIL">
+      <HintPath>packages\SuperSocket.1.6.6.1\lib\net45\SuperSocket.SocketBase.dll</HintPath>
+    </Reference>
+    <Reference Include="SuperSocket.SocketEngine, Version=1.6.6.1, Culture=neutral, PublicKeyToken=6c80000676988ebb, processorArchitecture=MSIL">
+      <HintPath>packages\SuperSocket.Engine.1.6.6.1\lib\net45\SuperSocket.SocketEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="SuperSocket.SocketService, Version=1.6.6.1, Culture=neutral, PublicKeyToken=6c80000676988ebb, processorArchitecture=MSIL">
+      <HintPath>packages\SuperSocket.Engine.1.6.6.1\lib\net45\SuperSocket.SocketService.exe</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -116,6 +135,7 @@
     <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Reactive.Core, Version=3.0.1000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
@@ -155,7 +175,9 @@
     </Reference>
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows" />
+    <Reference Include="System.Windows.Controls.Ribbon" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="TitaniumAS.Opc.Client, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -165,27 +187,53 @@
     <Reference Include="UIAutomationClient" />
     <Reference Include="UIAutomationTypes" />
     <Reference Include="WindowsBase" />
+    <Reference Include="Workstation.UaClient, Version=2.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Workstation.UaClient.2.0.2\lib\net45\Workstation.UaClient.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AccessHelper.cs" />
-    <Compile Include="BacDevice.cs" />
-    <Compile Include="BACnetHelper.cs" />
-    <Compile Include="BacProperty.cs" />
-    <Compile Include="ControlHelper.cs" />
-    <Compile Include="HttpClientHelper.cs" />
-    <Compile Include="JsonArray.cs" />
-    <Compile Include="JsonObject.cs" />
+    <Compile Include="component\Access\AccessHelper.cs" />
+    <Compile Include="component\BACnet\BacDevice.cs" />
+    <Compile Include="component\BACnet\BACnetHelper.cs" />
+    <Compile Include="component\BACnet\BacProperty.cs" />
+    <Compile Include="component\Control\ControlHelper.cs" />
+    <Compile Include="component\Http\HttpClientHelper.cs" />
+    <Compile Include="component\Mqtt\MqttClientHelper.cs" />
+    <Compile Include="component\Mqtt\MqttServerHelper.cs" />
+    <Compile Include="component\Opc\IOPCDa.cs" />
+    <Compile Include="component\Opc\Model\GroupEntity.cs" />
+    <Compile Include="component\Opc\Model\Header.cs" />
+    <Compile Include="component\Opc\Model\Item.cs" />
+    <Compile Include="component\Opc\Model\OpcDaService.cs" />
+    <Compile Include="component\Opc\Model\ServiceCollection.cs" />
+    <Compile Include="component\Opc\Model\TreeNode.cs" />
+    <Compile Include="component\Opc\OPCDAHelper.cs" />
+    <Compile Include="component\Opc\OPCDaImp.cs" />
+    <Compile Include="component\Opc\OPCUAHelper.cs" />
+    <Compile Include="component\Opc\Protocol\Command.cs" />
+    <Compile Include="component\Opc\Protocol\ReadItemsReq.cs" />
+    <Compile Include="component\Opc\Protocol\ReadItemsRsp.cs" />
+    <Compile Include="component\Opc\Protocol\StartMonitoringItemsReq.cs" />
+    <Compile Include="component\Opc\Protocol\StartMonitoringItemsRsp.cs" />
+    <Compile Include="component\Opc\Protocol\StopMonitoringItemsReq.cs" />
+    <Compile Include="component\Opc\Protocol\WriteNodesValuesReq.cs" />
+    <Compile Include="component\Opc\ReceiveFilter.cs" />
+    <Compile Include="component\Opc\ReceiveFilterFactory.cs" />
+    <Compile Include="component\Opc\SocketService.cs" />
+    <Compile Include="component\Opc\StructUtility.cs" />
+    <Compile Include="component\Plc\PLCHelper.cs" />
+    <Compile Include="component\SerialPort\SerialPortHelper.cs" />
+    <Compile Include="component\Sqlserver\SqlServerHelper.cs" />
+    <Compile Include="component\Tcp\TcpClientHelper.cs" />
+    <Compile Include="component\Tcp\TcpServerHelper.cs" />
+    <Compile Include="component\Udp\UDPClientHelper.cs" />
+    <Compile Include="component\Udp\UDPServerHelper.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="MqttHelper.cs" />
-    <Compile Include="OPCDAHelper.cs" />
-    <Compile Include="OPCUAHelper.cs" />
-    <Compile Include="PLCHelper.cs" />
-    <Compile Include="PocoJsonSerializerStrategy.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -193,15 +241,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="ReflectionUtils.cs" />
-    <Compile Include="SerialPortHelper.cs" />
-    <Compile Include="SimpleJson.cs" />
-    <Compile Include="SqlServerHelper.cs" />
-    <Compile Include="StringHelper.cs" />
-    <Compile Include="TcpClientHelper.cs" />
-    <Compile Include="TcpServerHelper.cs" />
-    <Compile Include="UDPClientHelper.cs" />
-    <Compile Include="UDPServerHelper.cs" />
+    <Compile Include="utils\JsonArray.cs" />
+    <Compile Include="utils\JsonObject.cs" />
+    <Compile Include="utils\PocoJsonSerializerStrategy.cs" />
+    <Compile Include="utils\ReflectionUtils.cs" />
+    <Compile Include="utils\SimpleJson.cs" />
+    <Compile Include="utils\StringHelper.cs" />
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -212,6 +257,8 @@
     </EmbeddedResource>
     <None Include=".editorconfig" />
     <None Include="app.config" />
+    <None Include="Config\log4net.config" />
+    <None Include="Config\log4net.unix.config" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -222,6 +269,8 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="supersocket.cmd" />
+    <None Include="supersocket.sh" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="DD-All.ico" />

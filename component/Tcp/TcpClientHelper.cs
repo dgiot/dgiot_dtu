@@ -9,7 +9,6 @@ namespace Dgiot_dtu
     using System.IO;
     using System.Net.Sockets;
     using System.Threading;
-    using PortListener.Core.Utilities;
 
     public class TcpClientHelper
     {

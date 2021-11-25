@@ -1,4 +1,4 @@
-// <copyright file="BAnetHelper.cs" company="PlaceholderCompany">
+// <copyright file="BACnetHelper.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
@@ -10,16 +10,13 @@ namespace Dgiot_dtu
     using System.IO.BACnet;
     using System.Linq;
 
-    // https://github.com/titanium-as/TitaniumAS.Opc.Client
-    // https://github.com/chkr1011/MQTTnet
-    using PortListener.Core.Utilities;
-
     public class BACnetHelper
     {
         private BACnetHelper()
         {
         }
 
+        private const bool V = false;
         private static BACnetHelper instance;
         private static BacnetClient bacnetClient = null;
 
@@ -29,7 +26,7 @@ namespace Dgiot_dtu
         private static byte invokeId = 0x00;
 
         private static MainForm mainform = null;
-        private static bool bIsRunning = false;
+        private static bool bIsRun = V;
         private static bool bIsCheck = false;
 
         public static BACnetHelper GetInstance()
@@ -45,7 +42,7 @@ namespace Dgiot_dtu
         public static void Start(KeyValueConfigurationCollection config, MainForm mainform)
         {
             Config(config, mainform);
-            bIsRunning = true;
+            bIsRun = true;
             if (bIsCheck)
             {
                 if (bacnetClient == null)
@@ -70,7 +67,7 @@ namespace Dgiot_dtu
 
         public static void Stop()
         {
-            bIsRunning = false;
+            bIsRun = false;
             if (bacnetClient != null)
             {
                // bacnetClient.Start();
@@ -89,6 +86,7 @@ namespace Dgiot_dtu
 
         public static void Write(byte[] data, int offset, int len)
         {
+            mainform.Log("bacnet write: " + bIsCheck.ToString());
             if (bIsCheck)
             {
                 foreach (var device in devicesList)

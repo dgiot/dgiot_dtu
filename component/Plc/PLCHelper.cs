@@ -2,9 +2,6 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-// https://github.com/titanium-as/TitaniumAS.Opc.Client
-// https://github.com/chkr1011/MQTTnet
-using PortListener.Core.Utilities;
 using System.Configuration;
 
 namespace Dgiot_dtu
