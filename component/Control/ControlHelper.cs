@@ -76,7 +76,7 @@ namespace Dgiot_dtu
         {
             if (config["ControlIsCheck"] != null)
             {
-                ControlHelper.bIsCheck = StringHelper.StrTobool(config["ControlIsCheck"].Value);
+                ControlHelper.bIsCheck = DgiotHelper.StrTobool(config["ControlIsCheck"].Value);
             }
 
             ControlHelper.mainform = mainform;

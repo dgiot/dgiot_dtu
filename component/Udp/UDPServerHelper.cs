@@ -16,7 +16,6 @@ namespace Dgiot_dtu
         private const bool V = false;
         private static UDPServerHelper instance;
         private static NetManager server = null;
-        private static MainForm mainform = null;
         private static int port;
         private static bool bIsRun = V;
         private static bool bIsCheck = false;
@@ -34,11 +33,9 @@ namespace Dgiot_dtu
             }
         }
 
-        public static void Start(KeyValueConfigurationCollection config, MainForm mainform)
+        public static void Start(KeyValueConfigurationCollection config)
         {
-            Config(config, mainform);
-            UDPServerHelper.mainform = mainform;
-
+            Config(config);
             if (bIsCheck)
             {
                 if (server == null)
@@ -89,19 +86,17 @@ namespace Dgiot_dtu
             bIsRun = false;
         }
 
-        public static void Config(KeyValueConfigurationCollection config, MainForm mainform)
+        public static void Config(KeyValueConfigurationCollection config)
         {
             if (config["updServerPort"] != null)
             {
-                UDPServerHelper.port = int.Parse((string)config["UDPClientPort"].Value);
+                port = int.Parse((string)config["UDPClientPort"].Value);
             }
 
             if (config["updbridgeIsCheck"] != null)
             {
-                UDPServerHelper.bIsCheck = StringHelper.StrTobool(config["updbridgeIsCheck"].Value);
+                bIsCheck = DgiotHelper.StrTobool(config["updbridgeIsCheck"].Value);
             }
-
-            UDPServerHelper.mainform = mainform;
         }
 
         public static void Write(byte[] data, int offset, int len)

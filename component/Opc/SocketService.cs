@@ -191,16 +191,6 @@ namespace Da
                             // 没有白名单，全添加
                             childNodes.Add(new TreeNode() { Name = opcItem });
                         }
-
-                        // if ("NETxKNX.OPC.Server.3.5" == opcItem)
-                        // {
-                        //    _debugDataCallBack.DoEventLogCallBack(debugInfo(string.Format("扫描成功 地址：{0} OPCClassic {1} 添加", usefulItem.ToString(), opcItem)));
-                        //    childNodes.Add(new TreeNode() { Name = opcItem });
-                        // }
-                        // else
-                        // {
-                        //    _debugDataCallBack.DoEventLogCallBack(debugInfo(string.Format("扫描成功 地址：{0} OPCClassic {1} 不添加", usefulItem.ToString(), opcItem)));
-                        // }
                     }
 
                     node.Children.AddRange(childNodes);
@@ -292,6 +282,7 @@ namespace Da
 
         private void NewSessionConnected(AppSession session)
         {
+            sessionDic.Add(session.RemoteEndPoint.Address.ToString(), session);
         }
 
         private void NewRequestReceived(AppSession session, StringRequestInfo requestInfo)

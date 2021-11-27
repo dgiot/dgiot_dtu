@@ -16,7 +16,6 @@ namespace Dgiot_dtu
 
         private static SerialPort port = null;
         private static SerialPortHelper instance = null;
-        private static MainForm mainform = null;
         private static bool bIsRunning = false;
         private static bool bIsCheck = false;
         private static string portName;
@@ -35,9 +34,9 @@ namespace Dgiot_dtu
             return instance;
         }
 
-        public static void Start(KeyValueConfigurationCollection config, MainForm mainform)
+        public static void Start(KeyValueConfigurationCollection config)
         {
-            Config(config, mainform);
+            Config(config);
             bIsRunning = true;
             if (!bIsRunning)
             {
@@ -50,7 +49,7 @@ namespace Dgiot_dtu
                 }
                 catch (Exception)
                 {
-                    mainform.Log(@"Couldn't open port " + portName);
+                    LogHelper.Log(@"Couldn't open port " + portName);
                     return;
                 }
 
@@ -69,7 +68,7 @@ namespace Dgiot_dtu
             }
         }
 
-        public static void Config(KeyValueConfigurationCollection config, MainForm mainform)
+        public static void Config(KeyValueConfigurationCollection config)
         {
             if (config["portName"] != null)
             {
@@ -98,17 +97,15 @@ namespace Dgiot_dtu
 
             if (config["SerialPortIsCheck"] != null)
             {
-                bIsCheck = StringHelper.StrTobool(config["SerialPortIsCheck"].Value);
+                bIsCheck = DgiotHelper.StrTobool(config["SerialPortIsCheck"].Value);
             }
-
-            SerialPortHelper.mainform = mainform;
         }
 
         public static void Write(byte[] payload, int offset, int len)
         {
             if (bIsCheck)
             {
-                mainform.Log("S->N: " + mainform.Logdata(payload, 0, payload.Length));
+                LogHelper.Log("S->N: " + LogHelper.Logdata(payload, 0, payload.Length));
                 port.Write(payload, offset, len);
             }
         }
@@ -118,7 +115,7 @@ namespace Dgiot_dtu
             var rxlen = port.BytesToRead;
             var data = new byte[rxlen];
             port.Read(data, 0, rxlen);
-            mainform.Log("S->N: " + mainform.Logdata(data, 0, rxlen));
+            LogHelper.Log("S->N: " + LogHelper.Logdata(data, 0, rxlen));
         }
 
         private static StopBits StrToStopBits(string s)

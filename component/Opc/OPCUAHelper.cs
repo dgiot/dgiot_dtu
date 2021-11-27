@@ -23,7 +23,6 @@ namespace Dgiot_dtu
         private static ApplicationDescription localDescription;
         private static ICertificateStore certificateStore;
         private static OPCUAHelper instance;
-        private static MainForm mainform = null;
         private static bool bIsRun = V;
         private static bool bIsCheck = V;
         private static UaTcpSessionChannel channel;
@@ -38,9 +37,9 @@ namespace Dgiot_dtu
             return instance;
         }
 
-        public static void Start(KeyValueConfigurationCollection config, MainForm mainform)
+        public static void Start(KeyValueConfigurationCollection config)
         {
-            Config(config, mainform);
+            Config(config);
             bIsRun = true;
             localDescription = new ApplicationDescription
             {
@@ -67,14 +66,12 @@ namespace Dgiot_dtu
             }
         }
 
-        public static void Config(KeyValueConfigurationCollection config, MainForm mainform)
+        public static void Config(KeyValueConfigurationCollection config)
         {
             if (config["OPCUAIsCheck"] != null)
             {
-                bIsCheck = StringHelper.StrTobool(config["OPCUAIsCheck"].Value);
+                bIsCheck = DgiotHelper.StrTobool(config["OPCUAIsCheck"].Value);
             }
-
-            OPCUAHelper.mainform = mainform;
         }
 
         private static async Task ConnectAsync()

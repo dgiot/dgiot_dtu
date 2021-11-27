@@ -1,12 +1,16 @@
-﻿// <copyright file="StringHelper.cs" company="PlaceholderCompany">
+﻿// <copyright file="DgiotHelper.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
 namespace Dgiot_dtu
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Management;
+    using System.Security.Cryptography;
     using System.Text;
 
-    public class StringHelper
+    public class DgiotHelper
     {
         public static string ToHexString(string s)
         {
@@ -92,6 +96,59 @@ namespace Dgiot_dtu
             {
                 return "false";
             }
+        }
+
+        /// <summary>
+        /// 通过WMI读取系统信息里的网卡MAC
+        /// </summary>
+        /// <returns> list </returns>
+        public static List<string> GetMacByWmi()
+        {
+            try
+            {
+                List<string> macs = new List<string>();
+                ManagementClass mc = new ManagementClass("Win32_NetworkAdapterConfiguration");
+                ManagementObjectCollection moc = mc.GetInstances();
+                foreach (ManagementObject mo in moc)
+                {
+                    if ((bool)mo["IPEnabled"])
+                    {
+                        var mac = mo["MacAddress"].ToString();
+                        macs.Add(mac);
+                    }
+                }
+
+                return macs;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        public static string Md5(string str)
+        {
+            try
+            {
+                MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
+                byte[] bytValue, bytHash;
+                bytValue = System.Text.Encoding.UTF8.GetBytes(str);
+                bytHash = md5.ComputeHash(bytValue);
+                md5.Clear();
+                string sTemp = "";
+                for (int i = 0; i < bytHash.Length; i++)
+                {
+                    sTemp += bytHash[i].ToString("X").PadLeft(2, '0');
+                }
+
+                str = sTemp.ToLower();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+            return str;
         }
     }
 }

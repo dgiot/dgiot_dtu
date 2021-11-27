@@ -47,7 +47,6 @@ namespace Dgiot_dtu
              @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source='" + dbq + ";" +
                "Persist Security Info = False; Jet OLEDB:Database Password = " + pwd + ";";
 
-        private static MainForm mainform = null;
         private static bool bIsRunning = false;
         private static bool bIsCheck = false;
 
@@ -61,9 +60,9 @@ namespace Dgiot_dtu
             return instance;
         }
 
-        public static void Start(KeyValueConfigurationCollection config, bool bIsRunning, MainForm mainform)
+        public static void Start(KeyValueConfigurationCollection config, bool bIsRunning)
         {
-            Config(config, mainform);
+            Config(config);
             AccessHelper.bIsRunning = bIsRunning;
         }
 
@@ -72,23 +71,20 @@ namespace Dgiot_dtu
             AccessHelper.bIsRunning = false;
         }
 
-        public static void Config(KeyValueConfigurationCollection config, MainForm mainform)
+        public static void Config(KeyValueConfigurationCollection config)
         {
             if (config["AccessIsCheck"] != null)
             {
-                AccessHelper.bIsCheck = StringHelper.StrTobool(config["AccessIsCheck"].Value);
+               bIsCheck = DgiotHelper.StrTobool(config["AccessIsCheck"].Value);
             }
-
-            AccessHelper.mainform = mainform;
         }
 
-        public static void Check(bool isCheck, MainForm mainform)
+        public static void Check(bool isCheck)
         {
-            AccessHelper.bIsCheck = isCheck;
-            AccessHelper.mainform = mainform;
+            bIsCheck = isCheck;
         }
 
-        public static void Do_mdb(MqttClient mqttClient, string topic, Dictionary<string, object> json, string clientid, MainForm mainform)
+        public static void Do_mdb(MqttClient mqttClient, string topic, Dictionary<string, object> json, string clientid)
         {
             Regex r_submdb = new Regex(topic); // 定义一个Regex对象实例
             Match m_submdb = r_submdb.Match(topic); // 在字符串中匹配
@@ -219,7 +215,7 @@ namespace Dgiot_dtu
                 var jsonResults = DataSetToJson(dataSet);
                 var appMsg = new MqttApplicationMessage(scantopic, Encoding.UTF8.GetBytes(jsonResults.ToString()), MqttQualityOfServiceLevel.AtLeastOnce, false);
                 mqttClient.PublishAsync(appMsg);
-                Console.WriteLine(jsonResults);
+                LogHelper.Log(jsonResults);
             }
         }
 

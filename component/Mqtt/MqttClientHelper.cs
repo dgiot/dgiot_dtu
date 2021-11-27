@@ -40,7 +40,6 @@ namespace Dgiot_dtu
         private static string username = "dgiot";
         private static string password = "dgiot";
         private static MqttClientHelper instance = null;
-        private static MainForm mainform = null;
         private static bool bIsRunning = false;
         private static bool bIsCheck = false;
         private static bool bAutoReconnect = false;
@@ -55,9 +54,9 @@ namespace Dgiot_dtu
             return instance;
         }
 
-        public static void Start(KeyValueConfigurationCollection config, bool bAutoReconnect, MainForm mainform)
+        public static void Start(KeyValueConfigurationCollection config, bool bAutoReconnect)
         {
-            Config(config, mainform);
+            Config(config);
             bIsRunning = true;
             MqttClientHelper.bAutoReconnect = bAutoReconnect;
             if (bIsCheck)
@@ -76,7 +75,7 @@ namespace Dgiot_dtu
             }
         }
 
-        public static void Config(KeyValueConfigurationCollection config, MainForm mainform)
+        public static void Config(KeyValueConfigurationCollection config)
         {
             if (config["mqttServer"] != null)
             {
@@ -125,7 +124,7 @@ namespace Dgiot_dtu
 
             if (config["mqttIsCheck"] != null)
             {
-                bIsCheck = StringHelper.StrTobool(config["mqttIsCheck"].Value);
+                bIsCheck = DgiotHelper.StrTobool(config["mqttIsCheck"].Value);
             }
 
             if (config["PLCTopic"] != null)
@@ -162,8 +161,6 @@ namespace Dgiot_dtu
             {
                 sqlservertopic = config["SqlServerTopic"].Value;
             }
-
-            MqttClientHelper.mainform = mainform;
         }
 
         public void Publish(byte[] payload)
@@ -223,7 +220,7 @@ namespace Dgiot_dtu
             }
             catch (Exception ex)
             {
-                mainform.Log(ex.ToString());
+                LogHelper.Log(ex.ToString());
             }
         }
 
@@ -235,7 +232,7 @@ namespace Dgiot_dtu
             }
             catch (Exception ex)
             {
-                mainform.Log(ex.ToString());
+                LogHelper.Log(ex.ToString());
             }
         }
 
@@ -246,7 +243,7 @@ namespace Dgiot_dtu
         /// <param name="e"></param>
         private static void MqttClient_Connected(object sender, EventArgs e)
         {
-            mainform.Log("mqtt client:" + clientid + " connected");
+            LogHelper.Log("mqtt client:" + clientid + " connected");
             mqttClient.SubscribeAsync(new TopicFilter(plctopic + "/#",  MqttQualityOfServiceLevel.AtLeastOnce));
             mqttClient.SubscribeAsync(new TopicFilter(opcdatopic + "/#",   MqttQualityOfServiceLevel.AtLeastOnce));
             mqttClient.SubscribeAsync(new TopicFilter(opcuatopic + "/#", MqttQualityOfServiceLevel.AtLeastOnce));
@@ -254,14 +251,14 @@ namespace Dgiot_dtu
             mqttClient.SubscribeAsync(new TopicFilter(controltopic + "/#", MqttQualityOfServiceLevel.AtLeastOnce));
             mqttClient.SubscribeAsync(new TopicFilter(accesstopic + "/#", MqttQualityOfServiceLevel.AtLeastOnce));
             mqttClient.SubscribeAsync(new TopicFilter(sqlservertopic + "/#", MqttQualityOfServiceLevel.AtLeastOnce));
-            mainform.Log("mqtt client subscribe topic: " + plctopic + "/#");
-            mainform.Log("mqtt client subscribe topic: " + opcdatopic + "/#" );
-            mainform.Log("mqtt client subscribe topic: " + opcuatopic + "/#");
-            mainform.Log("mqtt client subscribe topic: " + bacnettopic + "/#");
-            mainform.Log("mqtt client subscribe topic: " + controltopic + "/#" );
-            mainform.Log("mqtt client subscribe topic: " + accesstopic + "/#" );
-            mainform.Log("mqtt client subscribe topic: " + sqlservertopic + "/#" );
-            mainform.Log("mqtt client subscribe topic: " + subtopic + "/#" );
+            LogHelper.Log("mqtt client subscribe topic: " + plctopic + "/#");
+            LogHelper.Log("mqtt client subscribe topic: " + opcdatopic + "/#" );
+            LogHelper.Log("mqtt client subscribe topic: " + opcuatopic + "/#");
+            LogHelper.Log("mqtt client subscribe topic: " + bacnettopic + "/#");
+            LogHelper.Log("mqtt client subscribe topic: " + controltopic + "/#" );
+            LogHelper.Log("mqtt client subscribe topic: " + accesstopic + "/#" );
+            LogHelper.Log("mqtt client subscribe topic: " + sqlservertopic + "/#" );
+            LogHelper.Log("mqtt client subscribe topic: " + subtopic + "/#" );
         }
 
         /// <summary>
@@ -277,7 +274,7 @@ namespace Dgiot_dtu
             }
             else
             {
-                mainform.Log("mqtt:" + clientid + " disconnected");
+                LogHelper.Log("mqtt:" + clientid + " disconnected");
             }
         }
 
@@ -291,7 +288,7 @@ namespace Dgiot_dtu
             Dictionary<string, object> json = Get_payload(e.ApplicationMessage.Payload);
             string topic = e.ApplicationMessage.Topic;
             string data = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
-            mainform.Log("mqtt recv:topic: " + e.ApplicationMessage.Topic.ToString() + " payload: " + data);
+            LogHelper.Log("mqtt recv:topic: " + e.ApplicationMessage.Topic.ToString() + " payload: " + data);
 
             Regex r_subtopic = new Regex(subtopic); // 定义一个Regex对象实例
             Match m_subtopic = r_subtopic.Match(e.ApplicationMessage.Topic); // 在字符串中匹配
@@ -300,9 +297,9 @@ namespace Dgiot_dtu
                 SerialPortHelper.Write(e.ApplicationMessage.Payload, 0, e.ApplicationMessage.Payload.Length);
             }
 
-            OPCDAHelper.Do_opc_da(mqttClient, topic, json, clientid, mainform);
+            OPCDAHelper.Do_opc_da(mqttClient, topic, json, clientid);
 
-            AccessHelper.Do_mdb(mqttClient, topic,  json, clientid, mainform);
+            AccessHelper.Do_mdb(mqttClient, topic,  json, clientid);
 
             MqttServerHelper.Write(e.ApplicationMessage);
         }
@@ -311,8 +308,8 @@ namespace Dgiot_dtu
         {
             if (bIsCheck)
             {
-                var appMsg = new MqttApplicationMessage(pubtopic + clientid, Encoding.UTF8.GetBytes(mainform.Logdata(data, offset, len)), MqttQualityOfServiceLevel.AtLeastOnce, false);
-                mainform.Log("mqtt client publish:" + mainform.Logdata(data, offset, len));
+                var appMsg = new MqttApplicationMessage(pubtopic + clientid, Encoding.UTF8.GetBytes(LogHelper.Logdata(data, offset, len)), MqttQualityOfServiceLevel.AtLeastOnce, false);
+                LogHelper.Log("mqtt client publish:" + LogHelper.Logdata(data, offset, len));
                 mqttClient.PublishAsync(appMsg);
            }
         }

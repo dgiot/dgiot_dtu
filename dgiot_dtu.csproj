@@ -241,12 +241,13 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="utils\DgiotHelper.cs" />
     <Compile Include="utils\JsonArray.cs" />
     <Compile Include="utils\JsonObject.cs" />
+    <Compile Include="utils\LogHelper.cs" />
     <Compile Include="utils\PocoJsonSerializerStrategy.cs" />
     <Compile Include="utils\ReflectionUtils.cs" />
     <Compile Include="utils\SimpleJson.cs" />
-    <Compile Include="utils\StringHelper.cs" />
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>

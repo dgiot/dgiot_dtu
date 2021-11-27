@@ -13,7 +13,6 @@ namespace Dgiot_dtu
         }
 
         private static PLCHelper instance;
-        private static MainForm mainform = null;
         private static bool bIsRunning = false;
         private static bool bIsCheck = false;
 
@@ -27,10 +26,9 @@ namespace Dgiot_dtu
             return instance;
         }
 
-        public static void Start(bool bIsRunning, MainForm mainform)
+        public static void Start(bool bIsRunning)
         {
             PLCHelper.bIsRunning = bIsRunning;
-            PLCHelper.mainform = mainform;
         }
 
         public static void Stop()
@@ -38,20 +36,17 @@ namespace Dgiot_dtu
             PLCHelper.bIsRunning = false;
         }
 
-        public static void Config(KeyValueConfigurationCollection config, MainForm mainform)
+        public static void Config(KeyValueConfigurationCollection config)
         {
             if (config["PLCIsCheck"] != null)
             {
-                PLCHelper.bIsCheck = StringHelper.StrTobool(config["PLCIsCheck"].Value);
+                bIsCheck = DgiotHelper.StrTobool(config["PLCIsCheck"].Value);
             }
-
-            PLCHelper.mainform = mainform;
         }
 
-        public static void Check(bool isCheck, MainForm mainform)
+        public static void Check(bool isCheck)
         {
-            PLCHelper.bIsCheck = isCheck;
-            PLCHelper.mainform = mainform;
+            bIsCheck = isCheck;
         }
     }
 }

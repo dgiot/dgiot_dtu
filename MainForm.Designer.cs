@@ -121,6 +121,8 @@
             this.textBoxPLCTopic = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.comboBoxLogLevel = new System.Windows.Forms.ComboBox();
+            this.label32 = new System.Windows.Forms.Label();
             this.groupBoxSerialPort.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -137,7 +139,7 @@
             // 
             // buttonStartStop
             // 
-            this.buttonStartStop.Location = new System.Drawing.Point(764, 800);
+            this.buttonStartStop.Location = new System.Drawing.Point(915, 800);
             this.buttonStartStop.Margin = new System.Windows.Forms.Padding(4);
             this.buttonStartStop.Name = "buttonStartStop";
             this.buttonStartStop.Size = new System.Drawing.Size(80, 32);
@@ -161,7 +163,7 @@
             // 
             this.linkLabel1.AutoSize = true;
             this.linkLabel1.LinkColor = System.Drawing.Color.Silver;
-            this.linkLabel1.Location = new System.Drawing.Point(1108, 796);
+            this.linkLabel1.Location = new System.Drawing.Point(1343, 810);
             this.linkLabel1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.linkLabel1.Name = "linkLabel1";
             this.linkLabel1.Size = new System.Drawing.Size(89, 18);
@@ -173,7 +175,7 @@
             // checkBoxReconnect
             // 
             this.checkBoxReconnect.AutoSize = true;
-            this.checkBoxReconnect.Location = new System.Drawing.Point(849, 806);
+            this.checkBoxReconnect.Location = new System.Drawing.Point(1003, 807);
             this.checkBoxReconnect.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxReconnect.Name = "checkBoxReconnect";
             this.checkBoxReconnect.Size = new System.Drawing.Size(160, 22);
@@ -196,7 +198,7 @@
             // 
             // buttonClear
             // 
-            this.buttonClear.Location = new System.Drawing.Point(682, 800);
+            this.buttonClear.Location = new System.Drawing.Point(835, 800);
             this.buttonClear.Margin = new System.Windows.Forms.Padding(4);
             this.buttonClear.Name = "buttonClear";
             this.buttonClear.Size = new System.Drawing.Size(72, 32);
@@ -452,7 +454,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.ForeColor = System.Drawing.Color.Silver;
-            this.label3.Location = new System.Drawing.Point(1035, 798);
+            this.label3.Location = new System.Drawing.Point(1260, 814);
             this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(71, 18);
@@ -463,7 +465,7 @@
             // 
             this.linkLabel2.AutoSize = true;
             this.linkLabel2.LinkColor = System.Drawing.Color.Silver;
-            this.linkLabel2.Location = new System.Drawing.Point(1256, 798);
+            this.linkLabel2.Location = new System.Drawing.Point(1445, 810);
             this.linkLabel2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.linkLabel2.Name = "linkLabel2";
             this.linkLabel2.Size = new System.Drawing.Size(62, 18);
@@ -474,10 +476,10 @@
             // 
             // textToPayload
             // 
-            this.textToPayload.Location = new System.Drawing.Point(266, 798);
+            this.textToPayload.Location = new System.Drawing.Point(266, 799);
             this.textToPayload.Margin = new System.Windows.Forms.Padding(4);
             this.textToPayload.Name = "textToPayload";
-            this.textToPayload.Size = new System.Drawing.Size(326, 28);
+            this.textToPayload.Size = new System.Drawing.Size(316, 28);
             this.textToPayload.TabIndex = 14;
             this.textToPayload.Text = "12345678";
             this.textToPayload.TextChanged += new System.EventHandler(this.TextToPayload_TextChanged);
@@ -544,7 +546,7 @@
             // 
             // sendBridge
             // 
-            this.sendBridge.Location = new System.Drawing.Point(603, 800);
+            this.sendBridge.Location = new System.Drawing.Point(757, 800);
             this.sendBridge.Margin = new System.Windows.Forms.Padding(4);
             this.sendBridge.Name = "sendBridge";
             this.sendBridge.Size = new System.Drawing.Size(70, 32);
@@ -799,7 +801,6 @@
             this.textBoxOpcServer.Location = new System.Drawing.Point(75, 27);
             this.textBoxOpcServer.Margin = new System.Windows.Forms.Padding(4);
             this.textBoxOpcServer.Name = "textBoxOpcServer";
-            this.textBoxOpcServer.ReadOnly = true;
             this.textBoxOpcServer.Size = new System.Drawing.Size(227, 28);
             this.textBoxOpcServer.TabIndex = 8;
             this.textBoxOpcServer.Text = "127.0.0.1";
@@ -1192,10 +1193,30 @@
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
             this.pictureBox1.Location = new System.Drawing.Point(1346, 32);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(148, 782);
+            this.pictureBox1.Size = new System.Drawing.Size(148, 768);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 35;
             this.pictureBox1.TabStop = false;
+            // 
+            // comboBoxLogLevel
+            // 
+            this.comboBoxLogLevel.FormattingEnabled = true;
+            this.comboBoxLogLevel.Location = new System.Drawing.Point(650, 801);
+            this.comboBoxLogLevel.Margin = new System.Windows.Forms.Padding(4);
+            this.comboBoxLogLevel.Name = "comboBoxLogLevel";
+            this.comboBoxLogLevel.Size = new System.Drawing.Size(99, 26);
+            this.comboBoxLogLevel.TabIndex = 36;
+            this.comboBoxLogLevel.SelectedIndexChanged += new System.EventHandler(this.ComboBoxLogLevel_SelectedIndexChanged);
+            // 
+            // label32
+            // 
+            this.label32.AutoSize = true;
+            this.label32.Location = new System.Drawing.Point(589, 805);
+            this.label32.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label32.Name = "label32";
+            this.label32.Size = new System.Drawing.Size(53, 18);
+            this.label32.TabIndex = 37;
+            this.label32.Text = "Level";
             // 
             // MainForm
             // 
@@ -1203,6 +1224,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(143)))), ((int)(((byte)(178)))));
             this.ClientSize = new System.Drawing.Size(1869, 839);
+            this.Controls.Add(this.label32);
+            this.Controls.Add(this.comboBoxLogLevel);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.groupBox12);
             this.Controls.Add(this.radioButtonUDPClient);
@@ -1308,7 +1331,6 @@
         private System.Windows.Forms.TextBox textBoxMqttClientId;
         private System.Windows.Forms.TextBox textBoxMqttPort;
         private System.Windows.Forms.Label label21;
-        private System.Windows.Forms.TextBox textBoxMqttSever;
         private System.Windows.Forms.Label label22;
         private System.Windows.Forms.CheckBox checkBoxTcpServer;
         private System.Windows.Forms.GroupBox groupBox4;
@@ -1359,6 +1381,9 @@
         private System.Windows.Forms.TextBox textBoxOpcServer;
         private System.Windows.Forms.Label label31;
         private System.Windows.Forms.ComboBox comboBoxOpcServer;
+        private System.Windows.Forms.TextBox textBoxMqttSever;
+        private System.Windows.Forms.ComboBox comboBoxLogLevel;
+        private System.Windows.Forms.Label label32;
     }
 }
 

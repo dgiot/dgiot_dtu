@@ -25,7 +25,6 @@ namespace Dgiot_dtu
         private static int scanBatchStep = 5;
         private static byte invokeId = 0x00;
 
-        private static MainForm mainform = null;
         private static bool bIsRun = V;
         private static bool bIsCheck = false;
 
@@ -39,9 +38,9 @@ namespace Dgiot_dtu
             return instance;
         }
 
-        public static void Start(KeyValueConfigurationCollection config, MainForm mainform)
+        public static void Start(KeyValueConfigurationCollection config)
         {
-            Config(config, mainform);
+            Config(config);
             bIsRun = true;
             if (bIsCheck)
             {
@@ -61,7 +60,7 @@ namespace Dgiot_dtu
                 bacnetClient.OnIam += Handler_OnIam;
                 bacnetClient.Start();
                 bacnetClient.WhoIs();
-                mainform.Log("bacnetClient start IpUdpProtocol 0xBAC0: " + bacnetClient.ToString());
+                LogHelper.Log("bacnetClient start IpUdpProtocol 0xBAC0: " + bacnetClient.ToString());
             }
         }
 
@@ -74,25 +73,23 @@ namespace Dgiot_dtu
             }
         }
 
-        public static void Config(KeyValueConfigurationCollection config, MainForm mainform)
+        public static void Config(KeyValueConfigurationCollection config)
         {
             if (config["BACnetIsCheck"] != null)
             {
-                bIsCheck = StringHelper.StrTobool(config["BACnetIsCheck"].Value);
+                bIsCheck = DgiotHelper.StrTobool(config["BACnetIsCheck"].Value);
             }
-
-            BACnetHelper.mainform = mainform;
         }
 
         public static void Write(byte[] data, int offset, int len)
         {
-            mainform.Log("bacnet write: " + bIsCheck.ToString());
+            LogHelper.Log("bacnet write: " + bIsCheck.ToString());
             if (bIsCheck)
             {
                 foreach (var device in devicesList)
                 {
                     var count = GetDeviceArrayIndexCount(device);
-                    mainform.Log("bacnet write: " + device.ToString() + " count: " + count.ToString());
+                    LogHelper.Log("bacnet write: " + device.ToString() + " count: " + count.ToString());
                     ScanPointsBatch(device, count);
                 }
 
@@ -109,7 +106,7 @@ namespace Dgiot_dtu
                 foreach (var device in devicesList)
                 {
                     System.IO.File.WriteAllText($"{device.DeviceId}pppp.json", Newtonsoft.Json.JsonConvert.SerializeObject(device));
-                    mainform.Log("bacnet device: " + Newtonsoft.Json.JsonConvert.SerializeObject(device).ToString());
+                    LogHelper.Log("bacnet device: " + Newtonsoft.Json.JsonConvert.SerializeObject(device).ToString());
                 }
             }
         }
@@ -259,7 +256,7 @@ namespace Dgiot_dtu
                     foreach (var bValue in list)
                     {
                         var strBValue = "" + bValue.Value;
-                        mainform.Log(pid + " , " + strBValue + " , " + bValue.Tag);
+                        LogHelper.Log(pid + " , " + strBValue + " , " + bValue.Tag);
                         var strs = strBValue.Split(':');
                         if (strs.Length < 2)
                         {
@@ -277,7 +274,7 @@ namespace Dgiot_dtu
                 }
                 catch (Exception exp)
                 {
-                    mainform.Log("Error: " + index + " , " + exp.Message);
+                    LogHelper.Log("Error: " + index + " , " + exp.Message);
                 }
             }
         }
@@ -381,7 +378,7 @@ namespace Dgiot_dtu
                 }
 
                 devicesList.Insert(index, new BacDevice(adr, deviceId));
-                mainform.Log(@"Detect Device: " + deviceId);
+                LogHelper.Log(@"Detect Device: " + deviceId);
             }
         }
 

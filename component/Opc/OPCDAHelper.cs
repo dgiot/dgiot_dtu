@@ -13,9 +13,7 @@ namespace Dgiot_dtu
     using System.Text;
     using System.Text.RegularExpressions;
     using Da;
-    using MQTTnet.Core;
     using MQTTnet.Core.Client;
-    using MQTTnet.Core.Protocol;
     using TitaniumAS.Opc.Client.Common;
     using TitaniumAS.Opc.Client.Da;
     using TitaniumAS.Opc.Client.Da.Browsing;
@@ -24,15 +22,37 @@ namespace Dgiot_dtu
     {
         private const bool V = false;
         private static string topic = "thing/opcda/";
-        private static string opcserver = "127.0.0.1";
+        private static string opcip = "127.0.0.1";
         private static List<string> serverlist = new List<string> { };
-        private static MainForm mainform = null;
         private static OPCDAHelper instance = null;
         private static string clientid = string.Empty;
         private static bool bIsRun = V;
         private static bool bIsCheck = false;
         private static SocketService socketserver = new SocketService();
         private static List<TreeNode> dataList = null;
+        private static List<string> filter = new List<string>
+        {
+            "_AdvancedTags",
+            "_ConnectionSharing",
+            "_CustomAlarms",
+            "_DataLogger",
+            "_EFMExporter",
+            "_IDF_for_Splunk",
+            "_IoT_Gateway",
+            "_LocalHistorian",
+            "_Redundancy",
+            "_Scheduler",
+            "_SecurityPolicies",
+            "_SNMP Agent",
+            "_System",
+            "_ThingWorx"
+        };
+
+        private static List<string> groupfilter = new List<string>
+        {
+            "._Statistics",
+            "._System"
+        };
 
         public static OPCDAHelper GetInstance()
         {
@@ -44,9 +64,9 @@ namespace Dgiot_dtu
          return instance;
         }
 
-        public static void Start(KeyValueConfigurationCollection config, MainForm mainform)
+        public static void Start(KeyValueConfigurationCollection config)
         {
-            Config(config, mainform);
+            Config(config);
             socketserver.Start();
             bIsRun = true;
         }
@@ -57,11 +77,11 @@ namespace Dgiot_dtu
             bIsRun = false;
         }
 
-        public static void Config(KeyValueConfigurationCollection config, MainForm mainform)
+        public static void Config(KeyValueConfigurationCollection config)
         {
             if (config["OPCDAIsCheck"] != null)
             {
-                bIsCheck = StringHelper.StrTobool(config["OPCDAIsCheck"].Value);
+                bIsCheck = DgiotHelper.StrTobool(config["OPCDAIsCheck"].Value);
             }
 
             if (config["OPCDATopic"] != null)
@@ -71,13 +91,11 @@ namespace Dgiot_dtu
 
             if (config["OpcServer"] != null)
             {
-                opcserver = config["OpcServer"].Value;
+                opcip = config["OpcServer"].Value;
             }
-
-            OPCDAHelper.mainform = mainform;
         }
 
-        public static void Do_opc_da(MqttClient mqttClient, string topic, Dictionary<string, object> json, string clientid, MainForm mainform)
+        public static void Do_opc_da(MqttClient mqttClient, string topic, Dictionary<string, object> json, string clientid)
         {
             Regex r_subopcda = new Regex(OPCDAHelper.topic); // 定义一个Regex对象实例
             Match m_subopcda = r_subopcda.Match(topic); // 在字符串中匹配
@@ -87,9 +105,7 @@ namespace Dgiot_dtu
                 return;
             }
 
-            mainform.Log(topic);
-
-            OPCDAHelper.mainform = mainform;
+            LogHelper.Log(topic);
             OPCDAHelper.clientid = clientid;
             string cmdType = "read";
             if (json.ContainsKey("cmdtype"))
@@ -100,7 +116,6 @@ namespace Dgiot_dtu
                     switch (cmdType)
                     {
                         case "scan":
-                            Scan_opc_da(json);
                             break;
                         case "read":
                             Read_opc_da(json);
@@ -114,14 +129,14 @@ namespace Dgiot_dtu
                 }
                 catch (Exception ex)
                 {
-                    mainform.Log(ex.ToString());
+                    LogHelper.Log(ex.ToString());
                 }
             }
         }
 
         public static List<string> GetServer()
         {
-            List<string> addresses = new List<string> { opcserver };
+            List<string> addresses = new List<string> { opcip };
             dataList = socketserver.ScanOPCClassicServer(addresses);
             serverlist.Clear();
             foreach (TreeNode node in dataList)
@@ -131,12 +146,38 @@ namespace Dgiot_dtu
                     foreach (TreeNode childnode in node.Children)
                     {
                         serverlist.Add(childnode.Name);
-                        Recursion(childnode);
                     }
                 }
             }
 
             return serverlist;
+        }
+
+        public static void Scan()
+        {
+            foreach (string opcserver in serverlist)
+            {
+                Uri url = UrlBuilder.Build(opcserver);
+                try
+                {
+                    using (var server = new OpcDaServer(url))
+                    {
+                        // Connect to the server first.
+                        server.Connect();
+                        var browser = new OpcDaBrowserAuto(server);
+                        JsonObject scan = new JsonObject();
+                        BrowseChildren(opcserver, scan, browser);
+                        MqttClientHelper.Publish(topic + "/metadata/derived", Encoding.UTF8.GetBytes(scan.ToString()));
+                    }
+                }
+                catch (Exception)
+                {
+                }
+            }
+        }
+
+        public static void Write()
+        {
         }
 
         private static void Recursion(TreeNode childNode)
@@ -151,76 +192,129 @@ namespace Dgiot_dtu
             }
         }
 
-        private static void Scan_opc_da(Dictionary<string, object> json)
-        {
-            // string opcserver = "Matrikon.OPC.Simulation.1";
-            string opcserver = "Kepware.KEPServerEX.V6";
-
-            IList<OpcDaItemDefinition> itemlist = new List<OpcDaItemDefinition>();
-            if (json.ContainsKey("opcserver"))
-            {
-                try
-                {
-                    opcserver = (string)json["opcserver"];
-                }
-                catch (Exception ex)
-                {
-                    mainform.Log(ex.ToString());
-                }
-            }
-
-            Uri url = UrlBuilder.Build(opcserver);
-            try
-            {
-                using (var server = new OpcDaServer(url))
-                {
-                    // Connect to the server first.
-                    server.Connect();
-                    var browser = new OpcDaBrowserAuto(server);
-                    JsonObject scan = new JsonObject();
-                    BrowseChildren(scan, browser);
-                    MqttClientHelper.Publish(topic + "/metadata/derived", Encoding.UTF8.GetBytes(scan.ToString()));
-                }
-            }
-            catch (Exception ex)
-            {
-                mainform.Log("error  " + ex.GetBaseException().ToString());
-                JsonObject result = new JsonObject();
-                result.Add("TimeStamp", FromDateTime(DateTime.UtcNow));
-                result.Add("opcserver", opcserver);
-                result.Add("status", ex.GetHashCode());
-                result.Add("err", ex.ToString());
-                MqttClientHelper.Publish(topic + "/event/scanfailed", Encoding.UTF8.GetBytes(result.ToString()));
-            }
-        }
-
-        private static void BrowseChildren(JsonObject json, IOpcDaBrowser browser, string itemId = null, int indent = 0)
+        private static void BrowseChildren(string opcserver, JsonObject json, IOpcDaBrowser browser, string itemId = null, int indent = 0)
         {
             // When itemId is null, root elements will be browsed.
             OpcDaBrowseElement[] elements = browser.GetElements(itemId);
-            JsonArray array = new JsonArray();
+            List<string> array = new List<string> { };
+            JsonObject items = new JsonObject();
             bool flag = false;
             foreach (OpcDaBrowseElement element in elements)
             {
-                // Skip elements without children.
-               if (!element.HasChildren)
+                if (IsPass(indent, element.ItemId.ToString()))
                 {
-                    array.Add(element);
+                    continue;
+                }
+
+                // Skip elements without children.
+                if (!element.HasChildren)
+                {
+                    items.Add(element.ItemId.ToString(), element.Name.ToString());
+                    array.Add(element.ItemId.ToString());
                     flag = true;
                     continue;
                 }
 
                 // Output children of the element.
-                BrowseChildren(json, browser, element.ItemId, indent + 2);
+                BrowseChildren(opcserver, json, browser, element.ItemId, indent + 2);
             }
 
             if (flag)
             {
                 if (itemId != null)
                 {
-                    json.Add(itemId, array);
+                    JsonObject thing = GetItems(opcserver, itemId, array, items);
+                    JsonObject payload = new JsonObject();
+                    payload.Add("thing", thing);
+                    payload.Add("opcserver", opcserver);
+                    payload.Add("group", itemId);
+                    MqttClientHelper.Publish(topic + "/metadata/derived", Encoding.UTF8.GetBytes(payload.ToString()));
+                    LogHelper.Log("Scan OPCDA payload: " + payload.ToString());
+                    json.Add(itemId, thing);
                 }
             }
+        }
+
+        private static JsonObject GetItems(string opcserver, string group_name, List<string> array, JsonObject jsonItems)
+        {
+            JsonObject json = new JsonObject();
+            Uri url = UrlBuilder.Build(opcserver);
+            try
+            {
+                using (var server = new OpcDaServer(url))
+                {
+                    server.Connect();
+                    OpcDaGroup group = server.AddGroup(group_name);
+                    IList<OpcDaItemDefinition> definitions = new List<OpcDaItemDefinition>();
+                    int i = 0;
+                    foreach (string id in array)
+                    {
+                        var definition = new OpcDaItemDefinition
+                        {
+                            ItemId = id,
+                            IsActive = true
+                        };
+                        definitions.Insert(i++, definition);
+                    }
+
+                    group.IsActive = true;
+                    OpcDaItemResult[] results = group.AddItems(definitions);
+                    OpcDaItemValue[] values = group.Read(group.Items, OpcDaDataSource.Device);
+                    foreach (OpcDaItemValue item in values)
+                    {
+                        JsonObject tmp = new JsonObject();
+                        tmp.Add("Type", item.Value.GetType().ToString());
+                        tmp.Add("ItemId", item.Item.ItemId.ToString());
+                        if (jsonItems.ContainsKey(item.Item.ItemId.ToString()))
+                        {
+                            json.Add(jsonItems[item.Item.ItemId.ToString()].ToString(), tmp);
+                        }
+                    }
+
+                    server.Disconnect();
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Log(ex.GetBaseException().ToString());
+            }
+
+            return json;
+        }
+
+        private static Boolean IsGroupfilter(string item)
+        {
+            Boolean result = false;
+            foreach (string filter in groupfilter)
+            {
+                // mainform.Log("item  " + item + " filter " + filter + " " + item.LastIndexOf(filter));
+                 if (-1 != item.LastIndexOf(filter))
+                 {
+                    return true;
+                }
+            }
+
+            return result;
+        }
+
+        private static Boolean IsPass(int indent, string item)
+        {
+            if (indent == 0)
+            {
+                return filter.IndexOf(item) != -1;
+            }
+
+            if (indent == 2)
+            {
+                return IsGroupfilter(item);
+            }
+
+            if (indent == 4)
+            {
+                return IsGroupfilter(item);
+            }
+
+            return true;
         }
 
         private static void Read_opc_da(Dictionary<string, object> json)
@@ -236,7 +330,7 @@ namespace Dgiot_dtu
                 }
                 catch (Exception ex)
                 {
-                    mainform.Log(ex.ToString());
+                    LogHelper.Log(ex.ToString());
                 }
             }
 
@@ -248,7 +342,7 @@ namespace Dgiot_dtu
                 }
                 catch (Exception ex)
                 {
-                    mainform.Log(ex.ToString());
+                    LogHelper.Log(ex.ToString());
                 }
             }
 
@@ -265,60 +359,18 @@ namespace Dgiot_dtu
                         Read_group(opcserver, group, arry, data);
                         result.Add("status", 0);
                         result.Add(group, data);
-                        mainform.Log("result " + result.ToString());
+                        LogHelper.Log("result " + result.ToString());
                         MqttClientHelper.Publish(topic + "/properties/read/reply", Encoding.UTF8.GetBytes(result.ToString()));
                     }
                     catch (Exception ex)
                     {
-                        mainform.Log(ex.ToString());
+                        LogHelper.Log(ex.ToString());
                     }
                 }
                 catch (Exception ex)
                 {
-                    mainform.Log(ex.ToString());
+                    LogHelper.Log(ex.ToString());
                 }
-            }
-        }
-
-        private static void Read(string opcserver, string group_name, string[] arry, JsonObject items)
-        {
-            Uri url = UrlBuilder.Build(opcserver);
-            try
-            {
-                using (var server = new OpcDaServer(url))
-                {
-                    // Connect to the server first.
-                    foreach (string id in arry)
-                    {
-                        server.Connect();
-                        OpcDaGroup group = server.AddGroup(group_name);
-                        var definition = new OpcDaItemDefinition
-                        {
-                            ItemId = id,
-                            IsActive = true
-                        };
-                        group.IsActive = true;
-                        OpcDaItemDefinition[] definitions = { definition };
-                        OpcDaItemResult[] results = group.AddItems(definitions);
-                        OpcDaItemValue[] values = group.Read(group.Items, OpcDaDataSource.Device);
-                        foreach (OpcDaItemValue item in values)
-                        {
-                            mainform.Log(topic + "/properties/read/reply" + " " + id.ToString() + " " + item.GetHashCode().ToString() + " " + item.Value.ToString() + " " + item.Timestamp.ToString());
-                            items.Add(id, item.Value);
-                        }
-
-                        server.Disconnect();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                mainform.Log(ex.GetBaseException().ToString());
-                JsonObject result = new JsonObject();
-                result.Add("opcserver", opcserver);
-                result.Add("status", ex.GetHashCode());
-                result.Add("err", ex.ToString());
-                MqttClientHelper.Publish(topic + "/event/readfailed", Encoding.UTF8.GetBytes(items.ToString()));
             }
         }
 
@@ -354,21 +406,20 @@ namespace Dgiot_dtu
                     JsonObject data = new JsonObject();
                     foreach (OpcDaItemValue item in values)
                     {
-                        mainform.Log(topic + "/properties/read/reply" + " " + item.GetHashCode().ToString() + " " + item.Value.ToString() + string.Empty + item.Timestamp.ToString());
+                        LogHelper.Log(topic + "/properties/read/reply" + " " + item.GetHashCode().ToString() + " " + item.Value.ToString() + string.Empty + item.Timestamp.ToString());
                         data.Add(item.Item.ItemId, item.Value);
                     }
 
                     items.Add("status", 0);
                     items.Add(group_name, data);
-                    mainform.Log(items.ToString());
+                    LogHelper.Log(items.ToString());
                     MqttClientHelper.Publish(topic + "/properties/read/reply", Encoding.UTF8.GetBytes(items.ToString()));
                     server.Disconnect();
                 }
             }
             catch (Exception ex)
             {
-                mainform.Log(ex.ToString());
-                Read(opcserver, group_name, arry, items);
+                LogHelper.Log(ex.ToString());
             }
         }
 
@@ -402,7 +453,7 @@ namespace Dgiot_dtu
             }
             catch (Exception ex)
             {
-                mainform.Log(ex.GetBaseException().ToString());
+                LogHelper.Log(ex.GetBaseException().ToString());
                 JsonObject result = new JsonObject();
                 result.Add("opcserver", opcserver);
                 result.Add("name", name);
@@ -417,7 +468,7 @@ namespace Dgiot_dtu
             // Output values.
             foreach (OpcDaItemValue value in args.Values)
             {
-                mainform.Log("ItemId: " + value.Item.ItemId.ToString() + "; Value: {1}" + value.Value.ToString() +
+                LogHelper.Log("ItemId: " + value.Item.ItemId.ToString() + "; Value: {1}" + value.Value.ToString() +
                     ";Quality: " + value.Quality.ToString() + ";Timestamp: {3}" + value.Timestamp.ToString());
             }
         }

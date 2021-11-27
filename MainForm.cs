@@ -17,6 +17,7 @@ namespace Dgiot_dtu
     {
         private delegate void LogHandler(string text);
 
+        private LogHelper log = LogHelper.GetInstance();
         private MqttClientHelper mqtt = MqttClientHelper.GetInstance();
         private TcpClientHelper tcpclient = TcpClientHelper.GetInstance();
         private UDPClientHelper udplient = UDPClientHelper.GetInstance();
@@ -35,15 +36,18 @@ namespace Dgiot_dtu
         private static string devaddr = Guid.NewGuid().ToString().Substring(0, 10);
 
         private bool bAutoReconnect = false;
-        private bool bDisplayHex = false;
         private bool bIsRunning = false;
         private string[] bridges = new string[]
         {
             "SerialPort",
             "TcpServer",
             "BACnet",
-            "OPCDA",
-            "OPCUA",
+            "OPCDA_SCAN",
+            "OPCDA_READ",
+            "OPCDA_WRITE",
+            "OPCUA_SCAN",
+            "OPCUA_READ",
+            "OPCUA_WRITE",
             "MqttClient",
             "MqttServer",
             "TcpClient",
@@ -61,6 +65,8 @@ namespace Dgiot_dtu
         public MainForm()
         {
             InitializeComponent();
+
+            LogHelper.Init(this);
 
             config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 
@@ -97,10 +103,9 @@ namespace Dgiot_dtu
             }
 
             bAutoReconnect = this.checkBoxReconnect.Checked;
-            bDisplayHex = this.checkBoxDisplayHex.Checked;
 
             comboBoxDevAddr.Items.Clear();
-            List<string> macAddrs = GetMacByWmi();
+            List<string> macAddrs = DgiotHelper.GetMacByWmi();
             foreach (var mac in macAddrs)
             {
                 devaddr = Regex.Replace(mac, @":", "");
@@ -120,6 +125,17 @@ namespace Dgiot_dtu
                 comboBoxOpcServer.SelectedIndex = 0;
             }
 
+            List<string> loglevels = LogHelper.Levels();
+            foreach (var level in loglevels)
+            {
+                comboBoxLogLevel.Items.Add(level);
+            }
+
+            if (loglevels.Count > 0)
+            {
+                comboBoxLogLevel.SelectedIndex = (int)LogHelper.Level.DEBUG;
+            }
+
             try
             {
                 ResotreConfig(config);
@@ -129,6 +145,25 @@ namespace Dgiot_dtu
             {
                 Log("read config exception: " + ex.Message);
             }
+        }
+
+        public void Log(string text)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new LogHandler(Log), new object[] { text });
+                return;
+            }
+
+            // Truncate
+            if (textBoxLog.Text.Length > 4096)
+            {
+                textBoxLog.Text = textBoxLog.Text.Substring(textBoxLog.Text.Length - 4096);
+            }
+
+            textBoxLog.Text += text + "\r\n";
+            textBoxLog.SelectionStart = textBoxLog.Text.Length - 1;
+            textBoxLog.ScrollToCaret();
         }
 
         private void ToStop()
@@ -160,14 +195,14 @@ namespace Dgiot_dtu
                 bIsRunning = true;
                 try
                 {
-                    MqttServerHelper.Start(config.AppSettings.Settings, this);
-                    MqttClientHelper.Start(config.AppSettings.Settings, bAutoReconnect, this);
-                    TcpServerHelper.Start(config.AppSettings.Settings, this);
-                    TcpClientHelper.Start(config.AppSettings.Settings, bAutoReconnect, this);
-                    UDPServerHelper.Start(config.AppSettings.Settings, this);
-                    UDPClientHelper.Start(config.AppSettings.Settings, bAutoReconnect, this);
-                    OPCDAHelper.Start(config.AppSettings.Settings, this);
-                    BACnetHelper.Start(config.AppSettings.Settings, this);
+                    MqttServerHelper.Start(config.AppSettings.Settings);
+                    MqttClientHelper.Start(config.AppSettings.Settings, bAutoReconnect);
+                    TcpServerHelper.Start(config.AppSettings.Settings);
+                    TcpClientHelper.Start(config.AppSettings.Settings, bAutoReconnect);
+                    UDPServerHelper.Start(config.AppSettings.Settings);
+                    UDPClientHelper.Start(config.AppSettings.Settings, bAutoReconnect);
+                    OPCDAHelper.Start(config.AppSettings.Settings);
+                    BACnetHelper.Start(config.AppSettings.Settings);
                 }
                 catch (Exception error)
                 {
@@ -182,63 +217,6 @@ namespace Dgiot_dtu
             else
             {
                 ToStop();
-            }
-        }
-
-        public void Log(string text)
-        {
-            if (InvokeRequired)
-            {
-                Invoke(new LogHandler(Log), new object[] { text });
-                return;
-            }
-
-            // Truncate
-            if (textBoxLog.Text.Length > 4096)
-            {
-                textBoxLog.Text = textBoxLog.Text.Substring(textBoxLog.Text.Length - 4096);
-            }
-
-            textBoxLog.Text += text + "\r\n";
-            textBoxLog.SelectionStart = textBoxLog.Text.Length - 1;
-            textBoxLog.ScrollToCaret();
-        }
-
-        public string Logdata(byte[] data, int offset, int len)
-        {
-            var line = bDisplayHex ? StringHelper.ToHexString(data, offset, len) : System.Text.Encoding.ASCII.GetString(data, offset, len);
-            if (line.EndsWith("\r\n"))
-            {
-                line = line.Substring(0, line.Length - 2);
-            }
-
-            return line;
-        }
-
-        public byte[] Payload(char[] data)
-        {
-            byte[] payload = System.Text.Encoding.UTF8.GetBytes(data);
-            if (bDisplayHex)
-            {
-                byte[] hexPayload = StringHelper.ToHexBinary(payload);
-                return hexPayload;
-            }
-            else
-            {
-                return payload;
-            }
-        }
-
-        public byte[] Payload(byte[] payload)
-        {
-            if (bDisplayHex)
-            {
-                byte[] hexPayload = StringHelper.ToHexBinary(payload);
-                return hexPayload;
-            }
-            else
-            {
-                return payload;
             }
         }
 
@@ -291,7 +269,7 @@ namespace Dgiot_dtu
 
             if (config.AppSettings.Settings["mqttServer"] != null)
             {
-                this.textBoxMqttSever.Text = config.AppSettings.Settings["mqttServer"].Value;
+                textBoxMqttSever.Text = config.AppSettings.Settings["mqttServer"].Value;
             }
 
             if (config.AppSettings.Settings["mqttPort"] != null)
@@ -352,31 +330,31 @@ namespace Dgiot_dtu
 
             if (config.AppSettings.Settings["tcpServerIsCheck"] != null)
             {
-                this.checkBoxTcpServer.Checked = StringHelper.StrTobool(config.AppSettings.Settings["tcpServerIsCheck"].Value);
+                this.checkBoxTcpServer.Checked = DgiotHelper.StrTobool(config.AppSettings.Settings["tcpServerIsCheck"].Value);
             }
 
             Resh_topic();
 
-            MqttClientHelper.Config(config.AppSettings.Settings, this);
-            MqttServerHelper.Config(config.AppSettings.Settings, this);
-            TcpClientHelper.Config(config.AppSettings.Settings, this);
-            TcpServerHelper.Config(config.AppSettings.Settings, this);
-            UDPClientHelper.Config(config.AppSettings.Settings, this);
-            UDPServerHelper.Config(config.AppSettings.Settings, this);
+            MqttClientHelper.Config(config.AppSettings.Settings);
+            MqttServerHelper.Config(config.AppSettings.Settings);
+            TcpClientHelper.Config(config.AppSettings.Settings);
+            TcpServerHelper.Config(config.AppSettings.Settings);
+            UDPClientHelper.Config(config.AppSettings.Settings);
+            UDPServerHelper.Config(config.AppSettings.Settings);
 
-            SerialPortHelper.Config(config.AppSettings.Settings, this);
-            PLCHelper.Config(config.AppSettings.Settings, this);
-            OPCDAHelper.Config(config.AppSettings.Settings, this);
-            OPCUAHelper.Config(config.AppSettings.Settings, this);
-            AccessHelper.Config(config.AppSettings.Settings, this);
-            SqlServerHelper.Config(config.AppSettings.Settings, this);
+            SerialPortHelper.Config(config.AppSettings.Settings);
+            PLCHelper.Config(config.AppSettings.Settings);
+            OPCDAHelper.Config(config.AppSettings.Settings);
+            OPCUAHelper.Config(config.AppSettings.Settings);
+            AccessHelper.Config(config.AppSettings.Settings);
+            SqlServerHelper.Config(config.AppSettings.Settings);
         }
 
         private void Resh_topic()
         {
             devaddr = comboBoxDevAddr.Text;
             productid = textBoxMqttUserName.Text;
-            clientid = Md5("Device" + this.textBoxMqttUserName.Text + devaddr).Substring(0, 10);
+            clientid = DgiotHelper.Md5("Device" + this.textBoxMqttUserName.Text + devaddr).Substring(0, 10);
             textBoxMqttClientId.Text = clientid;
             textBoxMqttSubTopic.Text = "/" + productid + "/" + devaddr;
             textBoxMqttPubTopic.Text = "/" + productid + "/" + devaddr + "/properties/read/reply";
@@ -405,68 +383,15 @@ namespace Dgiot_dtu
             Process.Start("https://github.com/dgiot/dgiot_dtu");
         }
 
-        /// <summary>
-        /// 通过WMI读取系统信息里的网卡MAC
-        /// </summary>
-        /// <returns> </returns>
-        public static List<string> GetMacByWmi()
-        {
-            try
-            {
-                List<string> macs = new List<string>();
-                ManagementClass mc = new ManagementClass("Win32_NetworkAdapterConfiguration");
-                ManagementObjectCollection moc = mc.GetInstances();
-                foreach (ManagementObject mo in moc)
-                {
-                    if ((bool)mo["IPEnabled"])
-                    {
-                        var mac = mo["MacAddress"].ToString();
-                        macs.Add(mac);
-                    }
-                }
-
-                return macs;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-        }
-
-        public static string Md5(string str)
-        {
-            try
-            {
-                MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
-                byte[] bytValue, bytHash;
-                bytValue = System.Text.Encoding.UTF8.GetBytes(str);
-                bytHash = md5.ComputeHash(bytValue);
-                md5.Clear();
-                string sTemp = "";
-                for (int i = 0; i < bytHash.Length; i++)
-                {
-                    sTemp += bytHash[i].ToString("X").PadLeft(2, '0');
-                }
-
-                str = sTemp.ToLower();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-
-            return str;
-        }
-
         private void SaveAppConfig()
         {
             if (config.AppSettings.Settings["tcpServerIsCheck"] == null)
             {
-                config.AppSettings.Settings.Add("tcpServerIsCheck", StringHelper.BoolTostr(this.checkBoxTcpServer.Checked));
+                config.AppSettings.Settings.Add("tcpServerIsCheck", DgiotHelper.BoolTostr(this.checkBoxTcpServer.Checked));
             }
             else
             {
-                config.AppSettings.Settings["tcpServerIsCheck"].Value = StringHelper.BoolTostr(this.checkBoxTcpServer.Checked);
+                config.AppSettings.Settings["tcpServerIsCheck"].Value = DgiotHelper.BoolTostr(this.checkBoxTcpServer.Checked);
             }
 
             if (config.AppSettings.Settings["PLCTopic"] == null)
@@ -534,173 +459,173 @@ namespace Dgiot_dtu
 
             if (config.AppSettings.Settings["mqttIsCheck"] == null)
             {
-                config.AppSettings.Settings.Add("mqttIsCheck", StringHelper.BoolTostr(this.radioButtonMqttClient.Checked));
+                config.AppSettings.Settings.Add("mqttIsCheck", DgiotHelper.BoolTostr(radioButtonMqttClient.Checked));
             }
             else
             {
-                config.AppSettings.Settings["mqttIsCheck"].Value = StringHelper.BoolTostr(this.radioButtonMqttClient.Checked);
+                config.AppSettings.Settings["mqttIsCheck"].Value = DgiotHelper.BoolTostr(radioButtonMqttClient.Checked);
             }
 
             if (config.AppSettings.Settings["tcpClientIsCheck"] == null)
             {
-                config.AppSettings.Settings.Add("tcpClientIsCheck", StringHelper.BoolTostr(this.radioButtonTcpClient.Checked));
+                config.AppSettings.Settings.Add("tcpClientIsCheck", DgiotHelper.BoolTostr(radioButtonTcpClient.Checked));
             }
             else
             {
-                config.AppSettings.Settings["tcpClientIsCheck"].Value = StringHelper.BoolTostr(this.radioButtonTcpClient.Checked);
+                config.AppSettings.Settings["tcpClientIsCheck"].Value = DgiotHelper.BoolTostr(radioButtonTcpClient.Checked);
             }
 
             if (config.AppSettings.Settings["UDPClientIsCheck"] == null)
             {
-                config.AppSettings.Settings.Add("UDPClientIsCheck", StringHelper.BoolTostr(this.radioButtonTcpClient.Checked));
+                config.AppSettings.Settings.Add("UDPClientIsCheck", DgiotHelper.BoolTostr(radioButtonTcpClient.Checked));
             }
             else
             {
-                config.AppSettings.Settings["UDPClientIsCheck"].Value = StringHelper.BoolTostr(this.radioButtonTcpClient.Checked);
+                config.AppSettings.Settings["UDPClientIsCheck"].Value = DgiotHelper.BoolTostr(radioButtonTcpClient.Checked);
             }
 
             if (config.AppSettings.Settings["toPayload"] == null)
             {
-                config.AppSettings.Settings.Add("toPayload", this.textToPayload.Text);
+                config.AppSettings.Settings.Add("toPayload", textToPayload.Text);
             }
             else
             {
-                config.AppSettings.Settings["toPayload"].Value = this.textToPayload.Text;
+                config.AppSettings.Settings["toPayload"].Value = textToPayload.Text;
             }
 
             if (config.AppSettings.Settings["mqttServer"] == null)
             {
-                config.AppSettings.Settings.Add("mqttServer", this.textBoxMqttSever.Text);
+                config.AppSettings.Settings.Add("mqttServer", textBoxMqttSever.Text);
             }
             else
             {
-                config.AppSettings.Settings["mqttServer"].Value = this.textBoxMqttSever.Text;
+                config.AppSettings.Settings["mqttServer"].Value = textBoxMqttSever.Text;
             }
 
             if (config.AppSettings.Settings["mqttPort"] == null)
             {
-                config.AppSettings.Settings.Add("mqttPort", this.textBoxMqttPort.Text);
+                config.AppSettings.Settings.Add("mqttPort", textBoxMqttPort.Text);
             }
             else
             {
-                config.AppSettings.Settings["mqttPort"].Value = this.textBoxMqttPort.Text;
+                config.AppSettings.Settings["mqttPort"].Value = textBoxMqttPort.Text;
             }
 
             if (config.AppSettings.Settings["mqttClientId"] == null)
             {
-                config.AppSettings.Settings.Add("mqttClientId", this.textBoxMqttClientId.Text);
+                config.AppSettings.Settings.Add("mqttClientId", textBoxMqttClientId.Text);
             }
             else
             {
-                config.AppSettings.Settings["mqttClientId"].Value = this.textBoxMqttClientId.Text;
+                config.AppSettings.Settings["mqttClientId"].Value = textBoxMqttClientId.Text;
             }
 
             if (config.AppSettings.Settings["devAddr"] == null)
             {
-                config.AppSettings.Settings.Add("devAddr", this.comboBoxDevAddr.Text);
+                config.AppSettings.Settings.Add("devAddr", comboBoxDevAddr.Text);
             }
             else
             {
-                config.AppSettings.Settings["devAddr"].Value = this.comboBoxDevAddr.Text;
+                config.AppSettings.Settings["devAddr"].Value = comboBoxDevAddr.Text;
             }
 
             if (config.AppSettings.Settings["mqttUserName"] == null)
             {
-                config.AppSettings.Settings.Add("mqttUserName", this.textBoxMqttUserName.Text);
+                config.AppSettings.Settings.Add("mqttUserName", textBoxMqttUserName.Text);
             }
             else
             {
-                config.AppSettings.Settings["mqttUserName"].Value = this.textBoxMqttUserName.Text;
+                config.AppSettings.Settings["mqttUserName"].Value = textBoxMqttUserName.Text;
             }
 
             if (config.AppSettings.Settings["mqttPassword"] == null)
             {
-                config.AppSettings.Settings.Add("mqttPassword", this.textBoxMqttPassword.Text);
+                config.AppSettings.Settings.Add("mqttPassword", textBoxMqttPassword.Text);
             }
             else
             {
-                config.AppSettings.Settings["mqttPassword"].Value = this.textBoxMqttPassword.Text;
+                config.AppSettings.Settings["mqttPassword"].Value = textBoxMqttPassword.Text;
             }
 
             if (config.AppSettings.Settings["mqttSubTopic"] == null)
             {
-                config.AppSettings.Settings.Add("mqttSubTopic", this.textBoxMqttSubTopic.Text);
+                config.AppSettings.Settings.Add("mqttSubTopic", textBoxMqttSubTopic.Text);
             }
             else
             {
-                config.AppSettings.Settings["mqttSubTopic"].Value = this.textBoxMqttSubTopic.Text;
+                config.AppSettings.Settings["mqttSubTopic"].Value = textBoxMqttSubTopic.Text;
             }
 
             if (config.AppSettings.Settings["mqttPubTopic"] == null)
             {
-                config.AppSettings.Settings.Add("mqttPubTopic", this.textBoxMqttPubTopic.Text);
+                config.AppSettings.Settings.Add("mqttPubTopic", textBoxMqttPubTopic.Text);
             }
             else
             {
-                config.AppSettings.Settings["mqttPubTopic"].Value = this.textBoxMqttPubTopic.Text;
+                config.AppSettings.Settings["mqttPubTopic"].Value = textBoxMqttPubTopic.Text;
             }
 
             if (config.AppSettings.Settings["tcpClientServer"] == null)
             {
-                config.AppSettings.Settings.Add("tcpClientServer", this.textBoxTcpClientServer.Text);
+                config.AppSettings.Settings.Add("tcpClientServer", textBoxTcpClientServer.Text);
             }
             else
             {
-                config.AppSettings.Settings["tcpClientServer"].Value = this.textBoxTcpClientServer.Text;
+                config.AppSettings.Settings["tcpClientServer"].Value = textBoxTcpClientServer.Text;
             }
 
             if (config.AppSettings.Settings["tcpClientPort"] == null)
             {
-                config.AppSettings.Settings.Add("tcpClientPort", this.textBoxTcpClientPort.Text);
+                config.AppSettings.Settings.Add("tcpClientPort", textBoxTcpClientPort.Text);
             }
             else
             {
-                config.AppSettings.Settings["tcpClientPort"].Value = this.textBoxTcpClientPort.Text;
+                config.AppSettings.Settings["tcpClientPort"].Value = textBoxTcpClientPort.Text;
             }
 
             if (config.AppSettings.Settings["tcpClientLogin"] == null)
             {
-                config.AppSettings.Settings.Add("tcpClientLogin", this.textBoxTcpClientLogin.Text);
+                config.AppSettings.Settings.Add("tcpClientLogin", textBoxTcpClientLogin.Text);
             }
             else
             {
-                config.AppSettings.Settings["tcpClientLogin"].Value = this.textBoxTcpClientLogin.Text;
+                config.AppSettings.Settings["tcpClientLogin"].Value = textBoxTcpClientLogin.Text;
             }
 
             if (config.AppSettings.Settings["UDPClientServer"] == null)
             {
-                config.AppSettings.Settings.Add("UDPClientServer", this.textBoxUDPClientServer.Text);
+                config.AppSettings.Settings.Add("UDPClientServer", textBoxUDPClientServer.Text);
             }
             else
             {
-                config.AppSettings.Settings["UDPClientServer"].Value = this.textBoxUDPClientServer.Text;
+                config.AppSettings.Settings["UDPClientServer"].Value = textBoxUDPClientServer.Text;
             }
 
             if (config.AppSettings.Settings["UDPClientPort"] == null)
             {
-                config.AppSettings.Settings.Add("UDPClientPort", this.textBoxUDPCLientPort.Text);
+                config.AppSettings.Settings.Add("UDPClientPort", textBoxUDPCLientPort.Text);
             }
             else
             {
-                config.AppSettings.Settings["UDPClientPort"].Value = this.textBoxUDPCLientPort.Text;
+                config.AppSettings.Settings["UDPClientPort"].Value = textBoxUDPCLientPort.Text;
             }
 
             if (config.AppSettings.Settings["UDPClientLogin"] == null)
             {
-                config.AppSettings.Settings.Add("UDPClientLogin", this.textBoxUDPClientLogin.Text);
+                config.AppSettings.Settings.Add("UDPClientLogin", textBoxUDPClientLogin.Text);
             }
             else
             {
-                config.AppSettings.Settings["UDPClientLogin"].Value = this.textBoxUDPClientLogin.Text;
+                config.AppSettings.Settings["UDPClientLogin"].Value = textBoxUDPClientLogin.Text;
             }
 
             if (config.AppSettings.Settings["tcpServerPort"] == null)
             {
-                config.AppSettings.Settings.Add("tcpServerPort", this.textBoxTcpServerPort.Text);
+                config.AppSettings.Settings.Add("tcpServerPort", textBoxTcpServerPort.Text);
             }
             else
             {
-                config.AppSettings.Settings["tcpServerPort"].Value = this.textBoxTcpServerPort.Text;
+                config.AppSettings.Settings["tcpServerPort"].Value = textBoxTcpServerPort.Text;
             }
 
             config.Save(ConfigurationSaveMode.Full);
@@ -714,102 +639,111 @@ namespace Dgiot_dtu
 
         private void CheckBoxDisplayHexCheckedChanged(object sender, EventArgs e)
         {
-            bDisplayHex = checkBoxDisplayHex.Checked;
+            if (config.AppSettings.Settings["DisplayHex"] == null)
+            {
+                config.AppSettings.Settings.Add("DisplayHex", DgiotHelper.BoolTostr(checkBoxDisplayHex.Checked));
+            }
+            else
+            {
+                config.AppSettings.Settings["DisplayHex"].Value = DgiotHelper.BoolTostr(checkBoxDisplayHex.Checked);
+            }
+
+            LogHelper.Config(config.AppSettings.Settings);
         }
 
         private void CheckBoxTcpServer_CheckedChanged(object sender, EventArgs e)
         {
             if (config.AppSettings.Settings["tcpServerIsCheck"] == null)
             {
-                config.AppSettings.Settings.Add("tcpServerIsCheck", StringHelper.BoolTostr(this.checkBoxTcpServer.Checked));
+                config.AppSettings.Settings.Add("tcpServerIsCheck", DgiotHelper.BoolTostr(checkBoxTcpServer.Checked));
             }
             else
             {
-                config.AppSettings.Settings["tcpServerIsCheck"].Value = StringHelper.BoolTostr(this.checkBoxTcpServer.Checked);
+                config.AppSettings.Settings["tcpServerIsCheck"].Value = DgiotHelper.BoolTostr(checkBoxTcpServer.Checked);
             }
 
-            TcpServerHelper.Config(config.AppSettings.Settings, this);
+            TcpServerHelper.Config(config.AppSettings.Settings);
         }
 
         private void CheckBoxMqttBridge_CheckedChanged(object sender, EventArgs e)
         {
             if (config.AppSettings.Settings["mqttbridgeIsCheck"] == null)
             {
-                config.AppSettings.Settings.Add("mqttbridgeIsCheck", StringHelper.BoolTostr(this.radioButtonMqttClient.Checked));
+                config.AppSettings.Settings.Add("mqttbridgeIsCheck", DgiotHelper.BoolTostr(radioButtonMqttClient.Checked));
             }
             else
             {
-                config.AppSettings.Settings["mqttbridgeIsCheck"].Value = StringHelper.BoolTostr(this.radioButtonMqttClient.Checked);
+                config.AppSettings.Settings["mqttbridgeIsCheck"].Value = DgiotHelper.BoolTostr(radioButtonMqttClient.Checked);
             }
 
-            MqttServerHelper.Config(config.AppSettings.Settings, this);
+            MqttServerHelper.Config(config.AppSettings.Settings);
         }
 
         private void CheckBoxUdpServer_CheckedChanged(object sender, EventArgs e)
         {
             if (config.AppSettings.Settings["udpbridgeIsCheck"] == null)
             {
-                config.AppSettings.Settings.Add("udpbridgeIsCheck", StringHelper.BoolTostr(this.radioButtonMqttClient.Checked));
+                config.AppSettings.Settings.Add("udpbridgeIsCheck", DgiotHelper.BoolTostr(radioButtonMqttClient.Checked));
             }
             else
             {
-                config.AppSettings.Settings["udpbridgeIsCheck"].Value = StringHelper.BoolTostr(this.radioButtonMqttClient.Checked);
+                config.AppSettings.Settings["udpbridgeIsCheck"].Value = DgiotHelper.BoolTostr(radioButtonMqttClient.Checked);
             }
 
-            UDPClientHelper.Config(config.AppSettings.Settings, this);
+            UDPClientHelper.Config(config.AppSettings.Settings);
         }
 
         private void RadioButtonMqttClient_CheckedChanged(object sender, EventArgs e)
         {
            if (config.AppSettings.Settings["mqttIsCheck"] == null)
            {
-              config.AppSettings.Settings.Add("mqttIsCheck", StringHelper.BoolTostr(this.radioButtonMqttClient.Checked));
+              config.AppSettings.Settings.Add("mqttIsCheck", DgiotHelper.BoolTostr(radioButtonMqttClient.Checked));
            }
            else
            {
-              config.AppSettings.Settings["mqttIsCheck"].Value = StringHelper.BoolTostr(this.radioButtonMqttClient.Checked);
+              config.AppSettings.Settings["mqttIsCheck"].Value = DgiotHelper.BoolTostr(radioButtonMqttClient.Checked);
            }
 
-            MqttClientHelper.Config(config.AppSettings.Settings, this);
+            MqttClientHelper.Config(config.AppSettings.Settings);
         }
 
         private void RadioButtonTcpClient_CheckedChanged(object sender, EventArgs e)
         {
             if (config.AppSettings.Settings["tcpClientIsCheck"] == null)
             {
-                config.AppSettings.Settings.Add("tcpClientIsCheck", StringHelper.BoolTostr(this.radioButtonTcpClient.Checked));
+                config.AppSettings.Settings.Add("tcpClientIsCheck", DgiotHelper.BoolTostr(radioButtonTcpClient.Checked));
             }
             else
             {
-                config.AppSettings.Settings["tcpClientIsCheck"].Value = StringHelper.BoolTostr(this.radioButtonTcpClient.Checked);
+                config.AppSettings.Settings["tcpClientIsCheck"].Value = DgiotHelper.BoolTostr(radioButtonTcpClient.Checked);
             }
 
-           TcpClientHelper.Config(config.AppSettings.Settings, this);
+           TcpClientHelper.Config(config.AppSettings.Settings);
         }
 
         private void RadioButtonUDPClient_CheckedChanged(object sender, EventArgs e)
         {
             if (config.AppSettings.Settings["UDPClientIsCheck"] == null)
             {
-                config.AppSettings.Settings.Add("UDPClientIsCheck", StringHelper.BoolTostr(this.radioButtonTcpClient.Checked));
+                config.AppSettings.Settings.Add("UDPClientIsCheck", DgiotHelper.BoolTostr(radioButtonTcpClient.Checked));
             }
             else
             {
-                config.AppSettings.Settings["UDPClientIsCheck"].Value = StringHelper.BoolTostr(this.radioButtonTcpClient.Checked);
+                config.AppSettings.Settings["UDPClientIsCheck"].Value = DgiotHelper.BoolTostr(radioButtonTcpClient.Checked);
             }
 
-            UDPClientHelper.Config(config.AppSettings.Settings, this);
+            UDPClientHelper.Config(config.AppSettings.Settings);
         }
 
         private void TextToPayload_TextChanged(object sender, EventArgs e)
         {
             if (config.AppSettings.Settings["toPayload"] == null)
             {
-                config.AppSettings.Settings.Add("toPayload", this.textToPayload.Text);
+                config.AppSettings.Settings.Add("toPayload", textToPayload.Text);
             }
             else
             {
-                config.AppSettings.Settings["toPayload"].Value = this.textToPayload.Text;
+                config.AppSettings.Settings["toPayload"].Value = textToPayload.Text;
             }
         }
 
@@ -817,172 +751,172 @@ namespace Dgiot_dtu
         {
             if (config.AppSettings.Settings["mqttServer"] == null)
             {
-                config.AppSettings.Settings.Add("mqttServer", this.textBoxMqttSever.Text);
+                config.AppSettings.Settings.Add("mqttServer", textBoxMqttSever.Text);
             }
             else
             {
-                config.AppSettings.Settings["mqttServer"].Value = this.textBoxMqttSever.Text;
+                config.AppSettings.Settings["mqttServer"].Value = textBoxMqttSever.Text;
             }
 
-            MqttClientHelper.Config(config.AppSettings.Settings, this);
+            MqttClientHelper.Config(config.AppSettings.Settings);
         }
 
         private void TextBoxMqttPort_TextChanged(object sender, EventArgs e)
         {
             if (config.AppSettings.Settings["mqttPort"] == null)
             {
-                config.AppSettings.Settings.Add("mqttPort", this.textBoxMqttPort.Text);
+                config.AppSettings.Settings.Add("mqttPort", textBoxMqttPort.Text);
             }
             else
             {
-                config.AppSettings.Settings["mqttPort"].Value = this.textBoxMqttPort.Text;
+                config.AppSettings.Settings["mqttPort"].Value = textBoxMqttPort.Text;
             }
 
-            MqttClientHelper.Config(config.AppSettings.Settings, this);
+            MqttClientHelper.Config(config.AppSettings.Settings);
         }
 
         private void TextBoxMqttClientId_TextChanged(object sender, EventArgs e)
         {
             if (config.AppSettings.Settings["mqttClientId"] == null)
             {
-                config.AppSettings.Settings.Add("mqttClientId", this.textBoxMqttClientId.Text);
+                config.AppSettings.Settings.Add("mqttClientId", textBoxMqttClientId.Text);
             }
             else
             {
-                config.AppSettings.Settings["mqttClientId"].Value = this.textBoxMqttClientId.Text;
+                config.AppSettings.Settings["mqttClientId"].Value = textBoxMqttClientId.Text;
             }
 
             Resh_topic();
 
-            MqttClientHelper.Config(config.AppSettings.Settings, this);
+            MqttClientHelper.Config(config.AppSettings.Settings);
         }
 
         private void TextBoxMqttUserName_TextChanged(object sender, EventArgs e)
         {
             if (config.AppSettings.Settings["mqttUserName"] == null)
             {
-                config.AppSettings.Settings.Add("mqttUserName", this.textBoxMqttUserName.Text);
+                config.AppSettings.Settings.Add("mqttUserName", textBoxMqttUserName.Text);
             }
             else
             {
-                config.AppSettings.Settings["mqttUserName"].Value = this.textBoxMqttUserName.Text;
+                config.AppSettings.Settings["mqttUserName"].Value = textBoxMqttUserName.Text;
             }
 
             Resh_topic();
 
-            MqttClientHelper.Config(config.AppSettings.Settings, this);
+            MqttClientHelper.Config(config.AppSettings.Settings);
         }
 
         private void TextBoxMqttPassword_TextChanged(object sender, EventArgs e)
         {
             if (config.AppSettings.Settings["mqttPassword"] == null)
             {
-                config.AppSettings.Settings.Add("mqttPassword", this.textBoxMqttPassword.Text);
+                config.AppSettings.Settings.Add("mqttPassword", textBoxMqttPassword.Text);
             }
             else
             {
-                config.AppSettings.Settings["mqttPassword"].Value = this.textBoxMqttPassword.Text;
+                config.AppSettings.Settings["mqttPassword"].Value = textBoxMqttPassword.Text;
             }
 
-            MqttClientHelper.Config(config.AppSettings.Settings, this);
+            MqttClientHelper.Config(config.AppSettings.Settings);
         }
 
         private void TextBoxMqttSubTopic_TextChanged(object sender, EventArgs e)
         {
             if (config.AppSettings.Settings["mqttSubTopic"] == null)
             {
-                config.AppSettings.Settings.Add("mqttSubTopic", this.textBoxMqttSubTopic.Text);
+                config.AppSettings.Settings.Add("mqttSubTopic", textBoxMqttSubTopic.Text);
             }
             else
             {
-                config.AppSettings.Settings["mqttSubTopic"].Value = this.textBoxMqttSubTopic.Text;
+                config.AppSettings.Settings["mqttSubTopic"].Value = textBoxMqttSubTopic.Text;
             }
 
-            MqttClientHelper.Config(config.AppSettings.Settings, this);
+            MqttClientHelper.Config(config.AppSettings.Settings);
         }
 
         private void TextBoxMqttPubTopic_TextChanged(object sender, EventArgs e)
         {
             if (config.AppSettings.Settings["mqttPubTopic"] == null)
             {
-                config.AppSettings.Settings.Add("mqttPubTopic", this.textBoxMqttPubTopic.Text);
+                config.AppSettings.Settings.Add("mqttPubTopic", textBoxMqttPubTopic.Text);
             }
             else
             {
-                config.AppSettings.Settings["mqttPubTopic"].Value = this.textBoxMqttPubTopic.Text;
+                config.AppSettings.Settings["mqttPubTopic"].Value = textBoxMqttPubTopic.Text;
             }
 
-            MqttClientHelper.Config(config.AppSettings.Settings, this);
+            MqttClientHelper.Config(config.AppSettings.Settings);
         }
 
         private void TextBoxMqttServerPort_TextChanged(object sender, EventArgs e)
         {
             if (config.AppSettings.Settings["mqttServerPort"] == null)
             {
-                config.AppSettings.Settings.Add("mqttServerPort", this.textBoxTcpClientLogin.Text);
+                config.AppSettings.Settings.Add("mqttServerPort", textBoxTcpClientLogin.Text);
             }
             else
             {
-                config.AppSettings.Settings["mqttServerPort"].Value = this.textBoxTcpClientLogin.Text;
+                config.AppSettings.Settings["mqttServerPort"].Value = textBoxTcpClientLogin.Text;
             }
 
-            MqttServerHelper.Config(config.AppSettings.Settings, this);
+            MqttServerHelper.Config(config.AppSettings.Settings);
         }
 
         private void TextBoxTcpClientServer_TextChanged(object sender, EventArgs e)
         {
             if (config.AppSettings.Settings["tcpClientServer"] == null)
             {
-                config.AppSettings.Settings.Add("tcpClientServer", this.textBoxTcpClientServer.Text);
+                config.AppSettings.Settings.Add("tcpClientServer", textBoxTcpClientServer.Text);
             }
             else
             {
-                config.AppSettings.Settings["tcpClientServer"].Value = this.textBoxTcpClientServer.Text;
+                config.AppSettings.Settings["tcpClientServer"].Value = textBoxTcpClientServer.Text;
             }
 
-            MqttClientHelper.Config(config.AppSettings.Settings, this);
+            MqttClientHelper.Config(config.AppSettings.Settings);
         }
 
         private void TextBoxTcpClientPort_TextChanged(object sender, EventArgs e)
         {
             if (config.AppSettings.Settings["tcpClientPort"] == null)
             {
-                config.AppSettings.Settings.Add("tcpClientPort", this.textBoxTcpClientPort.Text);
+                config.AppSettings.Settings.Add("tcpClientPort", textBoxTcpClientPort.Text);
             }
             else
             {
-                config.AppSettings.Settings["tcpClientPort"].Value = this.textBoxTcpClientPort.Text;
+                config.AppSettings.Settings["tcpClientPort"].Value = textBoxTcpClientPort.Text;
             }
 
-            TcpClientHelper.Config(config.AppSettings.Settings, this);
+            TcpClientHelper.Config(config.AppSettings.Settings);
         }
 
         private void TextBoxTcpClientLogin_TextChanged(object sender, EventArgs e)
         {
             if (config.AppSettings.Settings["tcpClientLogin"] == null)
             {
-                config.AppSettings.Settings.Add("tcpClientLogin", this.textBoxTcpClientLogin.Text);
+                config.AppSettings.Settings.Add("tcpClientLogin", textBoxTcpClientLogin.Text);
             }
             else
             {
-                config.AppSettings.Settings["tcpClientLogin"].Value = this.textBoxTcpClientLogin.Text;
+                config.AppSettings.Settings["tcpClientLogin"].Value = textBoxTcpClientLogin.Text;
             }
 
-            TcpClientHelper.Config(config.AppSettings.Settings, this);
+            TcpClientHelper.Config(config.AppSettings.Settings);
         }
 
         private void TextBoxTcpServerPort_TextChanged(object sender, EventArgs e)
         {
             if (config.AppSettings.Settings["tcpServerPort"] == null)
             {
-                config.AppSettings.Settings.Add("tcpServerPort", this.textBoxTcpServerPort.Text);
+                config.AppSettings.Settings.Add("tcpServerPort", textBoxTcpServerPort.Text);
             }
             else
             {
-                config.AppSettings.Settings["tcpServerPort"].Value = this.textBoxTcpServerPort.Text;
+                config.AppSettings.Settings["tcpServerPort"].Value = textBoxTcpServerPort.Text;
             }
 
-            TcpServerHelper.Config(config.AppSettings.Settings, this);
+            TcpServerHelper.Config(config.AppSettings.Settings);
         }
 
         private void TextBoxUDPClientServer_TextChanged(object sender, EventArgs e)
@@ -996,21 +930,21 @@ namespace Dgiot_dtu
                 config.AppSettings.Settings["UDPClientServer"].Value = this.textBoxUDPClientServer.Text;
             }
 
-            UDPClientHelper.Config(config.AppSettings.Settings, this);
+            UDPClientHelper.Config(config.AppSettings.Settings);
         }
 
         private void TextBoxUDPCLientPort_TextChanged(object sender, EventArgs e)
         {
             if (config.AppSettings.Settings["UDPClientPort"] == null)
             {
-                config.AppSettings.Settings.Add("UDPClientPort", this.textBoxUDPCLientPort.Text);
+                config.AppSettings.Settings.Add("UDPClientPort", textBoxUDPCLientPort.Text);
             }
             else
             {
-                config.AppSettings.Settings["UDPClientPort"].Value = this.textBoxUDPCLientPort.Text;
+                config.AppSettings.Settings["UDPClientPort"].Value = textBoxUDPCLientPort.Text;
             }
 
-            UDPClientHelper.Config(config.AppSettings.Settings, this);
+            UDPClientHelper.Config(config.AppSettings.Settings);
         }
 
         private void TextBoxUDPClientLogin_TextChanged(object sender, EventArgs e)
@@ -1024,7 +958,7 @@ namespace Dgiot_dtu
                 config.AppSettings.Settings["UDPClientLogin"].Value = this.textBoxUDPClientLogin.Text;
             }
 
-            UDPClientHelper.Config(config.AppSettings.Settings, this);
+            UDPClientHelper.Config(config.AppSettings.Settings);
         }
 
         private void TextBoxUdpServerPort_TextChanged(object sender, EventArgs e)
@@ -1035,16 +969,16 @@ namespace Dgiot_dtu
             }
             else
             {
-                config.AppSettings.Settings["udpServerPort"].Value = this.textBoxTcpServerPort.Text;
+                config.AppSettings.Settings["udpServerPort"].Value = textBoxTcpServerPort.Text;
             }
 
-            UDPClientHelper.Config(config.AppSettings.Settings, this);
+            UDPClientHelper.Config(config.AppSettings.Settings);
         }
 
         private void SendBridge_Click(object sender, EventArgs e)
         {
-            byte[] payload = Payload(config.AppSettings.Settings["toPayload"].Value.ToCharArray());
-            Log(bridges[comboBoxBridge.SelectedIndex] + " send  [" + Logdata(payload, 0, payload.Length) + "]");
+            byte[] payload = LogHelper.Payload(config.AppSettings.Settings["toPayload"].Value.ToCharArray());
+            LogHelper.Log(bridges[comboBoxBridge.SelectedIndex] + " send  [" + LogHelper.Logdata(payload, 0, payload.Length) + "]");
 
             if (bridges[comboBoxBridge.SelectedIndex] == "SerialPort")
             {
@@ -1056,9 +990,16 @@ namespace Dgiot_dtu
             else if (bridges[comboBoxBridge.SelectedIndex] == "PLC")
             {
             }
-            else if (bridges[this.comboBoxBridge.SelectedIndex] == "OPCDA")
+            else if (bridges[this.comboBoxBridge.SelectedIndex] == "OPCDA_SCAN")
             {
-                OPCDAHelper.GetServer();
+                OPCDAHelper.Scan();
+            }
+            else if (bridges[this.comboBoxBridge.SelectedIndex] == "OPCDA_READ")
+            {
+            }
+            else if (bridges[this.comboBoxBridge.SelectedIndex] == "OPCDA_WRITE")
+            {
+                OPCDAHelper.Write();
             }
             else if (bridges[this.comboBoxBridge.SelectedIndex] == "OPCUA")
             {
@@ -1123,7 +1064,7 @@ namespace Dgiot_dtu
                 config.AppSettings.Settings.Add("devAddr", this.comboBoxDevAddr.Text);
             }
 
-            MqttClientHelper.Config(config.AppSettings.Settings, this);
+            MqttClientHelper.Config(config.AppSettings.Settings);
             Resh_topic();
         }
 
@@ -1138,7 +1079,7 @@ namespace Dgiot_dtu
                 config.AppSettings.Settings["PLCTopic"].Value = textBoxPLCTopic.Text;
             }
 
-            MqttClientHelper.Config(config.AppSettings.Settings, this);
+            MqttClientHelper.Config(config.AppSettings.Settings);
             Resh_topic();
         }
 
@@ -1153,7 +1094,7 @@ namespace Dgiot_dtu
                 config.AppSettings.Settings["OPCUATopic"].Value = textBoxOPCUATopic.Text;
             }
 
-            MqttClientHelper.Config(config.AppSettings.Settings, this);
+            MqttClientHelper.Config(config.AppSettings.Settings);
             Resh_topic();
         }
 
@@ -1168,7 +1109,7 @@ namespace Dgiot_dtu
                 config.AppSettings.Settings["BACnetTopic"].Value = textBoxBACnetTopic.Text;
             }
 
-            MqttClientHelper.Config(config.AppSettings.Settings, this);
+            MqttClientHelper.Config(config.AppSettings.Settings);
             Resh_topic();
         }
 
@@ -1183,7 +1124,7 @@ namespace Dgiot_dtu
                 config.AppSettings.Settings["ControlTopic"].Value = textBoxControlTopic.Text;
             }
 
-            MqttClientHelper.Config(config.AppSettings.Settings, this);
+            MqttClientHelper.Config(config.AppSettings.Settings);
             Resh_topic();
         }
 
@@ -1198,7 +1139,7 @@ namespace Dgiot_dtu
                 config.AppSettings.Settings["AccessTopic"].Value = textBoxAccessTopic.Text;
             }
 
-            MqttClientHelper.Config(config.AppSettings.Settings, this);
+            MqttClientHelper.Config(config.AppSettings.Settings);
             Resh_topic();
         }
 
@@ -1213,7 +1154,7 @@ namespace Dgiot_dtu
                 config.AppSettings.Settings["SqlServerTopic"].Value = textBoxSqlServerTopic.Text;
             }
 
-            MqttClientHelper.Config(config.AppSettings.Settings, this);
+            MqttClientHelper.Config(config.AppSettings.Settings);
             Resh_topic();
         }
 
@@ -1228,11 +1169,25 @@ namespace Dgiot_dtu
                 config.AppSettings.Settings["OpcServer"].Value = textBoxOpcServer.Text;
             }
 
-            OPCDAHelper.Config(config.AppSettings.Settings, this);
+            OPCDAHelper.Config(config.AppSettings.Settings);
         }
 
         private void ComboBoxOpcServer_SelectedIndexChanged(object sender, EventArgs e)
         {
+        }
+
+        private void ComboBoxLogLevel_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (config.AppSettings.Settings["LogLevel"] == null)
+            {
+                config.AppSettings.Settings.Add("LogLevel", comboBoxLogLevel.Text);
+            }
+            else
+            {
+                config.AppSettings.Settings["LogLevel"].Value = comboBoxLogLevel.Text;
+            }
+
+            LogHelper.SetLevel(comboBoxLogLevel.SelectedIndex);
         }
     }
 }
