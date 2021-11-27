@@ -60,6 +60,8 @@ namespace Dgiot_dtu
             };
         }
 
+
+
         public static void SetLevel(int level = 0)
         {
             LogHelper.level = level;
