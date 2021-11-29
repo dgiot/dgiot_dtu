@@ -31,8 +31,8 @@ dgiot_dtu 用[vc2019](https://dgiot-dev-1306147891.cos.ap-nanjing.myqcloud.com/d
 
 ## 串口模拟测试
 
-+ 虚拟电表
-+ 虚拟modbus
++ [虚拟电表](http://tech.iotn2n.com/w/docs/details?id=9)
++ [虚拟modbus](http://tech.iotn2n.com/w/docs/details?id=9)
 
 ## Bacnet模拟测试
 
