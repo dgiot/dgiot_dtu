@@ -276,6 +276,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="DD-All.ico" />
+    <Content Include="FodyWeavers.xml" />
     <Content Include="Resources\bridge.jpg" />
   </ItemGroup>
   <ItemGroup>
