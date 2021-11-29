@@ -1,9 +1,0 @@
-.eunit
-test-data/
-!deps/.placeholder
-_build/
-www/
-obj/
-bin/
-packages/
-.vs/
