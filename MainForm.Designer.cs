@@ -71,7 +71,7 @@
             this.label17 = new System.Windows.Forms.Label();
             this.textBoxTcpClientServer = new System.Windows.Forms.TextBox();
             this.label18 = new System.Windows.Forms.Label();
-            this.checkBoxTcpServer = new System.Windows.Forms.CheckBox();
+            this.checkBoxTcpBridge = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.comboBoxDevAddr = new System.Windows.Forms.ComboBox();
             this.label30 = new System.Windows.Forms.Label();
@@ -107,7 +107,7 @@
             this.textBoxSqlServerTopic = new System.Windows.Forms.TextBox();
             this.label14 = new System.Windows.Forms.Label();
             this.groupBox10 = new System.Windows.Forms.GroupBox();
-            this.checkBoxUdpServer = new System.Windows.Forms.CheckBox();
+            this.checkBoxUdpBridge = new System.Windows.Forms.CheckBox();
             this.label28 = new System.Windows.Forms.Label();
             this.textBoxUdpServerPort = new System.Windows.Forms.TextBox();
             this.label15 = new System.Windows.Forms.Label();
@@ -565,7 +565,7 @@
             this.groupBox2.Controls.Add(this.label17);
             this.groupBox2.Controls.Add(this.textBoxTcpClientServer);
             this.groupBox2.Controls.Add(this.label18);
-            this.groupBox2.Controls.Add(this.checkBoxTcpServer);
+            this.groupBox2.Controls.Add(this.checkBoxTcpBridge);
             this.groupBox2.Location = new System.Drawing.Point(1532, 422);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox2.Name = "groupBox2";
@@ -615,16 +615,16 @@
             this.label18.TabIndex = 6;
             this.label18.Text = "Server";
             // 
-            // checkBoxTcpServer
+            // checkBoxTcpBridge
             // 
-            this.checkBoxTcpServer.AutoSize = true;
-            this.checkBoxTcpServer.Location = new System.Drawing.Point(8, 148);
-            this.checkBoxTcpServer.Margin = new System.Windows.Forms.Padding(4);
-            this.checkBoxTcpServer.Name = "checkBoxTcpServer";
-            this.checkBoxTcpServer.Size = new System.Drawing.Size(22, 21);
-            this.checkBoxTcpServer.TabIndex = 23;
-            this.checkBoxTcpServer.UseVisualStyleBackColor = true;
-            this.checkBoxTcpServer.CheckedChanged += new System.EventHandler(this.CheckBoxTcpServer_CheckedChanged);
+            this.checkBoxTcpBridge.AutoSize = true;
+            this.checkBoxTcpBridge.Location = new System.Drawing.Point(8, 148);
+            this.checkBoxTcpBridge.Margin = new System.Windows.Forms.Padding(4);
+            this.checkBoxTcpBridge.Name = "checkBoxTcpBridge";
+            this.checkBoxTcpBridge.Size = new System.Drawing.Size(22, 21);
+            this.checkBoxTcpBridge.TabIndex = 23;
+            this.checkBoxTcpBridge.UseVisualStyleBackColor = true;
+            this.checkBoxTcpBridge.CheckedChanged += new System.EventHandler(this.CheckBoxTcpBridge_CheckedChanged);
             // 
             // groupBox3
             // 
@@ -1033,7 +1033,7 @@
             // 
             // groupBox10
             // 
-            this.groupBox10.Controls.Add(this.checkBoxUdpServer);
+            this.groupBox10.Controls.Add(this.checkBoxUdpBridge);
             this.groupBox10.Controls.Add(this.label28);
             this.groupBox10.Controls.Add(this.textBoxUdpServerPort);
             this.groupBox10.Controls.Add(this.label15);
@@ -1051,16 +1051,16 @@
             this.groupBox10.TabStop = false;
             this.groupBox10.Text = "UDP Client Channel";
             // 
-            // checkBoxUdpServer
+            // checkBoxUdpBridge
             // 
-            this.checkBoxUdpServer.AutoSize = true;
-            this.checkBoxUdpServer.Location = new System.Drawing.Point(8, 152);
-            this.checkBoxUdpServer.Margin = new System.Windows.Forms.Padding(4);
-            this.checkBoxUdpServer.Name = "checkBoxUdpServer";
-            this.checkBoxUdpServer.Size = new System.Drawing.Size(22, 21);
-            this.checkBoxUdpServer.TabIndex = 24;
-            this.checkBoxUdpServer.UseVisualStyleBackColor = true;
-            this.checkBoxUdpServer.CheckedChanged += new System.EventHandler(this.CheckBoxUdpServer_CheckedChanged);
+            this.checkBoxUdpBridge.AutoSize = true;
+            this.checkBoxUdpBridge.Location = new System.Drawing.Point(8, 152);
+            this.checkBoxUdpBridge.Margin = new System.Windows.Forms.Padding(4);
+            this.checkBoxUdpBridge.Name = "checkBoxUdpBridge";
+            this.checkBoxUdpBridge.Size = new System.Drawing.Size(22, 21);
+            this.checkBoxUdpBridge.TabIndex = 24;
+            this.checkBoxUdpBridge.UseVisualStyleBackColor = true;
+            this.checkBoxUdpBridge.CheckedChanged += new System.EventHandler(this.CheckBoxUdpBridge_CheckedChanged);
             // 
             // label28
             // 
@@ -1152,7 +1152,6 @@
             this.radioButtonUDPClient.Size = new System.Drawing.Size(21, 20);
             this.radioButtonUDPClient.TabIndex = 32;
             this.radioButtonUDPClient.UseVisualStyleBackColor = true;
-            this.radioButtonUDPClient.CheckedChanged += new System.EventHandler(this.RadioButtonUDPClient_CheckedChanged);
             // 
             // groupBox12
             // 
@@ -1332,7 +1331,7 @@
         private System.Windows.Forms.TextBox textBoxMqttPort;
         private System.Windows.Forms.Label label21;
         private System.Windows.Forms.Label label22;
-        private System.Windows.Forms.CheckBox checkBoxTcpServer;
+        private System.Windows.Forms.CheckBox checkBoxTcpBridge;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.Label label25;
         private System.Windows.Forms.GroupBox groupBox5;
@@ -1373,7 +1372,7 @@
         private System.Windows.Forms.Label label27;
         private System.Windows.Forms.Label label28;
         private System.Windows.Forms.TextBox textBoxUdpServerPort;
-        private System.Windows.Forms.CheckBox checkBoxUdpServer;
+        private System.Windows.Forms.CheckBox checkBoxUdpBridge;
         private System.Windows.Forms.Label label29;
         private System.Windows.Forms.ComboBox comboBoxCmdProdxy;
         private System.Windows.Forms.Label label30;

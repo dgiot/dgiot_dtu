@@ -24,8 +24,19 @@ namespace Dgiot_dtu
             ALERT,
         }
 
+        private static List<string> levelstring = new List<string>
+        {
+            "DEBUG",
+            "INFO",
+            "NOTICE",
+            "WARN",
+            "ERROR",
+            "CRITICAL",
+            "ALERT"
+        };
+
         private static bool bDisplayHex = false;
-        private static int level = (int)Level.DEBUG;
+        private static int loglevel = (int)Level.DEBUG;
         private static LogHelper instance;
         private static string login = string.Empty;
         private static MainForm mainform = null;
@@ -43,33 +54,22 @@ namespace Dgiot_dtu
         public static void Init(MainForm mainform, int level = 0)
         {
             LogHelper.mainform = mainform;
-            LogHelper.level = level;
+            loglevel = level;
         }
 
         public static List<string> Levels()
         {
-            return new List<string>
-            {
-                "DEBUG",
-                "INFO",
-                "NOTICE",
-                "WARN",
-                "ERROR",
-                "CRITICAL",
-                "ALERT"
-            };
+            return levelstring;
         }
-
-
 
         public static void SetLevel(int level = 0)
         {
-            LogHelper.level = level;
+            loglevel = level;
         }
 
         public static void Log(string text, int level = 0)
         {
-            if (level >= LogHelper.level)
+            if (level >= loglevel)
             {
                 mainform.Log(text);
             }
@@ -79,7 +79,7 @@ namespace Dgiot_dtu
         {
             if (config["DisplayHex"] != null)
             {
-                LogHelper.bDisplayHex = DgiotHelper.StrTobool(config["DisplayHex"].Value);
+                bDisplayHex = DgiotHelper.StrTobool(config["DisplayHex"].Value);
             }
         }
 
