@@ -1,25 +1,17 @@
-name: .NET
+name: Continuos Integration with Github
 
 on:
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
-
+    tags:
+      - 'v*'
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 5.0.x
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+      - uses: actions/checkout@master
+      - name: Publish to Docker Repository
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: ispeakcode/docker-githubaction
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
