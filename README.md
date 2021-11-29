@@ -15,14 +15,39 @@
 ![dgiot_dtu_demo.png](http://dgiot-1253666439.cos.ap-shanghai-fsi.myqcloud.com/dgiot4.0/dgiot_dtu_demo.png)
 
 # 运行环境
-[.net4.5](https://dgiot-dev-1306147891.cos.ap-nanjing.myqcloud.com/dgiot_dtu/dotNetFx45.rar)
+dgiot_dtu 依赖[.net4.5](https://dgiot-dev-1306147891.cos.ap-nanjing.myqcloud.com/dgiot_dtu/dotNetFx45.rar)运行环境，
+在window7及以下环境下需要安装.net4.5
 
 # 编译环境
-[vc2019](https://dgiot-dev-1306147891.cos.ap-nanjing.myqcloud.com/dgiot_dtu/visualstudio2019.zip)
+dgiot_dtu 用[vc2019](https://dgiot-dev-1306147891.cos.ap-nanjing.myqcloud.com/dgiot_dtu/visualstudio2019.zip)编译调试
+
 
 # 测试环境
+
+## OPC模拟测试
 + [opcserver](https://dgiot-dev-1306147891.cos.ap-nanjing.myqcloud.com/dgiot_dtu/MatrikonOPCSimulation.zip)
 
 + [opcclient](https://dgiot-dev-1306147891.cos.ap-nanjing.myqcloud.com/dgiot_dtu/MatrikonOPCSimulationV_1.5.zip)
+
+## 串口模拟测试
+
++ 虚拟电表
++ 虚拟modbus
+
+## Bacnet模拟测试
+
+## PLC模拟测试
+
+## Control模拟测试
+
+## Access模拟测试
+
+## SqlSever模拟测试
+
+## mqtt桥接测试
+
+## tcp桥接测试
+
+## udp桥接测试
 
 
