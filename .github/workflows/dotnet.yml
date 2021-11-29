@@ -1,17 +1,37 @@
-name: Continuos Integration with Github
+name: sync
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches: [t]
+#  schedule:
+#    - cron: '0 21 * * *'
+  workflow_dispatch:
+
 jobs:
-  build:
+  sync:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-      - name: Publish to Docker Repository
-        uses: elgohr/Publish-Docker-Github-Action@master
+      - name: Sync to Gitee page
+        uses: wearerequired/git-mirror-action@master
+        env:
+          # 在 Settings->Secrets 配置 GITEE_RSA_PRIVATE_KEY
+          SSH_PRIVATE_KEY: ${{ secrets.GITEE_PRIVATE_KEY }}
         with:
-          name: ispeakcode/docker-githubaction
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          # GitHub 源仓库地址
+          source-repo: git@github.com:dgiot/dgiot_dtu.git
+          # Gitee 目标仓库地址
+          destination-repo: git@gitee.com:dgiot_dtu/dgiot_dtu.git
+
+      # 绕过手机验证码：https://github.com/yanglbme/gitee-pages-action/issues/6#issuecomment-664812675
+      - name: Build Gitee Pages
+        uses: yanglbme/gitee-pages-action@main
+        with:
+          # Gitee 用户名
+          gitee-username: ${{ secrets.GITEE_USERNAME }}
+          # Gitee 密码
+          gitee-password: ${{ secrets.GITEE_PASSWORD }}
+          # Gitee 仓库
+          gitee-repo: dgiot-dashboard/dgiot-dashboard
+          # 要部署的分支
+          branch: cdn-pages
+
