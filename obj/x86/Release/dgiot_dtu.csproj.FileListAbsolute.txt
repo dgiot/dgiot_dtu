@@ -36,3 +36,4 @@ D:\msys64\home\jonhl\dgiot_dtu\obj\x86\Release\dgiot_dtu.csproj.Fody.CopyLocal.c
 D:\msys64\home\jonhl\dgiot_dtu\obj\x86\Release\dgiot_dtu.csproj.CopyComplete
 D:\msys64\home\jonhl\dgiot_dtu\obj\x86\Release\dgiot_dtu.exe
 D:\msys64\home\jonhl\dgiot_dtu\obj\x86\Release\dgiot_dtu.pdb
+D:\msys64\home\jonhl\dgiot_dtu\obj\x86\Release\dgiot_dtu.csprojAssemblyReference.cache
