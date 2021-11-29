@@ -51,7 +51,8 @@ namespace Dgiot_dtu
         private static List<string> groupfilter = new List<string>
         {
             "._Statistics",
-            "._System"
+            "._System",
+            ".SystemVariable"
         };
 
         public static OPCDAHelper GetInstance()
@@ -67,13 +68,21 @@ namespace Dgiot_dtu
         public static void Start(KeyValueConfigurationCollection config)
         {
             Config(config);
-            socketserver.Start();
+            if (socketserver == null)
+            {
+                socketserver.Start();
+            }
+
             bIsRun = true;
         }
 
         public static void Stop()
         {
-            socketserver.Stop();
+            if (socketserver != null)
+            {
+                socketserver.Stop();
+            }
+
             bIsRun = false;
         }
 
@@ -95,7 +104,7 @@ namespace Dgiot_dtu
             }
         }
 
-        public static void Do_opc_da(MqttClient mqttClient, string topic, Dictionary<string, object> json, string clientid)
+        public static void Do_opc_da(string topic, Dictionary<string, object> json, string clientid)
         {
             Regex r_subopcda = new Regex(OPCDAHelper.topic); // 定义一个Regex对象实例
             Match m_subopcda = r_subopcda.Match(topic); // 在字符串中匹配

@@ -297,9 +297,9 @@ namespace Dgiot_dtu
                 SerialPortHelper.Write(e.ApplicationMessage.Payload, 0, e.ApplicationMessage.Payload.Length);
             }
 
-            OPCDAHelper.Do_opc_da(mqttClient, topic, json, clientid);
+            OPCDAHelper.Do_opc_da(topic, json, clientid);
 
-            AccessHelper.Do_mdb(mqttClient, topic,  json, clientid);
+            AccessHelper.Do_mdb(topic,  json, clientid);
 
             MqttServerHelper.Write(e.ApplicationMessage);
         }

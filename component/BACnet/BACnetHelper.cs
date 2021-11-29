@@ -42,26 +42,23 @@ namespace Dgiot_dtu
         {
             Config(config);
             bIsRun = true;
-            if (bIsCheck)
+            if (bacnetClient == null)
             {
-                if (bacnetClient == null)
-                {
-                    // Bacnet on UDP/IP/Ethernet
-                    bacnetClient = new BacnetClient(new BacnetIpUdpProtocolTransport(0xBAC0, false));
+                // Bacnet on UDP/IP/Ethernet
+                bacnetClient = new BacnetClient(new BacnetIpUdpProtocolTransport(0xBAC0, false));
 
-                    // or Bacnet Mstp on COM4 à 38400 bps, own master id 8
-                    // m_bacnet_client = new BacnetClient(new BacnetMstpProtocolTransport("COM4", 38400, 8);
-                    // Or Bacnet Ethernet
-                    // bacnetClient = new BacnetClient(new BacnetEthernetProtocolTransport("Connexion au réseau local"));
-                    // Or Bacnet on IPV6
-                    // bacnetClient = new BacnetClient(new BacnetIpV6UdpProtocolTransport(0xBAC0));
-                }
-
-                bacnetClient.OnIam += Handler_OnIam;
-                bacnetClient.Start();
-                bacnetClient.WhoIs();
-                LogHelper.Log("bacnetClient start IpUdpProtocol 0xBAC0: " + bacnetClient.ToString());
+                // or Bacnet Mstp on COM4 à 38400 bps, own master id 8
+                // m_bacnet_client = new BacnetClient(new BacnetMstpProtocolTransport("COM4", 38400, 8);
+                // Or Bacnet Ethernet
+                // bacnetClient = new BacnetClient(new BacnetEthernetProtocolTransport("Connexion au réseau local"));
+                // Or Bacnet on IPV6
+                // bacnetClient = new BacnetClient(new BacnetIpV6UdpProtocolTransport(0xBAC0));
             }
+
+            bacnetClient.OnIam += Handler_OnIam;
+            bacnetClient.Start();
+            bacnetClient.WhoIs();
+            LogHelper.Log("bacnetClient start IpUdpProtocol 0xBAC0: " + bacnetClient.ToString());
         }
 
         public static void Stop()
@@ -69,7 +66,7 @@ namespace Dgiot_dtu
             bIsRun = false;
             if (bacnetClient != null)
             {
-               // bacnetClient.Start();
+               //bacnetClient.Start();
             }
         }
 
@@ -83,9 +80,8 @@ namespace Dgiot_dtu
 
         public static void Write(byte[] data, int offset, int len)
         {
-            LogHelper.Log("bacnet write: " + bIsCheck.ToString());
-            if (bIsCheck)
-            {
+                LogHelper.Log("bacnet write: " + bIsCheck.ToString());
+
                 foreach (var device in devicesList)
                 {
                     var count = GetDeviceArrayIndexCount(device);
@@ -108,7 +104,6 @@ namespace Dgiot_dtu
                     System.IO.File.WriteAllText($"{device.DeviceId}pppp.json", Newtonsoft.Json.JsonConvert.SerializeObject(device));
                     LogHelper.Log("bacnet device: " + Newtonsoft.Json.JsonConvert.SerializeObject(device).ToString());
                 }
-            }
         }
 
         // 批量扫点,注意不要太多,超过maxAPDU失败
