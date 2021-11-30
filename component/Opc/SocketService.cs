@@ -218,6 +218,28 @@ namespace Da
             return opcServerNodes;
         }
 
+        public void SetupCallBack(List<TreeNode> opcDaServerList)
+        {
+            scanTimer.Interval = 3000; // 每3秒更新一次 这里只是假设3秒可以完全执行扫描点位 实际情况不一定如此 
+            scanTimer.Elapsed += (o, e) =>
+            {
+                if (Interlocked.CompareExchange(ref exchanging, 1, 0) == 0)
+                {
+                    if (scanTimer.Interval == 3000)
+                    {
+                        scanTimer.Interval = int.MaxValue; // 60000;
+                    }
+
+                    List<TreeNode> tempDataList = ScanOPCServerData(opcDaServerList);
+                    treeNodeCaches.Clear();
+                    treeNodeCaches.AddRange(tempDataList);
+                    Interlocked.Decrement(ref exchanging);
+                }
+            };
+
+            scanTimer.Start();
+        }
+
         private int CompareIPs(byte[] ip1, byte[] ip2)
         {
             if (ip1 == null || ip1.Length != 4)

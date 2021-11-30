@@ -259,7 +259,6 @@
     <None Include=".editorconfig" />
     <None Include="app.config" />
     <None Include="Config\log4net.config" />
-    <None Include="Config\log4net.unix.config" />
     <None Include="FodyWeavers.xsd">
       <SubType>Designer</SubType>
     </None>

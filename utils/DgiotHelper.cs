@@ -7,11 +7,30 @@ namespace Dgiot_dtu
     using System;
     using System.Collections.Generic;
     using System.Management;
+    using System.Net;
+    using System.Net.Sockets;
     using System.Security.Cryptography;
     using System.Text;
 
     public class DgiotHelper
     {
+        public static string GetIp()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            string localIp = string.Empty;
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    localIp = ip.ToString();
+                    break;
+                }
+            }
+
+            LogHelper.Log("localIp:" + localIp);
+            return localIp;
+        }
+
         public static string ToHexString(string s)
         {
             return ToHexString(Encoding.ASCII.GetBytes(s));

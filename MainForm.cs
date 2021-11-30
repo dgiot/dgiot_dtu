@@ -146,6 +146,7 @@ namespace Dgiot_dtu
 
                 buttonStartStop.Text = @"Stop";
 
+                DgiotHelper.GetIp();
                 SaveAppConfig();
             }
             else
@@ -413,7 +414,8 @@ namespace Dgiot_dtu
         {
             SetConfig("tcpServerIsCheck", DgiotHelper.BoolTostr(checkBoxTcpBridge.Checked));
             SetConfig("PLCTopic", textBoxPLCTopic.Text);
-            SetConfig("OpcServer", textBoxOpcServer.Text);
+            SetConfig("OpcIp", textBoxOpcIp.Text);
+            SetConfig("OpcServer", comboBoxOpcServer.Text);
             SetConfig("OPCUATopic", textBoxOPCUATopic.Text);
             SetConfig("BACnetTopic", textBoxBACnetTopic.Text);
             SetConfig("ControlTopic", textBoxControlTopic.Text);
@@ -614,13 +616,15 @@ namespace Dgiot_dtu
             SetConfig("SqlServerTopic", textBoxSqlServerTopic.Text);
         }
 
-        private void TextBoxOpcServer_TextChanged(object sender, EventArgs e)
+
+        private void TextBoxOpcIp_TextChanged(object sender, EventArgs e)
         {
-            SetConfig("OpcServer", textBoxOpcServer.Text);
+            SetConfig("OpcIp", textBoxOpcIp.Text);
         }
 
         private void ComboBoxOpcServer_SelectedIndexChanged(object sender, EventArgs e)
         {
+            SetConfig("OpcServer", comboBoxOpcServer.Text);
         }
 
         private void ComboBoxLogLevel_SelectedIndexChanged(object sender, EventArgs e)
@@ -690,5 +694,6 @@ namespace Dgiot_dtu
             {
             }
         }
+
     }
 }

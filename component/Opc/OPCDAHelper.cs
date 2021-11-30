@@ -13,7 +13,6 @@ namespace Dgiot_dtu
     using System.Text;
     using System.Text.RegularExpressions;
     using Da;
-    using MQTTnet.Core.Client;
     using TitaniumAS.Opc.Client.Common;
     using TitaniumAS.Opc.Client.Da;
     using TitaniumAS.Opc.Client.Da.Browsing;
@@ -24,6 +23,8 @@ namespace Dgiot_dtu
         private static string topic = "thing/opcda/";
         private static string opcip = "127.0.0.1";
         private static List<string> serverlist = new List<string> { };
+        private static string opcserver = "";
+        private static List<TreeNode> opcDaServerList = new List<TreeNode>();
         private static OPCDAHelper instance = null;
         private static string clientid = string.Empty;
         private static bool bIsRun = V;
@@ -70,6 +71,7 @@ namespace Dgiot_dtu
             Config(config);
             if (socketserver == null)
             {
+                // socketserver.SetupCallBack(opcDaServerList);
                 socketserver.Start();
             }
 
@@ -98,9 +100,14 @@ namespace Dgiot_dtu
                 topic = config["OPCDATopic"].Value;
             }
 
+            if (config["OpcIp"] != null)
+            {
+                opcip= config["OpcIp"].Value;
+            }
+
             if (config["OpcServer"] != null)
             {
-                opcip = config["OpcServer"].Value;
+                opcserver = config["OpcServer"].Value;
             }
         }
 
@@ -146,9 +153,9 @@ namespace Dgiot_dtu
         public static List<string> GetServer()
         {
             List<string> addresses = new List<string> { opcip };
-            dataList = socketserver.ScanOPCClassicServer(addresses);
+            opcDaServerList = socketserver.ScanOPCClassicServer(addresses);
             serverlist.Clear();
-            foreach (TreeNode node in dataList)
+            foreach (TreeNode node in opcDaServerList)
             {
                 if (node.Children.Any())
                 {
@@ -164,24 +171,21 @@ namespace Dgiot_dtu
 
         public static void Scan()
         {
-            foreach (string opcserver in serverlist)
+            Uri url = UrlBuilder.Build(opcserver);
+            try
             {
-                Uri url = UrlBuilder.Build(opcserver);
-                try
+                using (var server = new OpcDaServer(url))
                 {
-                    using (var server = new OpcDaServer(url))
-                    {
-                        // Connect to the server first.
-                        server.Connect();
-                        var browser = new OpcDaBrowserAuto(server);
-                        JsonObject scan = new JsonObject();
-                        BrowseChildren(opcserver, scan, browser);
-                        MqttClientHelper.Publish(topic + "/metadata/derived", Encoding.UTF8.GetBytes(scan.ToString()));
-                    }
+                    // Connect to the server first.
+                    server.Connect();
+                    var browser = new OpcDaBrowserAuto(server);
+                    JsonObject scan = new JsonObject();
+                    BrowseChildren(opcserver, scan, browser);
+                    MqttClientHelper.Publish(topic + "/metadata/derived", Encoding.UTF8.GetBytes(scan.ToString()));
                 }
-                catch (Exception)
-                {
-                }
+            }
+            catch (Exception)
+            {
             }
         }
 
@@ -210,22 +214,27 @@ namespace Dgiot_dtu
             bool flag = false;
             foreach (OpcDaBrowseElement element in elements)
             {
-                if (IsPass(indent, element.ItemId.ToString()))
+                if (!(element.ItemId.IndexOf('$') == 0))
                 {
-                    continue;
-                }
+                    if (IsPass(indent, element.ItemId.ToString()))
+                    {
+                        continue;
+                     }
 
-                // Skip elements without children.
-                if (!element.HasChildren)
-                {
-                    items.Add(element.ItemId.ToString(), element.Name.ToString());
-                    array.Add(element.ItemId.ToString());
-                    flag = true;
-                    continue;
-                }
+                    if (element.ItemId != null && indent > 2 )
+                    {
+                        items.Add(element.ItemId.ToString(), element.Name.ToString());
+                        array.Add(element.ItemId.ToString());
+                        flag = true;
+                    }
 
-                // Output children of the element.
-                BrowseChildren(opcserver, json, browser, element.ItemId, indent + 2);
+                    // Skip elements without children.
+                    if (element.HasChildren)
+                    {
+                        // Output children of the element.
+                        BrowseChildren(opcserver, json, browser, element.ItemId, indent + 2);
+                    }
+                }
             }
 
             if (flag)
@@ -269,15 +278,27 @@ namespace Dgiot_dtu
                     group.IsActive = true;
                     OpcDaItemResult[] results = group.AddItems(definitions);
                     OpcDaItemValue[] values = group.Read(group.Items, OpcDaDataSource.Device);
-                    foreach (OpcDaItemValue item in values)
+                    foreach (string id in array)
                     {
                         JsonObject tmp = new JsonObject();
-                        tmp.Add("Type", item.Value.GetType().ToString());
-                        tmp.Add("ItemId", item.Item.ItemId.ToString());
-                        if (jsonItems.ContainsKey(item.Item.ItemId.ToString()))
+                        tmp.Add("ItemId", id);
+
+                        foreach (OpcDaItemValue item in values)
                         {
-                            json.Add(jsonItems[item.Item.ItemId.ToString()].ToString(), tmp);
+                            if (item.Item != null && item.Item.ItemId != null)
+                            {
+                                if (item.Value != null)
+                                {
+                                    if (item.Item.ItemId.ToString() == id)
+                                    {
+                                        tmp.Add("Type", item.Value.GetType().ToString());
+                                        break;
+                                    }
+                                }
+                            }
                         }
+
+                      json.Add(jsonItems[id].ToString(), tmp);
                     }
 
                     server.Disconnect();
@@ -285,7 +306,7 @@ namespace Dgiot_dtu
             }
             catch (Exception ex)
             {
-                LogHelper.Log(ex.GetBaseException().ToString());
+                // LogHelper.Log(ex.GetBaseException().ToString());
             }
 
             return json;
