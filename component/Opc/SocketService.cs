@@ -12,6 +12,7 @@ namespace Da
     using System.Net.NetworkInformation;
     using System.Net.Sockets;
     using System.Threading;
+    using Dgiot_dtu;
     using IniParser;
     using IniParser.Model;
     using Newtonsoft.Json;
@@ -220,7 +221,7 @@ namespace Da
 
         public void SetupCallBack(List<TreeNode> opcDaServerList)
         {
-            scanTimer.Interval = 3000; // 每3秒更新一次 这里只是假设3秒可以完全执行扫描点位 实际情况不一定如此 
+            scanTimer.Interval = 3000; // 每3秒更新一次 这里只是假设3秒可以完全执行扫描点位 实际情况不一定如此
             scanTimer.Elapsed += (o, e) =>
             {
                 if (Interlocked.CompareExchange(ref exchanging, 1, 0) == 0)
@@ -235,8 +236,11 @@ namespace Da
                     treeNodeCaches.AddRange(tempDataList);
                     Interlocked.Decrement(ref exchanging);
                 }
+
+                LogHelper.Log("SetupCallBack");
             };
 
+            LogHelper.Log("SetupCallBack start");
             scanTimer.Start();
         }
 
@@ -309,11 +313,13 @@ namespace Da
 
         private void NewRequestReceived(AppSession session, StringRequestInfo requestInfo)
         {
+            LogHelper.Log("session  " + session.ToString() + " " + requestInfo.ToString());
             ProcessRequest(session, requestInfo);
         }
 
         public void ProcessRequest(AppSession session, StringRequestInfo requestInfo)
         {
+            LogHelper.Log("session  " + session.ToString() + " " + requestInfo.ToString());
             int cmd = int.Parse(requestInfo.Parameters[0]);
             if (Interlocked.CompareExchange(ref exchanging, 1, 0) == 0)
             {

@@ -47,3 +47,9 @@ dotnet_diagnostic.IDE0052.severity = none
 
 # Default severity for analyzer diagnostics with category 'CodeQuality'
 dotnet_analyzer_diagnostic.category-CodeQuality.severity = none
+
+# Default severity for all analyzer diagnostics
+dotnet_analyzer_diagnostic.severity = silent
+
+# Default severity for analyzer diagnostics with category 'StyleCop.CSharp.OrderingRules'
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.OrderingRules.severity = none

@@ -66,7 +66,7 @@ namespace Dgiot_dtu
             bIsRun = false;
             if (bacnetClient != null)
             {
-               //bacnetClient.Start();
+               // bacnetClient.Start();
             }
         }
 

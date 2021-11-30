@@ -9,5 +9,7 @@ namespace Da
         public string ItemId { get; set; }
 
         public object Data { get; set; }
+
+        public string Type { get; set; }
     }
 }

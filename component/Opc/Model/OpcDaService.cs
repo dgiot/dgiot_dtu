@@ -2,12 +2,12 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
-using TitaniumAS.Opc.Client.Da;
-
 namespace Da
 {
+    using System;
+    using System.Collections.Generic;
+    using TitaniumAS.Opc.Client.Da;
+
     public class OpcDaService
     {
         public string Host { get; set; }

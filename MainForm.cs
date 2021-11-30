@@ -58,6 +58,8 @@ namespace Dgiot_dtu
             "SqlServer",
         };
 
+    
+              
         private Configuration config;
 
         public MainForm()
@@ -79,6 +81,7 @@ namespace Dgiot_dtu
             {
                 Log("read config exception: " + ex.Message);
             }
+
         }
 
         public void Log(string text)
@@ -220,6 +223,9 @@ namespace Dgiot_dtu
             {
                 comboBoxLogLevel.SelectedIndex = (int)LogHelper.Level.DEBUG;
             }
+
+            comboBoxLan.Items.Add("简体中文");
+            comboBoxLan.Items.Add("English");
         }
 
         private void RestoreConfigs(Configuration config)
@@ -695,5 +701,144 @@ namespace Dgiot_dtu
             }
         }
 
+        private void comboBoxLan_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Language(comboBoxLan.SelectedItem.ToString());
+        }
+
+        private void Language(String lan)
+        {
+            if (lan == "English")
+            {
+                En();
+            }
+            else
+            {
+                Zh();
+            }
+        }
+
+        private void Zh()
+        {
+            sendBridge.Text = "发送";
+            buttonClear.Text = "清除";
+            buttonStartStop.Text = "开始";
+
+            checkBoxReconnect.Text = "自动重连";
+            label3.Text = "作者：";
+            label33.Text = "语言";
+            label32.Text = "日志级别";
+
+            label7.Text = "发至";
+            label2.Text = "发至";
+            label19.Text = "发至";
+            label23.Text = "发至";
+            label8.Text = "发至";
+            label6.Text = "发至";
+            label14.Text = "发至";
+
+            groupBoxSerialPort.Text = "串口捕获";
+            groupBox12.Text = "PLC 捕获";
+            groupBox4.Text = "OPC_DA 捕获";
+            groupBox5.Text = "OPC_UA 捕获";
+            groupBox6.Text = "BACnet 捕获";
+            groupBox7.Text = "控制捕获";
+            groupBox8.Text = "访问捕获";
+            groupBox9.Text = "Sql Server 捕获";
+
+            labelSerialPort.Text = "端口";
+            label1.Text = "波特率";
+            label4.Text = "数据位";
+            label13.Text = "校验位";
+            label5.Text = "停止位";
+            label31.Text = "扫描";
+            label25.Text = "服务";
+
+            groupBox3.Text = "Mqtt 客户端通道";
+            label22.Text = "服务";
+            label21.Text = "端口";
+            label9.Text = "用户名";
+            label10.Text = "密码";
+            label30.Text = "开发地址";
+            label20.Text = "客户编号";
+            label11.Text = "订阅主题";
+            label12.Text = "发布主题";
+            label29.Text = "命令行代理";
+            label27.Text = "桥接";
+
+            groupBox2.Text = "TCP 客户端通道";
+            label18.Text = "服务";
+            label17.Text = "端口";
+            label16.Text = "登录";
+            labelTargetPort.Text = "桥接";
+
+            groupBox10.Text = "UDP 客户端通道";
+            label26.Text = "服务";
+            label24.Text = "端口";
+            label15.Text = "登录";
+            label28.Text = "桥接";
+        }
+
+        private void En()
+        {
+            sendBridge.Text = "Send";
+            buttonClear.Text = "Clear";
+            buttonStartStop.Text = "Start";
+            label32.Text = "Level";
+
+            checkBoxReconnect.Text = "Auto Reconnect";
+            label3.Text = "Author:";
+            label33.Text = "Language";
+
+            label7.Text = "To";
+            label2.Text = "To";
+            label19.Text = "To";
+            label23.Text = "To";
+            label8.Text = "To";
+            label6.Text = "To";
+            label14.Text = "To";
+
+            groupBoxSerialPort.Text = "Serial Port Capture";
+            groupBox12.Text = "PLC Capture";
+            groupBox4.Text = "OPC_DA Capture";
+            groupBox5.Text = "OPC_UA Capture";
+            groupBox6.Text = "BACnet Capture";
+            groupBox7.Text = "Control Capture";
+            groupBox8.Text = "Access Capture";
+            groupBox9.Text = "Sql Server Capture";
+
+
+            labelSerialPort.Text = "Port";
+            label1.Text = "Baud Rate";
+            label4.Text = "dataBits";
+            label13.Text = "Parity";
+            label5.Text = "stopBits";
+            label31.Text = "Scan";
+            label25.Text = "Server";
+
+            groupBox3.Text = "Mqtt Client Channel";
+            label22.Text = "Server";
+            label21.Text = "Port";
+            label9.Text = "UserName";
+            label10.Text = "PassWord";
+            label30.Text = "DevAddr";
+            label20.Text = "Clientid";
+            label11.Text = "SubTopic";
+            label12.Text = "PubTopic";
+            label29.Text = "cmd proxy";
+            label27.Text = "bridge";
+
+            groupBox2.Text = "TCP Client Channel";
+            label18.Text = "Server";
+            label17.Text = "Port";
+            label16.Text = "login";
+            labelTargetPort.Text = "bridge";
+
+            groupBox10.Text = "UDP Client Channel";
+            label26.Text = "Server";
+            label24.Text = "Port";
+            label15.Text = "login";
+            label28.Text = "bridge";
+        }
     }
 }
