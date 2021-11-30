@@ -226,6 +226,7 @@ namespace Dgiot_dtu
 
             comboBoxLan.Items.Add("简体中文");
             comboBoxLan.Items.Add("English");
+            comboBoxLan.SelectedIndex = 0;
         }
 
         private void RestoreConfigs(Configuration config)

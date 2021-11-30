@@ -125,6 +125,7 @@
             this.label32 = new System.Windows.Forms.Label();
             this.comboBoxLan = new System.Windows.Forms.ComboBox();
             this.label33 = new System.Windows.Forms.Label();
+            this.label34 = new System.Windows.Forms.Label();
             this.groupBoxSerialPort.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -1232,13 +1233,17 @@
             this.comboBoxLan.Size = new System.Drawing.Size(148, 26);
             this.comboBoxLan.TabIndex = 38;
             this.comboBoxLan.SelectedIndexChanged += new System.EventHandler(this.comboBoxLan_SelectedIndexChanged);
+ 
             // 
-            // label33
+            // label34
             // 
-            this.label33.Location = new System.Drawing.Point(0, 0);
+            this.label33.AutoSize = true;
+            this.label33.Location = new System.Drawing.Point(1254, 837);
+            this.label33.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label33.Name = "label33";
-            this.label33.Size = new System.Drawing.Size(112, 28);
-            this.label33.TabIndex = 0;
+            this.label33.Size = new System.Drawing.Size(80, 18);
+            this.label33.TabIndex = 39;
+            this.label33.Text = "Language";
             // 
             // MainForm
             // 
@@ -1246,6 +1251,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(143)))), ((int)(((byte)(178)))));
             this.ClientSize = new System.Drawing.Size(1910, 877);
+            this.Controls.Add(this.label34);
             this.Controls.Add(this.label33);
             this.Controls.Add(this.comboBoxLan);
             this.Controls.Add(this.label32);
@@ -1410,6 +1416,7 @@
         private System.Windows.Forms.Label label32;
         private System.Windows.Forms.ComboBox comboBoxLan;
         private System.Windows.Forms.Label label33;
+        private System.Windows.Forms.Label label34;
     }
 }
 
