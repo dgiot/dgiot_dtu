@@ -40,9 +40,6 @@ namespace Dgiot_dtu
             "SerialPort",
             "TcpServer",
             "BACnet",
-            "OPCDA_SCAN",
-            "OPCDA_READ",
-            "OPCDA_WRITE",
             "OPCUA_SCAN",
             "OPCUA_READ",
             "OPCUA_WRITE",
@@ -840,6 +837,26 @@ namespace Dgiot_dtu
             label24.Text = "Port";
             label15.Text = "login";
             label28.Text = "bridge";
+        }
+
+        private void comboBoxBridge_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void comboBoxOpcHost_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void comboBoxOpcGroup_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBoxOpcItems_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

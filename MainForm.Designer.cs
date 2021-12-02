@@ -126,6 +126,11 @@
             this.comboBoxLan = new System.Windows.Forms.ComboBox();
             this.label33 = new System.Windows.Forms.Label();
             this.label34 = new System.Windows.Forms.Label();
+            this.comboBoxOpcHost = new System.Windows.Forms.ComboBox();
+            this.comboBoxOpcGroup = new System.Windows.Forms.ComboBox();
+            this.label35 = new System.Windows.Forms.Label();
+            this.label36 = new System.Windows.Forms.Label();
+            this.textBoxOpcItems = new System.Windows.Forms.TextBox();
             this.groupBoxSerialPort.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -226,7 +231,7 @@
             this.groupBoxSerialPort.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBoxSerialPort.Name = "groupBoxSerialPort";
             this.groupBoxSerialPort.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBoxSerialPort.Size = new System.Drawing.Size(316, 181);
+            this.groupBoxSerialPort.Size = new System.Drawing.Size(316, 179);
             this.groupBoxSerialPort.TabIndex = 13;
             this.groupBoxSerialPort.TabStop = false;
             this.groupBoxSerialPort.Text = "Serial Port Capture";
@@ -776,14 +781,19 @@
             // 
             // groupBox4
             // 
+            this.groupBox4.Controls.Add(this.textBoxOpcItems);
+            this.groupBox4.Controls.Add(this.label36);
+            this.groupBox4.Controls.Add(this.label35);
+            this.groupBox4.Controls.Add(this.comboBoxOpcGroup);
+            this.groupBox4.Controls.Add(this.comboBoxOpcHost);
             this.groupBox4.Controls.Add(this.comboBoxOpcServer);
             this.groupBox4.Controls.Add(this.label31);
             this.groupBox4.Controls.Add(this.label25);
-            this.groupBox4.Location = new System.Drawing.Point(1022, 289);
+            this.groupBox4.Location = new System.Drawing.Point(1022, 286);
             this.groupBox4.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBox4.Size = new System.Drawing.Size(316, 96);
+            this.groupBox4.Size = new System.Drawing.Size(316, 155);
             this.groupBox4.TabIndex = 18;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "OPC_DA Capture";
@@ -791,7 +801,7 @@
             // comboBoxOpcServer
             // 
             this.comboBoxOpcServer.FormattingEnabled = true;
-            this.comboBoxOpcServer.Location = new System.Drawing.Point(75, 59);
+            this.comboBoxOpcServer.Location = new System.Drawing.Point(75, 55);
             this.comboBoxOpcServer.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.comboBoxOpcServer.Name = "comboBoxOpcServer";
             this.comboBoxOpcServer.Size = new System.Drawing.Size(228, 26);
@@ -806,12 +816,12 @@
             this.label31.Name = "label31";
             this.label31.Size = new System.Drawing.Size(44, 18);
             this.label31.TabIndex = 7;
-            this.label31.Text = "Scan";
+            this.label31.Text = "Host";
             // 
             // label25
             // 
             this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(3, 60);
+            this.label25.Location = new System.Drawing.Point(5, 60);
             this.label25.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label25.Name = "label25";
             this.label25.Size = new System.Drawing.Size(62, 18);
@@ -832,11 +842,11 @@
             // 
             this.groupBox5.Controls.Add(this.textBoxOPCUATopic);
             this.groupBox5.Controls.Add(this.label19);
-            this.groupBox5.Location = new System.Drawing.Point(1022, 402);
+            this.groupBox5.Location = new System.Drawing.Point(1022, 452);
             this.groupBox5.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBox5.Size = new System.Drawing.Size(316, 73);
+            this.groupBox5.Size = new System.Drawing.Size(316, 67);
             this.groupBox5.TabIndex = 19;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "OPC_UA Capture";
@@ -866,11 +876,11 @@
             // 
             this.groupBox6.Controls.Add(this.textBoxBACnetTopic);
             this.groupBox6.Controls.Add(this.label23);
-            this.groupBox6.Location = new System.Drawing.Point(1022, 485);
+            this.groupBox6.Location = new System.Drawing.Point(1022, 533);
             this.groupBox6.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBox6.Size = new System.Drawing.Size(316, 73);
+            this.groupBox6.Size = new System.Drawing.Size(316, 63);
             this.groupBox6.TabIndex = 20;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "BACnet Capture";
@@ -900,11 +910,11 @@
             // 
             this.groupBox7.Controls.Add(this.textBoxControlTopic);
             this.groupBox7.Controls.Add(this.label8);
-            this.groupBox7.Location = new System.Drawing.Point(1022, 568);
+            this.groupBox7.Location = new System.Drawing.Point(1022, 607);
             this.groupBox7.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBox7.Size = new System.Drawing.Size(316, 73);
+            this.groupBox7.Size = new System.Drawing.Size(316, 71);
             this.groupBox7.TabIndex = 21;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Control Capture";
@@ -954,6 +964,7 @@
             this.comboBoxBridge.Name = "comboBoxBridge";
             this.comboBoxBridge.Size = new System.Drawing.Size(140, 26);
             this.comboBoxBridge.TabIndex = 13;
+            this.comboBoxBridge.SelectedIndexChanged += new System.EventHandler(this.comboBoxBridge_SelectedIndexChanged);
             // 
             // label7
             // 
@@ -969,18 +980,18 @@
             // 
             this.groupBox8.Controls.Add(this.textBoxAccessTopic);
             this.groupBox8.Controls.Add(this.label6);
-            this.groupBox8.Location = new System.Drawing.Point(1022, 661);
+            this.groupBox8.Location = new System.Drawing.Point(1022, 683);
             this.groupBox8.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox8.Name = "groupBox8";
             this.groupBox8.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBox8.Size = new System.Drawing.Size(316, 73);
+            this.groupBox8.Size = new System.Drawing.Size(316, 64);
             this.groupBox8.TabIndex = 22;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Access Capture";
             // 
             // textBoxAccessTopic
             // 
-            this.textBoxAccessTopic.Location = new System.Drawing.Point(53, 25);
+            this.textBoxAccessTopic.Location = new System.Drawing.Point(53, 26);
             this.textBoxAccessTopic.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.textBoxAccessTopic.Name = "textBoxAccessTopic";
             this.textBoxAccessTopic.ReadOnly = true;
@@ -1003,11 +1014,11 @@
             // 
             this.groupBox9.Controls.Add(this.textBoxSqlServerTopic);
             this.groupBox9.Controls.Add(this.label14);
-            this.groupBox9.Location = new System.Drawing.Point(1022, 744);
+            this.groupBox9.Location = new System.Drawing.Point(1022, 758);
             this.groupBox9.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox9.Name = "groupBox9";
             this.groupBox9.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBox9.Size = new System.Drawing.Size(316, 73);
+            this.groupBox9.Size = new System.Drawing.Size(316, 63);
             this.groupBox9.TabIndex = 23;
             this.groupBox9.TabStop = false;
             this.groupBox9.Text = "Sql Server Capture";
@@ -1162,7 +1173,7 @@
             // 
             this.groupBox12.Controls.Add(this.textBoxPLCTopic);
             this.groupBox12.Controls.Add(this.label2);
-            this.groupBox12.Location = new System.Drawing.Point(1022, 212);
+            this.groupBox12.Location = new System.Drawing.Point(1022, 211);
             this.groupBox12.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox12.Name = "groupBox12";
             this.groupBox12.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
@@ -1233,9 +1244,8 @@
             this.comboBoxLan.Size = new System.Drawing.Size(148, 26);
             this.comboBoxLan.TabIndex = 38;
             this.comboBoxLan.SelectedIndexChanged += new System.EventHandler(this.comboBoxLan_SelectedIndexChanged);
- 
             // 
-            // label34
+            // label33
             // 
             this.label33.AutoSize = true;
             this.label33.Location = new System.Drawing.Point(1254, 837);
@@ -1245,12 +1255,70 @@
             this.label33.TabIndex = 39;
             this.label33.Text = "Language";
             // 
+            // label34
+            // 
+            this.label34.Location = new System.Drawing.Point(0, 0);
+            this.label34.Name = "label34";
+            this.label34.Size = new System.Drawing.Size(100, 23);
+            this.label34.TabIndex = 0;
+            // 
+            // comboBoxOpcHost
+            // 
+            this.comboBoxOpcHost.FormattingEnabled = true;
+            this.comboBoxOpcHost.Location = new System.Drawing.Point(75, 25);
+            this.comboBoxOpcHost.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.comboBoxOpcHost.Name = "comboBoxOpcHost";
+            this.comboBoxOpcHost.Size = new System.Drawing.Size(228, 26);
+            this.comboBoxOpcHost.TabIndex = 41;
+            this.comboBoxOpcHost.SelectedIndexChanged += new System.EventHandler(this.comboBoxOpcHost_SelectedIndexChanged);
+            // 
+            // comboBoxOpcGroup
+            // 
+            this.comboBoxOpcGroup.FormattingEnabled = true;
+            this.comboBoxOpcGroup.Location = new System.Drawing.Point(75, 87);
+            this.comboBoxOpcGroup.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.comboBoxOpcGroup.Name = "comboBoxOpcGroup";
+            this.comboBoxOpcGroup.Size = new System.Drawing.Size(228, 26);
+            this.comboBoxOpcGroup.TabIndex = 42;
+            this.comboBoxOpcGroup.SelectedIndexChanged += new System.EventHandler(this.comboBoxOpcGroup_SelectedIndexChanged);
+            // 
+            // label35
+            // 
+            this.label35.AutoSize = true;
+            this.label35.Location = new System.Drawing.Point(8, 89);
+            this.label35.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label35.Name = "label35";
+            this.label35.Size = new System.Drawing.Size(53, 18);
+            this.label35.TabIndex = 43;
+            this.label35.Text = "Group";
+            // 
+            // label36
+            // 
+            this.label36.AutoSize = true;
+            this.label36.Location = new System.Drawing.Point(9, 120);
+            this.label36.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label36.Name = "label36";
+            this.label36.Size = new System.Drawing.Size(53, 18);
+            this.label36.TabIndex = 44;
+            this.label36.Text = "Items";
+            // 
+            // textBoxOpcItems
+            // 
+            this.textBoxOpcItems.Location = new System.Drawing.Point(75, 117);
+            this.textBoxOpcItems.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxOpcItems.Name = "textBoxOpcItems";
+            this.textBoxOpcItems.ReadOnly = true;
+            this.textBoxOpcItems.Size = new System.Drawing.Size(228, 28);
+            this.textBoxOpcItems.TabIndex = 7;
+            this.textBoxOpcItems.Text = "items";
+            this.textBoxOpcItems.TextChanged += new System.EventHandler(this.textBoxOpcItems_TextChanged);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(143)))), ((int)(((byte)(178)))));
-            this.ClientSize = new System.Drawing.Size(1910, 877);
+            this.ClientSize = new System.Drawing.Size(1910, 885);
             this.Controls.Add(this.label34);
             this.Controls.Add(this.label33);
             this.Controls.Add(this.comboBoxLan);
@@ -1417,6 +1485,11 @@
         private System.Windows.Forms.ComboBox comboBoxLan;
         private System.Windows.Forms.Label label33;
         private System.Windows.Forms.Label label34;
+        private System.Windows.Forms.TextBox textBoxOpcItems;
+        private System.Windows.Forms.Label label36;
+        private System.Windows.Forms.Label label35;
+        private System.Windows.Forms.ComboBox comboBoxOpcGroup;
+        private System.Windows.Forms.ComboBox comboBoxOpcHost;
     }
 }
 
