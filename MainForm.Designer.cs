@@ -85,6 +85,11 @@
             this.textBoxMqttSever = new System.Windows.Forms.TextBox();
             this.label22 = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.textBoxOpcItems = new System.Windows.Forms.TextBox();
+            this.label36 = new System.Windows.Forms.Label();
+            this.label35 = new System.Windows.Forms.Label();
+            this.comboBoxOpcGroup = new System.Windows.Forms.ComboBox();
+            this.comboBoxOpcHost = new System.Windows.Forms.ComboBox();
             this.comboBoxOpcServer = new System.Windows.Forms.ComboBox();
             this.label31 = new System.Windows.Forms.Label();
             this.label25 = new System.Windows.Forms.Label();
@@ -126,11 +131,6 @@
             this.comboBoxLan = new System.Windows.Forms.ComboBox();
             this.label33 = new System.Windows.Forms.Label();
             this.label34 = new System.Windows.Forms.Label();
-            this.comboBoxOpcHost = new System.Windows.Forms.ComboBox();
-            this.comboBoxOpcGroup = new System.Windows.Forms.ComboBox();
-            this.label35 = new System.Windows.Forms.Label();
-            this.label36 = new System.Windows.Forms.Label();
-            this.textBoxOpcItems = new System.Windows.Forms.TextBox();
             this.groupBoxSerialPort.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -462,7 +462,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.ForeColor = System.Drawing.Color.Silver;
-            this.label3.Location = new System.Drawing.Point(1567, 830);
+            this.label3.Location = new System.Drawing.Point(1567, 831);
             this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(71, 18);
@@ -798,6 +798,57 @@
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "OPC_DA Capture";
             // 
+            // textBoxOpcItems
+            // 
+            this.textBoxOpcItems.Location = new System.Drawing.Point(75, 117);
+            this.textBoxOpcItems.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxOpcItems.Name = "textBoxOpcItems";
+            this.textBoxOpcItems.ReadOnly = true;
+            this.textBoxOpcItems.Size = new System.Drawing.Size(228, 28);
+            this.textBoxOpcItems.TabIndex = 7;
+            this.textBoxOpcItems.Text = "items";
+            this.textBoxOpcItems.TextChanged += new System.EventHandler(this.TextBoxOpcItems_TextChanged);
+            // 
+            // label36
+            // 
+            this.label36.AutoSize = true;
+            this.label36.Location = new System.Drawing.Point(9, 120);
+            this.label36.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label36.Name = "label36";
+            this.label36.Size = new System.Drawing.Size(53, 18);
+            this.label36.TabIndex = 44;
+            this.label36.Text = "Items";
+            // 
+            // label35
+            // 
+            this.label35.AutoSize = true;
+            this.label35.Location = new System.Drawing.Point(8, 89);
+            this.label35.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label35.Name = "label35";
+            this.label35.Size = new System.Drawing.Size(53, 18);
+            this.label35.TabIndex = 43;
+            this.label35.Text = "Group";
+            // 
+            // comboBoxOpcGroup
+            // 
+            this.comboBoxOpcGroup.FormattingEnabled = true;
+            this.comboBoxOpcGroup.Location = new System.Drawing.Point(75, 87);
+            this.comboBoxOpcGroup.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.comboBoxOpcGroup.Name = "comboBoxOpcGroup";
+            this.comboBoxOpcGroup.Size = new System.Drawing.Size(228, 26);
+            this.comboBoxOpcGroup.TabIndex = 42;
+            this.comboBoxOpcGroup.SelectedIndexChanged += new System.EventHandler(this.ComboBoxOpcGroup_SelectedIndexChanged);
+            // 
+            // comboBoxOpcHost
+            // 
+            this.comboBoxOpcHost.FormattingEnabled = true;
+            this.comboBoxOpcHost.Location = new System.Drawing.Point(75, 25);
+            this.comboBoxOpcHost.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.comboBoxOpcHost.Name = "comboBoxOpcHost";
+            this.comboBoxOpcHost.Size = new System.Drawing.Size(228, 26);
+            this.comboBoxOpcHost.TabIndex = 41;
+            this.comboBoxOpcHost.SelectedIndexChanged += new System.EventHandler(this.ComboBoxOpcHost_SelectedIndexChanged);
+            // 
             // comboBoxOpcServer
             // 
             this.comboBoxOpcServer.FormattingEnabled = true;
@@ -830,13 +881,10 @@
             // 
             // textBoxOpcIp
             // 
-            this.textBoxOpcIp.Location = new System.Drawing.Point(67, 22);
-            this.textBoxOpcIp.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.textBoxOpcIp.Location = new System.Drawing.Point(0, 0);
             this.textBoxOpcIp.Name = "textBoxOpcIp";
-            this.textBoxOpcIp.Size = new System.Drawing.Size(202, 28);
-            this.textBoxOpcIp.TabIndex = 8;
-            this.textBoxOpcIp.Text = "127.0.0.1";
-            this.textBoxOpcIp.TextChanged += new System.EventHandler(this.TextBoxOpcIp_TextChanged);
+            this.textBoxOpcIp.Size = new System.Drawing.Size(100, 28);
+            this.textBoxOpcIp.TabIndex = 0;
             // 
             // groupBox5
             // 
@@ -964,7 +1012,7 @@
             this.comboBoxBridge.Name = "comboBoxBridge";
             this.comboBoxBridge.Size = new System.Drawing.Size(140, 26);
             this.comboBoxBridge.TabIndex = 13;
-            this.comboBoxBridge.SelectedIndexChanged += new System.EventHandler(this.comboBoxBridge_SelectedIndexChanged);
+            this.comboBoxBridge.SelectedIndexChanged += new System.EventHandler(this.ComboBoxBridge_SelectedIndexChanged);
             // 
             // label7
             // 
@@ -1243,7 +1291,7 @@
             this.comboBoxLan.Name = "comboBoxLan";
             this.comboBoxLan.Size = new System.Drawing.Size(148, 26);
             this.comboBoxLan.TabIndex = 38;
-            this.comboBoxLan.SelectedIndexChanged += new System.EventHandler(this.comboBoxLan_SelectedIndexChanged);
+            this.comboBoxLan.SelectedIndexChanged += new System.EventHandler(this.ComboBoxLan_SelectedIndexChanged);
             // 
             // label33
             // 
@@ -1262,63 +1310,12 @@
             this.label34.Size = new System.Drawing.Size(100, 23);
             this.label34.TabIndex = 0;
             // 
-            // comboBoxOpcHost
-            // 
-            this.comboBoxOpcHost.FormattingEnabled = true;
-            this.comboBoxOpcHost.Location = new System.Drawing.Point(75, 25);
-            this.comboBoxOpcHost.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.comboBoxOpcHost.Name = "comboBoxOpcHost";
-            this.comboBoxOpcHost.Size = new System.Drawing.Size(228, 26);
-            this.comboBoxOpcHost.TabIndex = 41;
-            this.comboBoxOpcHost.SelectedIndexChanged += new System.EventHandler(this.comboBoxOpcHost_SelectedIndexChanged);
-            // 
-            // comboBoxOpcGroup
-            // 
-            this.comboBoxOpcGroup.FormattingEnabled = true;
-            this.comboBoxOpcGroup.Location = new System.Drawing.Point(75, 87);
-            this.comboBoxOpcGroup.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.comboBoxOpcGroup.Name = "comboBoxOpcGroup";
-            this.comboBoxOpcGroup.Size = new System.Drawing.Size(228, 26);
-            this.comboBoxOpcGroup.TabIndex = 42;
-            this.comboBoxOpcGroup.SelectedIndexChanged += new System.EventHandler(this.comboBoxOpcGroup_SelectedIndexChanged);
-            // 
-            // label35
-            // 
-            this.label35.AutoSize = true;
-            this.label35.Location = new System.Drawing.Point(8, 89);
-            this.label35.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label35.Name = "label35";
-            this.label35.Size = new System.Drawing.Size(53, 18);
-            this.label35.TabIndex = 43;
-            this.label35.Text = "Group";
-            // 
-            // label36
-            // 
-            this.label36.AutoSize = true;
-            this.label36.Location = new System.Drawing.Point(9, 120);
-            this.label36.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label36.Name = "label36";
-            this.label36.Size = new System.Drawing.Size(53, 18);
-            this.label36.TabIndex = 44;
-            this.label36.Text = "Items";
-            // 
-            // textBoxOpcItems
-            // 
-            this.textBoxOpcItems.Location = new System.Drawing.Point(75, 117);
-            this.textBoxOpcItems.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.textBoxOpcItems.Name = "textBoxOpcItems";
-            this.textBoxOpcItems.ReadOnly = true;
-            this.textBoxOpcItems.Size = new System.Drawing.Size(228, 28);
-            this.textBoxOpcItems.TabIndex = 7;
-            this.textBoxOpcItems.Text = "items";
-            this.textBoxOpcItems.TextChanged += new System.EventHandler(this.textBoxOpcItems_TextChanged);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(143)))), ((int)(((byte)(178)))));
-            this.ClientSize = new System.Drawing.Size(1910, 885);
+            this.ClientSize = new System.Drawing.Size(1910, 872);
             this.Controls.Add(this.label34);
             this.Controls.Add(this.label33);
             this.Controls.Add(this.comboBoxLan);

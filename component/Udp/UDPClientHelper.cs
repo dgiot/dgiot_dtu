@@ -16,7 +16,6 @@ namespace Dgiot_dtu
         private static NetManager client = null;
         private static string server = "prod.iotn2n.com";
         private static int port = 9050;
-        private static bool bIsRun = V;
         private static bool bIsCheck = false;
         private static bool bAutoReconnect = false;
 
@@ -33,7 +32,6 @@ namespace Dgiot_dtu
         public static void Start(KeyValueConfigurationCollection config, bool bAutoReconnect)
         {
             UDPClientHelper.bAutoReconnect = bAutoReconnect;
-            bIsRun = true;
             Config(config);
 
             if (bIsCheck)
@@ -68,8 +66,6 @@ namespace Dgiot_dtu
                     client.Stop();
                 }
             }
-
-            bIsRun = false;
         }
 
         public static void Config(KeyValueConfigurationCollection config)

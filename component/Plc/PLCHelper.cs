@@ -44,9 +44,8 @@ namespace Dgiot_dtu
             }
         }
 
-        public static void Check(bool isCheck)
+        public static void Write(byte[] data, int offset, int len)
         {
-            bIsCheck = isCheck;
         }
     }
 }

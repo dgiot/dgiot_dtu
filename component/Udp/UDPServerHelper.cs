@@ -13,11 +13,9 @@ namespace Dgiot_dtu
 
     public class UDPServerHelper
     {
-        private const bool V = false;
         private static UDPServerHelper instance;
         private static NetManager server = null;
         private static int port;
-        private static bool bIsRun = V;
         private static bool bIsCheck = false;
 
         public static UDPServerHelper Instance
@@ -64,7 +62,6 @@ namespace Dgiot_dtu
                     };
                 }
 
-                bIsRun = true;
                 while (!Console.KeyAvailable)
                 {
                     server.PollEvents();
@@ -82,8 +79,6 @@ namespace Dgiot_dtu
                     server.Stop();
                 }
             }
-
-            bIsRun = false;
         }
 
         public static void Config(KeyValueConfigurationCollection config)

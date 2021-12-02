@@ -171,8 +171,11 @@ namespace Dgiot_dtu
 
         public static void Publish(string pubtopic, byte[] payload)
         {
-            var appMsg = new MqttApplicationMessage(pubtopic, payload, MqttQualityOfServiceLevel.AtLeastOnce, false);
-            mqttClient.PublishAsync(appMsg);
+            if (mqttClient != null && mqttClient.IsConnected)
+            {
+                var appMsg = new MqttApplicationMessage(pubtopic, payload, MqttQualityOfServiceLevel.AtLeastOnce, false);
+                mqttClient.PublishAsync(appMsg);
+            }
         }
 
         private static async Task ReConnectMqttServerAsync()
@@ -296,8 +299,6 @@ namespace Dgiot_dtu
             {
                 SerialPortHelper.Write(e.ApplicationMessage.Payload, 0, e.ApplicationMessage.Payload.Length);
             }
-
-            OPCDAHelper.Do_opc_da(topic, json, clientid);
 
             AccessHelper.Do_mdb(topic,  json, clientid);
 

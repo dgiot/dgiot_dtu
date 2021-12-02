@@ -9,6 +9,7 @@ namespace Dgiot_dtu
     using System.Configuration;
     using System.IO.BACnet;
     using System.Linq;
+    using Newtonsoft.Json;
 
     public class BACnetHelper
     {
@@ -16,7 +17,6 @@ namespace Dgiot_dtu
         {
         }
 
-        private const bool V = false;
         private static BACnetHelper instance;
         private static BacnetClient bacnetClient = null;
 
@@ -24,8 +24,6 @@ namespace Dgiot_dtu
         private static List<BacDevice> devicesList = new List<BacDevice>();
         private static int scanBatchStep = 5;
         private static byte invokeId = 0x00;
-
-        private static bool bIsRun = V;
         private static bool bIsCheck = false;
 
         public static BACnetHelper GetInstance()
@@ -41,7 +39,6 @@ namespace Dgiot_dtu
         public static void Start(KeyValueConfigurationCollection config)
         {
             Config(config);
-            bIsRun = true;
             if (bacnetClient == null)
             {
                 // Bacnet on UDP/IP/Ethernet
@@ -63,7 +60,6 @@ namespace Dgiot_dtu
 
         public static void Stop()
         {
-            bIsRun = false;
             if (bacnetClient != null)
             {
                // bacnetClient.Start();
@@ -91,7 +87,7 @@ namespace Dgiot_dtu
 
                 foreach (var device in devicesList)
                 {
-                    System.IO.File.WriteAllText($"{device.DeviceId}.json", Newtonsoft.Json.JsonConvert.SerializeObject(device));
+                    System.IO.File.WriteAllText($"{device.DeviceId}.json", JsonConvert.SerializeObject(device));
                 }
 
                 foreach (var device in devicesList)
@@ -101,8 +97,8 @@ namespace Dgiot_dtu
 
                 foreach (var device in devicesList)
                 {
-                    System.IO.File.WriteAllText($"{device.DeviceId}pppp.json", Newtonsoft.Json.JsonConvert.SerializeObject(device));
-                    LogHelper.Log("bacnet device: " + Newtonsoft.Json.JsonConvert.SerializeObject(device).ToString());
+                    System.IO.File.WriteAllText($"{device.DeviceId}pppp.json", JsonConvert.SerializeObject(device));
+                    LogHelper.Log("bacnet device: " + JsonConvert.SerializeObject(device).ToString());
                 }
         }
 

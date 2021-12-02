@@ -103,7 +103,7 @@ namespace Dgiot_dtu
 
         public static void Write(byte[] payload, int offset, int len)
         {
-            if (bIsCheck)
+            if (port != null && port.IsOpen)
             {
                 LogHelper.Log("S->N: " + LogHelper.Logdata(payload, 0, payload.Length));
                 port.Write(payload, offset, len);

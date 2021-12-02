@@ -402,8 +402,7 @@ namespace Da
                         case (int)Command.Read_Nodes_Values_Req:
                             {
                                 ReadItemsReq req = JsonConvert.DeserializeObject<ReadItemsReq>(requestInfo.Body);
-
-                                List<Item> values = iOpcDa.ReadItemsValues(req.ServiceId, req.Items, req.GroupId, req.StrMd5);
+                                List<Item> values = iOpcDa.ReadItemsValues(req.ServiceId, req.GroupId, req.Items, req.StrMd5);
                                 if (values != null)
                                 {
                                     ReadItemsRsp rsp = new ReadItemsRsp() { ServiceId = req.ServiceId, GroupId = req.GroupId, ItemValues = values, StrMd5 = req.StrMd5 };
@@ -482,7 +481,7 @@ namespace Da
         public void ValueChangedCallBack(string group, OpcDaItemValue[] values)
         {
             GroupEntity entity = new GroupEntity();
-            entity.Id = group;
+            entity.Name = group;
             List<Item> collection = new List<Item>();
             values.ToList().ForEach(v =>
             {

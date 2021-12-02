@@ -55,8 +55,6 @@ namespace Dgiot_dtu
             "SqlServer",
         };
 
-    
-              
         private Configuration config;
 
         public MainForm()
@@ -78,7 +76,6 @@ namespace Dgiot_dtu
             {
                 Log("read config exception: " + ex.Message);
             }
-
         }
 
         public void Log(string text)
@@ -146,7 +143,7 @@ namespace Dgiot_dtu
 
                 buttonStartStop.Text = @"Stop";
 
-                DgiotHelper.GetIp();
+                DgiotHelper.GetIps();
                 SaveAppConfig();
             }
             else
@@ -224,6 +221,20 @@ namespace Dgiot_dtu
             comboBoxLan.Items.Add("简体中文");
             comboBoxLan.Items.Add("English");
             comboBoxLan.SelectedIndex = 0;
+        }
+
+        private void OpcServer()
+        {
+            SetConfig("SqlServerTopic", textBoxSqlServerTopic.Text);
+            DgiotHelper.GetIps().ForEach((ip) =>
+            {
+                comboBoxOpcHost.Items.Add(ip);
+            });
+
+            if (comboBoxOpcHost.Items.Count > 0)
+            {
+                comboBoxOpcHost.SelectedIndex = 0;
+            }
         }
 
         private void RestoreConfigs(Configuration config)
@@ -418,8 +429,10 @@ namespace Dgiot_dtu
         {
             SetConfig("tcpServerIsCheck", DgiotHelper.BoolTostr(checkBoxTcpBridge.Checked));
             SetConfig("PLCTopic", textBoxPLCTopic.Text);
-            SetConfig("OpcIp", textBoxOpcIp.Text);
+            SetConfig("OpcHost", textBoxOpcIp.Text);
             SetConfig("OpcServer", comboBoxOpcServer.Text);
+            SetConfig("OpcGroup", comboBoxOpcServer.Text);
+            SetConfig("OpcItems", textBoxOpcItems.Text);
             SetConfig("OPCUATopic", textBoxOPCUATopic.Text);
             SetConfig("BACnetTopic", textBoxBACnetTopic.Text);
             SetConfig("ControlTopic", textBoxControlTopic.Text);
@@ -618,12 +631,12 @@ namespace Dgiot_dtu
         private void TextBoxSqlServerTopic_TextChanged(object sender, EventArgs e)
         {
             SetConfig("SqlServerTopic", textBoxSqlServerTopic.Text);
+            OpcServer();
         }
 
-
-        private void TextBoxOpcIp_TextChanged(object sender, EventArgs e)
+        private void ComboBoxOpcHost_SelectedIndexChanged(object sender, EventArgs e)
         {
-            SetConfig("OpcIp", textBoxOpcIp.Text);
+            SetConfig("OpcHost", comboBoxOpcHost.Text);
         }
 
         private void ComboBoxOpcServer_SelectedIndexChanged(object sender, EventArgs e)
@@ -631,10 +644,25 @@ namespace Dgiot_dtu
             SetConfig("OpcServer", comboBoxOpcServer.Text);
         }
 
+        private void ComboBoxOpcGroup_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SetConfig("OpcGroup", comboBoxOpcServer.Text);
+        }
+
+        private void TextBoxOpcItems_TextChanged(object sender, EventArgs e)
+        {
+            SetConfig("OpcItems", textBoxOpcItems.Text);
+        }
+
         private void ComboBoxLogLevel_SelectedIndexChanged(object sender, EventArgs e)
         {
             SetConfig("LogLevel", comboBoxLogLevel.Text);
             LogHelper.SetLevel(comboBoxLogLevel.SelectedIndex);
+        }
+
+        private void ComboBoxBridge_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SetConfig("Bridge", comboBoxBridge.Text);
         }
 
         private void SendBridge_Click(object sender, EventArgs e)
@@ -699,7 +727,7 @@ namespace Dgiot_dtu
             }
         }
 
-        private void comboBoxLan_SelectedIndexChanged(object sender, EventArgs e)
+        private void ComboBoxLan_SelectedIndexChanged(object sender, EventArgs e)
         {
             Language(comboBoxLan.SelectedItem.ToString());
         }
@@ -805,7 +833,6 @@ namespace Dgiot_dtu
             groupBox8.Text = "Access Capture";
             groupBox9.Text = "Sql Server Capture";
 
-
             labelSerialPort.Text = "Port";
             label1.Text = "Baud Rate";
             label4.Text = "dataBits";
@@ -837,26 +864,6 @@ namespace Dgiot_dtu
             label24.Text = "Port";
             label15.Text = "login";
             label28.Text = "bridge";
-        }
-
-        private void comboBoxBridge_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void comboBoxOpcHost_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void comboBoxOpcGroup_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBoxOpcItems_TextChanged(object sender, EventArgs e)
-        {
-
         }
     }
 }

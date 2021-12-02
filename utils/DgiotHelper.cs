@@ -6,29 +6,37 @@ namespace Dgiot_dtu
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Management;
     using System.Net;
+    using System.Net.NetworkInformation;
     using System.Net.Sockets;
     using System.Security.Cryptography;
     using System.Text;
 
     public class DgiotHelper
     {
-        public static string GetIp()
+        public static List<string> GetIps()
         {
             var host = Dns.GetHostEntry(Dns.GetHostName());
-            string localIp = string.Empty;
+            List<string> localIps = new List<string>();
             foreach (var ip in host.AddressList)
             {
                 if (ip.AddressFamily == AddressFamily.InterNetwork)
                 {
-                    localIp = ip.ToString();
-                    break;
+                    using (Ping p = new Ping())
+                    {
+                        PingReply pingReply = p.Send(ip, 100);
+                        if (pingReply.Status != IPStatus.Success)
+                        {
+                            localIps.Add(ip.ToString());
+                        }
+                    }
                 }
             }
 
-            LogHelper.Log("localIp:" + localIp);
-            return localIp;
+            localIps.Add("127.0.0.1");
+            return localIps;
         }
 
         public static string ToHexString(string s)

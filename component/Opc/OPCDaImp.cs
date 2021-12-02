@@ -8,10 +8,10 @@ namespace Da
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
+    using Dgiot_dtu;
     using TitaniumAS.Opc.Client.Common;
     using TitaniumAS.Opc.Client.Da;
     using TitaniumAS.Opc.Client.Da.Browsing;
-    using Dgiot_dtu;
 
     // 不在一开始读取节点结构时创建缓存的原因：用户不一定会全部都读取所有节点属性值 仅仅在需要关注的时候 才读取
     public class OPCDaImp : IOPCDa
@@ -19,11 +19,17 @@ namespace Da
         private OpcServerEnumeratorAuto serverEnumerator = new OpcServerEnumeratorAuto();
         private Dictionary<string, OpcDaGroup> daGroupKeyPairs = new Dictionary<string, OpcDaGroup>();
         private List<ServiceCollection> serviceCollection = new List<ServiceCollection>();
+        private Dictionary<string, JsonObject> groupCollection = new Dictionary<string, JsonObject>();
         private IItemsValueChangedCallBack callBack;
         private List<OpcDaService> opcDaServices = new List<OpcDaService>();
 
-        public string[] ScanOPCDa(string host)
+        public string[] ScanOPCDa(string host, Boolean isClean = true)
         {
+            if (isClean)
+            {
+                serviceCollection.Clear();
+            }
+
             string[] retValue = new string[] { };
             try
             {
@@ -117,6 +123,89 @@ namespace Da
             return service1;
         }
 
+        private static List<string> groupfilter = new List<string>
+        {
+            "_AdvancedTags",
+            "_ConnectionSharing",
+            "_CustomAlarms",
+            "_DataLogger",
+            "_EFMExporter",
+            "_IDF_for_Splunk",
+            "_IoT_Gateway",
+            "_LocalHistorian",
+            "_Redundancy",
+            "_Scheduler",
+            "_SecurityPolicies",
+            "_SNMP Agent",
+            "_System",
+            "_ThingWorx"
+        };
+
+        private static bool IsGroupfilter(string item)
+        {
+            bool result = false;
+            foreach (string filter in groupfilter)
+            {
+                // LogHelper.Log("item  " + item + " filter " + filter + " " + item.LastIndexOf(filter));
+                if (-1 != item.LastIndexOf(filter))
+                {
+                    return true;
+                }
+            }
+
+            return result;
+        }
+
+        public List<string> GetGroups(string serviceProgId)
+        {
+            List<string> groups = new List<string>();
+            Uri url = UrlBuilder.Build(serviceProgId);
+            try
+            {
+                using (var server = new OpcDaServer(url))
+                {
+                    server.Connect();
+                    var browser = new OpcDaBrowserAuto(server);
+                    JsonObject scan = new JsonObject();
+                    OpcDaBrowseElement[] elements = browser.GetElements(null);
+                    foreach (OpcDaBrowseElement element in elements)
+                    {
+                        if (!(element.Name.IndexOf('$') == 0))
+                        {
+                            if (!IsGroupfilter(element.Name))
+                            {
+                                string deviceAddr = serviceProgId + "_" + element.Name;
+                                JsonObject group = new JsonObject();
+                                group.Add("Name", element.Name);
+                                OpcDaBrowseElement[] elements1 = browser.GetElements(element.Name);
+                                List<string> itemIds = new List<string> { };
+                                JsonObject items = new JsonObject();
+                                foreach (OpcDaBrowseElement element1 in elements1)
+                                {
+                                    items.Add(element1.Name, element1.ItemId);
+                                }
+
+                                group.Add("Value", items);
+                                groupCollection.Add(deviceAddr, group);
+                                groups.Add(element.Name);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+            }
+
+            return groups;
+        }
+
+        public List<string> GetItems(string serviceProgId, string group)
+        {
+            List<string> items = new List<string>();
+            return items;
+        }
+
         public IList<TreeNode> GetTreeNodes(string serviceProgId)
         {
             // var service =  _serviceCollection.Where(a => a.ServiceIds.Contains(serviceProgId))
@@ -145,7 +234,7 @@ namespace Da
             {
                 if (!(element.ItemId.IndexOf('$') == 0))
                 {
-                    TreeNode treeNode = new TreeNode() { Name = element.ItemId, NodeType = TreeNodeType.Property };
+                    TreeNode treeNode = new TreeNode() { Name = element.Name, NodeType = TreeNodeType.Property };
                     items.Add(treeNode);
                     if (element.HasChildren)
                     {
@@ -160,7 +249,7 @@ namespace Da
           return opcDaServices.Any(item => { return item.Host == service.Host && item.ServiceId == serviceProgId; });
         }
 
-        public string StartMonitoringItems(string serviceProgId, List<string> itemIds, string strMd5)
+        public string StartMonitoringItems(string serviceProgId, List<string> itemIds, string groupId)
         {
             OpcDaService server = GetOpcDaService(serviceProgId);
             if (server == null)
@@ -168,7 +257,7 @@ namespace Da
                 return null;
             }
 
-            string groupId = Guid.NewGuid().ToString();
+            string strMd5 = Guid.NewGuid().ToString();
             OpcDaGroup group;
             if (server.OpcDaGroupS.ContainsKey(strMd5) == false)
             {
@@ -223,7 +312,7 @@ namespace Da
             this.callBack = callBack;
         }
 
-        public List<Item> ReadItemsValues(string serverID, List<string> items, string groupId, string strMd5)
+        public List<Item> ReadItemsValues(string serverID, string groupId,  List<string> items,  string strMd5)
         {
             OpcDaService server = GetOpcDaService(serverID);
             if (server == null)
@@ -272,8 +361,8 @@ namespace Da
             {
                 OpcDaGroup group = server.OpcDaGroupS[groupId];
 
-                //OpcDaItemValue[] values = group.Read(group.Items, OpcDaDataSource.Device);
-                //LogHelper.Log("ReadItemsValues " + values);
+                // OpcDaItemValue[] values = group.Read(group.Items, OpcDaDataSource.Device);
+                // LogHelper.Log("ReadItemsValues " + values);
                 var keyList = itemValuePairs.Keys.ToList();
                 List<OpcDaItem> itemList = new List<OpcDaItem>();
                 keyList.ForEach(ids =>

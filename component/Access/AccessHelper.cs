@@ -91,7 +91,7 @@ namespace Dgiot_dtu
             }
 
             string cmdType = "read";
-            AccessHelper.scantopic = "thing/mdb/" + clientid + "post";
+            scantopic = "thing/mdb/" + clientid + "post";
             if (json.ContainsKey("cmdtype"))
             {
                 try

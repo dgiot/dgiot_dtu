@@ -2,6 +2,7 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
+using System;
 using System.Collections.Generic;
 
 using TitaniumAS.Opc.Client.Da;
@@ -10,7 +11,7 @@ namespace Da
 {
     public interface IOPCDa
     {
-        string[] ScanOPCDa(string host);
+        string[] ScanOPCDa(string host, Boolean isClean = true);
 
         IList<TreeNode> GetTreeNodes(string service);
 
@@ -20,7 +21,7 @@ namespace Da
 
         void StopMonitoringItems(string serviceProgId, string groupId);
 
-        List<Item> ReadItemsValues(string serverID, List<string> items, string groupId, string strMd5);
+        List<Item> ReadItemsValues(string serverID, string groupId, List<string> items,  string strMd5);
 
         void WriteValues(string serviceProgId, string groupId, Dictionary<string, object> itemValuePairs);
     }

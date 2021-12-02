@@ -21,15 +21,22 @@ namespace Dgiot_dtu
     public class OPCDAHelper : IItemsValueChangedCallBack
     {
         private static string topic = "thing/opcda/";
-        private static string opcip = "127.0.0.1";
-        private static List<string> opcipList = new List<string> { };
+        private static OPCDaImp opcDa = new OPCDaImp();
+
+        private static string opchost = "127.0.0.1";
+        private static List<string> opchostList = new List<string> { };
+
         private static string serviceProgId = "";
+        private static List<string> serviceProgIdList = new List<string> { };
+
+        private static string groupId = "";
+        private static List<string> groupIdList = new List<string> { };
+
         private static List<TreeNode> opcDaServerList = new List<TreeNode>();
-        private static List<TreeNode> nodeList = new List<TreeNode>();
+        private static List<TreeNode> treeNodeCaches = new List<TreeNode>();
         private static OPCDAHelper instance = null;
         private static string clientid = string.Empty;
-        private static bool bIsCheck = false;
-        private static OPCDaImp OpcDa = new OPCDaImp();
+
         private static readonly List<string> Filter = new List<string>
         {
             "_AdvancedTags",
@@ -57,13 +64,13 @@ namespace Dgiot_dtu
 
         public OPCDAHelper()
         {
-            OpcDa.SetItemsValueChangedCallBack(this);;
+            opcDa.SetItemsValueChangedCallBack(this);
         }
 
         public static OPCDAHelper GetInstance()
         {
             if (instance == null)
-            {     
+            {
                 instance = new OPCDAHelper();
             }
 
@@ -81,19 +88,14 @@ namespace Dgiot_dtu
 
         public static void Config(KeyValueConfigurationCollection config)
         {
-            if (config["OPCDAIsCheck"] != null)
-            {
-                bIsCheck = DgiotHelper.StrTobool(config["OPCDAIsCheck"].Value);
-            }
-
             if (config["OPCDATopic"] != null)
             {
                 topic = config["OPCDATopic"].Value;
             }
 
-            if (config["OpcIp"] != null)
+            if (config["OpcHost"] != null)
             {
-                opcip = config["OpcIp"].Value;
+                opchost = config["OpcHost"].Value;
             }
 
             if (config["OpcServer"] != null)
@@ -102,65 +104,85 @@ namespace Dgiot_dtu
             }
         }
 
-        public static void Do_opc_da(string topic, Dictionary<string, object> json, string clientid)
-        {
-            Regex r_subopcda = new Regex(OPCDAHelper.topic); // 定义一个Regex对象实例
-            Match m_subopcda = r_subopcda.Match(topic); // 在字符串中匹配
-
-            if (!m_subopcda.Success)
-            {
-                return;
-            }
-
-            LogHelper.Log(topic);
-            OPCDAHelper.clientid = clientid;
-            string cmdType = "read";
-            if (json.ContainsKey("cmdtype"))
-            {
-                try
-                {
-                    cmdType = (string)json["cmdtype"];
-                    switch (cmdType)
-                    {
-                        case "scan":
-                            break;
-                        case "read":
-                            Read_opc_da(json);
-                            break;
-                        case "write":
-                            break;
-                        default:
-                            Read_opc_da(json);
-                            break;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    LogHelper.Log(ex.ToString());
-                }
-            }
-        }
-
         public static List<string> GetServer()
         {
-            string[] groups = OpcDa.ScanOPCDa(opcip);
-            foreach(string group in groups)
+            serviceProgIdList.Clear();
+            string[] progIds = opcDa.ScanOPCDa(opchost);
+            foreach (string progId in progIds)
             {
-                opcipList.Add(group);
-                LogHelper.Log("group " + group);
-            };  
-            return opcipList;
+                serviceProgIdList.Add(progId);
+                LogHelper.Log("ProgId: " + progId);
+            }
+
+            return serviceProgIdList;
+        }
+
+        public static List<string> GetGroup()
+        {
+            groupIdList.Clear();
+            groupIdList = opcDa.GetGroups(serviceProgId);
+            return groupIdList;
+        }
+
+        public static List<TreeNode> ScanOPCClassicServer()
+        {
+            opcDaServerList.Clear();
+            string[] opcDaList = opcDa.ScanOPCDa(opchost);
+            if (opcDaList.Length > 0)
+            {
+                TreeNode node = new TreeNode();
+                node.Name = opchost.ToString();
+                node.NodeType = TreeNodeType.Local;
+                List<TreeNode> childNodes = new List<TreeNode>();
+                foreach (var opcItem in opcDaList)
+                {
+                    childNodes.Add(new TreeNode() { Name = opcItem });
+                }
+
+                node.Children.AddRange(childNodes);
+                opcDaServerList.Add(node);
+            }
+
+            return opcDaServerList;
+        }
+
+        public static List<TreeNode> ScanOPCServerData(List<TreeNode> opcServerNodes)
+        {
+            opcServerNodes.ForEach((service) =>
+            {
+                service.Children.ForEach((opc) =>
+                {
+                    IList<TreeNode> dataNodes = opcDa.GetTreeNodes(opc.Name);
+                    opc.Children.AddRange(dataNodes);
+                });
+            });
+
+            return opcServerNodes;
         }
 
         public static void Scan()
         {
-            OpcDaService server1 = OpcDa.GetOpcDaService(serviceProgId);
-            LogHelper.Log("server1 " + server1.ToString());
-            nodeList = (List <TreeNode>)OpcDa.GetTreeNodes(serviceProgId);
-            nodeList.ForEach((node) =>
+            List<TreeNode> servers = ScanOPCClassicServer();
+            foreach (TreeNode server in servers)
             {
-                Recursion(node);
-            });
+                Recursion(server);
+            }
+
+            List<TreeNode> tempDataList = ScanOPCServerData(opcDaServerList);
+            treeNodeCaches.Clear();
+            treeNodeCaches.AddRange(tempDataList);
+
+            // OpcDaService server1 = OpcDa.GetOpcDaService(serviceProgId);
+            // if (server1 != null)
+            // {
+            //    LogHelper.Log("Host " + server1.Host + " ServiceId " + server1.ServiceId + " serviceProgId " + serviceProgId);
+            //     treeNodeCaches = (List<TreeNode>)OpcDa.GetTreeNodes(serviceProgId);
+            //    treeNodeCaches.ForEach((node) =>
+            //    {
+            //        Recursion(node);
+            //     });
+            // }
+            Write();
         }
 
         public static void Write()
@@ -183,9 +205,29 @@ namespace Dgiot_dtu
             }
         }
 
+        public static void Read()
+        {
+            JsonObject items = new JsonObject();
+            List<string> arry = new List<string>();
+            arry.Add("GCU331_YJ.SX_PZ96_U_55");
+            arry.Add("GCU331_YJ.SX_PZ96_I_55");
+            arry.Add("GCU331_YJ.SX_PZ96_P_55");
+            arry.Add("GCU331_YJ.SX_PZ96_U_160");
+            arry.Add("GCU331_YJ.SX_PZ96_I_160");
+            arry.Add("GCU331_YJ.SX_PZ96_P_160");
+            arry.Add("GCU331_YJ.p_L_1");
+            arry.Add("GCU331_YJ.p_L_2");
+            arry.Add("GCU331_YJ.p_Q_2");
+            arry.Add("GCU331_YJ.Q_Q_DN65");
+            arry.Add("GCU331_YJ.Q_Q_DN100");
+            arry.Add("GCU331_YJ.Q_Q_DN125");
+
+            // Read_group(serviceProgId, "GCU331_YJ", arry, items);
+        }
+
         private static void Recursion(TreeNode childNode)
         {
-            LogHelper.Log("node name " + childNode.Name.ToString() + " " + childNode.NodeType.ToString());
+            LogHelper.Log("name " + childNode.Name + " " + childNode.NodeType.ToString());
             if (childNode.Children.Any())
             {
                 var children = childNode.Children.ToList();
@@ -205,9 +247,9 @@ namespace Dgiot_dtu
             bool flag = false;
             foreach (OpcDaBrowseElement element in elements)
             {
+                LogHelper.Log("ItemId  " + element.ItemId.ToString() + " " + indent.ToString());
                 if (!(element.ItemId.IndexOf('$') == 0))
                 {
-                    LogHelper.Log("element " + element.ItemId.ToString() + " " + element.Name.ToString() + " " + indent.ToString());
                     if (IsPass(indent, element.ItemId.ToString()))
                     {
                         continue;
@@ -233,86 +275,16 @@ namespace Dgiot_dtu
             {
                 if (group != null)
                 {
-                    JsonObject thing = GetItems(serviceProgId, group, itemIds, items);
-                    JsonObject payload = new JsonObject();
-                    payload.Add("thing", thing);
-                    payload.Add("opcserver", serviceProgId);
-                    payload.Add("group", group);
-                    string strMd5 = DgiotHelper.Md5(serviceProgId);
-                    //OpcDa.StartMonitoringItems(serviceProgId, itemIds, strMd5);
-                    MqttClientHelper.Publish(topic + "/metadata/derived", Encoding.UTF8.GetBytes(payload.ToString()));
-                    //LogHelper.Log("Scan OPCDA payload: " + payload.ToString());
-                    json.Add(group, thing);
-                }
-            }
-        }
-
-        private static JsonObject GetItems(string opcserver, string group_name, List<string> array, JsonObject jsonItems)
-        {
-            JsonObject json = new JsonObject();
-            Uri url = UrlBuilder.Build(opcserver);
-            try
-            {
-                using (var server = new OpcDaServer(url))
-                {
-                    server.Connect();
-                    OpcDaGroup group = server.AddGroup(group_name);
-                    IList<OpcDaItemDefinition> definitions = new List<OpcDaItemDefinition>();
-                    int i = 0;
-                    foreach (string id in array)
+                    if (itemIds.Count == 0)
                     {
-                        var definition = new OpcDaItemDefinition
-                        {
-                            ItemId = id,
-                            IsActive = true
-                        };
-                        definitions.Insert(i++, definition);
+                        LogHelper.Log("group " + group);
                     }
-
-                    group.IsActive = true;
-                    OpcDaItemResult[] results = group.AddItems(definitions);
-                    OpcDaItemValue[] values = group.Read(group.Items, OpcDaDataSource.Device);
-                    foreach (string id in array)
+                    else
                     {
-                        JsonObject tmp = new JsonObject();
-                        tmp.Add("ItemId", id);
-                        tmp.Add("Name", jsonItems[id].ToString());
-
-                        foreach (OpcDaItemValue item in values)
-                        {
-                            if (item.Item != null && item.Item.ItemId != null)
-                            {
-                                if (item.Value != null)
-                                {
-                                    if (item.Item.ItemId.ToString() == id)
-                                    {
-                                        tmp.Add("Type", item.Value.GetType().ToString());
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-
-                      json.Add(jsonItems[id].ToString(), tmp);
+                        opcDa.StartMonitoringItems(serviceProgId, itemIds, group);
                     }
-
-                    server.Disconnect();
                 }
             }
-            catch (Exception ex)
-            {
-                foreach (string id in array)
-                {
-                    JsonObject tmp = new JsonObject();
-                    tmp.Add("ItemId", id);
-                    tmp.Add("Name", jsonItems[id].ToString());
-                    json.Add(jsonItems[id].ToString(), tmp);
-                }
-
-                // LogHelper.Log(ex.GetBaseException().ToString());
-            }
-
-            return json;
         }
 
         private static Boolean IsGroupfilter(string item)
@@ -320,7 +292,7 @@ namespace Dgiot_dtu
             Boolean result = false;
             foreach (string filter in groupfilter)
             {
-                // mainform.Log("item  " + item + " filter " + filter + " " + item.LastIndexOf(filter));
+                 // LogHelper.Log("item  " + item + " filter " + filter + " " + item.LastIndexOf(filter));
                  if (-1 != item.LastIndexOf(filter))
                  {
                     return true;
@@ -350,153 +322,26 @@ namespace Dgiot_dtu
             return true;
         }
 
-        private static void Read_opc_da(Dictionary<string, object> json)
-        {
-            string opcserver = "Matrikon.OPC.Simulation.1";
-            string group = "addr";
-            IList<OpcDaItemDefinition> itemlist = new List<OpcDaItemDefinition>();
-            if (json.ContainsKey("opcserver"))
-            {
-                try
-                {
-                    opcserver = (string)json["opcserver"];
-                }
-                catch (Exception ex)
-                {
-                    LogHelper.Log(ex.ToString());
-                }
-            }
-
-            if (json.ContainsKey("group"))
-            {
-                try
-                {
-                    group = (string)json["group"];
-                }
-                catch (Exception ex)
-                {
-                    LogHelper.Log(ex.ToString());
-                }
-            }
-
-            if (json.ContainsKey("items"))
-            {
-                try
-                {
-                    string items = (string)json["items"];
-                    string[] arry = items.Split(',');
-                    JsonObject data = new JsonObject();
-                    try
-                    {
-                        JsonObject result = new JsonObject();
-                        Read_group(opcserver, group, arry, data);
-                        result.Add("status", 0);
-                        result.Add(group, data);
-                        LogHelper.Log("result " + result.ToString());
-                        MqttClientHelper.Publish(topic + "/properties/read/reply", Encoding.UTF8.GetBytes(result.ToString()));
-                    }
-                    catch (Exception ex)
-                    {
-                        LogHelper.Log(ex.ToString());
-                    }
-                }
-                catch (Exception ex)
-                {
-                    LogHelper.Log(ex.ToString());
-                }
-            }
-        }
-
-        private static void Read_group(string opcserver, string group_name, string[] arry, JsonObject items)
-        {
-            Uri url = UrlBuilder.Build(opcserver);
-            try
-            {
-                using (var server = new OpcDaServer(url))
-                {
-                    // Connect to the server first.
-                    server.Connect();
-
-                    // Create a group with items.
-                    OpcDaGroup group = server.AddGroup(group_name);
-                    IList<OpcDaItemDefinition> definitions = new List<OpcDaItemDefinition>();
-                    int i = 0;
-                    foreach (string id in arry)
-                    {
-                        var definition = new OpcDaItemDefinition
-                        {
-                            ItemId = id,
-                            IsActive = true
-                        };
-                        definitions.Insert(i++, definition);
-                    }
-
-                    group.IsActive = true;
-                    OpcDaItemResult[] results = group.AddItems(definitions);
-                    OpcDaItemValue[] values = group.Read(group.Items, OpcDaDataSource.Device);
-
-                    // Handle adding results.
-                    JsonObject data = new JsonObject();
-                    foreach (OpcDaItemValue item in values)
-                    {
-                        LogHelper.Log(topic + "/properties/read/reply" + " " + item.GetHashCode().ToString() + " " + item.Value.ToString() + string.Empty + item.Timestamp.ToString());
-                        data.Add(item.Item.ItemId, item.Value);
-                    }
-
-                    items.Add("status", 0);
-                    items.Add(group_name, data);
-                    LogHelper.Log(items.ToString());
-                    MqttClientHelper.Publish(topic + "/properties/read/reply", Encoding.UTF8.GetBytes(items.ToString()));
-                    server.Disconnect();
-                }
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Log(ex.ToString());
-            }
-        }
-
         public void ValueChangedCallBack(string group, OpcDaItemValue[] values)
         {
             GroupEntity entity = new GroupEntity();
-            entity.Id = group;
+            entity.Name = group;
             List<Item> collection = new List<Item>();
             values.ToList().ForEach(v =>
             {
                 Item i = new Item();
-                i.ItemId = v.Item.ItemId;
-                i.Data = v.Value;
-                i.Type = v.Value.GetType().ToString();
-                collection.Add(i);
+                if (v.Item != null)
+                {
+                    i.ItemId = v.Item.ItemId;
+                    i.Data = v.Value;
+                    i.Type = v.Value.GetType().ToString();
+                    collection.Add(i);
+                }
             });
 
             entity.Items = collection;
             string json = JsonConvert.SerializeObject(entity);
-            byte[] bufferList = StructUtility.Package(new Header() { Id = 0, Cmd = (int)Command.Notify_Nodes_Values_Ex, ContentSize = json.Length }, json);
-            LogHelper.Log("ValueChangedCallBack: " + json.ToString());
-            //sessionDic[group].Send(bufferList, 0, bufferList.Length);
-        }
-
-        private static DateTime baseTime = new DateTime(1970, 1, 1);
-
-        /// <summary>
-        /// 将unixtime转换为.NET的DateTimea
-        /// </summary>
-        /// <param name="timeStamp">秒数</param>
-        /// <returns>转换后的时间</returns>
-        public static DateTime FromUnixTime(long timeStamp)
-        {
-            return TimeZone.CurrentTimeZone.ToLocalTime(new DateTime((timeStamp * 10000000) + baseTime.Ticks));
-        }
-
-        /// <summary>
-        /// 将.NET的DateTime转换为unix time
-        /// </summary>
-        /// <param name="dateTime">待转换的时间</param>
-        /// <returns>转换后的unix time</returns>
-        public static long FromDateTime(DateTime dateTime)
-        {
-            return (TimeZone.CurrentTimeZone.ToUniversalTime(dateTime).Ticks - baseTime.Ticks) / 10000000;
+            LogHelper.Log("Group: " + json.ToString());
         }
     }
  }
