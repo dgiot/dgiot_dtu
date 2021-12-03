@@ -243,6 +243,7 @@ namespace Dgiot_dtu
 
         private void OpcServer()
         {
+            comboBoxOpcServer.Items.Clear();
             OPCDAHelper.GetServer().ForEach((server) =>
             {
                 comboBoxOpcServer.Items.Add(server);
@@ -259,6 +260,7 @@ namespace Dgiot_dtu
 
         private void OpcGroup()
         {
+            comboBoxOpcGroup.Items.Clear();
             OPCDAHelper.GetGroup().ForEach((group) =>
             {
                 comboBoxOpcGroup.Items.Add(group);
@@ -276,6 +278,8 @@ namespace Dgiot_dtu
 
         private void OpcItems()
         {
+            comboBoxOpcGroup.Items.Clear();
+
             OPCDAHelper.GetItems().ForEach((item) =>
             {
                 comboBoxOpcItem.Items.Add(item);

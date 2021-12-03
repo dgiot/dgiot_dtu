@@ -127,28 +127,6 @@ namespace Dgiot_dtu
             return opcDa.GetItems(serviceProgId, groupId);
         }
 
-        public static List<TreeNode> ScanOPCClassicServer()
-        {
-            opcDaServerList.Clear();
-            string[] serverList = opcDa.ScanOPCDa(opchost);
-            if (serverList.Length > 0)
-            {
-                TreeNode node = new TreeNode();
-                node.Name = opchost.ToString();
-                node.NodeType = TreeNodeType.Local;
-                List<TreeNode> childNodes = new List<TreeNode>();
-                foreach (var opcItem in serverList)
-                {
-                    childNodes.Add(new TreeNode() { Name = opcItem });
-                }
-
-                node.Children.AddRange(childNodes);
-                opcDaServerList.Add(node);
-            }
-
-            return opcDaServerList;
-        }
-
         public static void Scan()
         {
             LogHelper.Log("opchost " + opchost);
@@ -202,19 +180,6 @@ namespace Dgiot_dtu
             // Read_group(serviceProgId, "GCU331_YJ", arry, items);
         }
 
-        private static void Recursion(TreeNode childNode)
-        {
-            LogHelper.Log("name " + childNode.Name + " " + childNode.NodeType.ToString());
-            if (childNode.Children.Any())
-            {
-                var children = childNode.Children.ToList();
-                children.ForEach((child) =>
-                {
-                    Recursion(child);
-                });
-            }
-        }
-
         private static void BrowseChildren(string serviceProgId, JsonObject json, IOpcDaBrowser browser, string group = null, int indent = 0)
         {
             // When itemId is null, root elements will be browsed.
@@ -264,9 +229,9 @@ namespace Dgiot_dtu
             }
         }
 
-        private static Boolean IsGroupfilter(string item)
+        private static bool IsGroupfilter(string item)
         {
-            Boolean result = false;
+            bool result = false;
             foreach (string filter in groupfilter)
             {
                  // LogHelper.Log("item  " + item + " filter " + filter + " " + item.LastIndexOf(filter));
@@ -279,7 +244,7 @@ namespace Dgiot_dtu
             return result;
         }
 
-        private static Boolean IsPass(int indent, string item)
+        private static bool IsPass(int indent, string item)
         {
             if (indent == 0)
             {

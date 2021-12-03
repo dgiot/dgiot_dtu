@@ -219,6 +219,7 @@ namespace Da
                                     }
                                 }
 
+                                group.Items = items;
                                 groupCollection.Add(deviceAddr, group);
                                 groups.Add(element.Name);
                             }
