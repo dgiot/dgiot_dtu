@@ -85,7 +85,6 @@
             this.textBoxMqttSever = new System.Windows.Forms.TextBox();
             this.label22 = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.textBoxOpcItems = new System.Windows.Forms.TextBox();
             this.label36 = new System.Windows.Forms.Label();
             this.label35 = new System.Windows.Forms.Label();
             this.comboBoxOpcGroup = new System.Windows.Forms.ComboBox();
@@ -131,6 +130,7 @@
             this.comboBoxLan = new System.Windows.Forms.ComboBox();
             this.label33 = new System.Windows.Forms.Label();
             this.label34 = new System.Windows.Forms.Label();
+            this.comboBoxOpcItem = new System.Windows.Forms.ComboBox();
             this.groupBoxSerialPort.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -781,7 +781,7 @@
             // 
             // groupBox4
             // 
-            this.groupBox4.Controls.Add(this.textBoxOpcItems);
+            this.groupBox4.Controls.Add(this.comboBoxOpcItem);
             this.groupBox4.Controls.Add(this.label36);
             this.groupBox4.Controls.Add(this.label35);
             this.groupBox4.Controls.Add(this.comboBoxOpcGroup);
@@ -798,21 +798,10 @@
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "OPC_DA Capture";
             // 
-            // textBoxOpcItems
-            // 
-            this.textBoxOpcItems.Location = new System.Drawing.Point(75, 117);
-            this.textBoxOpcItems.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.textBoxOpcItems.Name = "textBoxOpcItems";
-            this.textBoxOpcItems.ReadOnly = true;
-            this.textBoxOpcItems.Size = new System.Drawing.Size(228, 28);
-            this.textBoxOpcItems.TabIndex = 7;
-            this.textBoxOpcItems.Text = "items";
-            this.textBoxOpcItems.TextChanged += new System.EventHandler(this.TextBoxOpcItems_TextChanged);
-            // 
             // label36
             // 
             this.label36.AutoSize = true;
-            this.label36.Location = new System.Drawing.Point(9, 120);
+            this.label36.Location = new System.Drawing.Point(6, 120);
             this.label36.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label36.Name = "label36";
             this.label36.Size = new System.Drawing.Size(53, 18);
@@ -822,7 +811,7 @@
             // label35
             // 
             this.label35.AutoSize = true;
-            this.label35.Location = new System.Drawing.Point(8, 89);
+            this.label35.Location = new System.Drawing.Point(7, 89);
             this.label35.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label35.Name = "label35";
             this.label35.Size = new System.Drawing.Size(53, 18);
@@ -1310,6 +1299,16 @@
             this.label34.Size = new System.Drawing.Size(100, 23);
             this.label34.TabIndex = 0;
             // 
+            // comboBoxOpcItem
+            // 
+            this.comboBoxOpcItem.FormattingEnabled = true;
+            this.comboBoxOpcItem.Location = new System.Drawing.Point(74, 117);
+            this.comboBoxOpcItem.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.comboBoxOpcItem.Name = "comboBoxOpcItem";
+            this.comboBoxOpcItem.Size = new System.Drawing.Size(228, 26);
+            this.comboBoxOpcItem.TabIndex = 45;
+            this.comboBoxOpcItem.SelectedIndexChanged += new System.EventHandler(this.ComboBoxOpcItem_SelectedIndexChanged);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
@@ -1482,11 +1481,11 @@
         private System.Windows.Forms.ComboBox comboBoxLan;
         private System.Windows.Forms.Label label33;
         private System.Windows.Forms.Label label34;
-        private System.Windows.Forms.TextBox textBoxOpcItems;
         private System.Windows.Forms.Label label36;
         private System.Windows.Forms.Label label35;
         private System.Windows.Forms.ComboBox comboBoxOpcGroup;
         private System.Windows.Forms.ComboBox comboBoxOpcHost;
+        private System.Windows.Forms.ComboBox comboBoxOpcItem;
     }
 }
 

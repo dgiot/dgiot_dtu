@@ -27,7 +27,7 @@ namespace Dgiot_dtu
                     using (Ping p = new Ping())
                     {
                         PingReply pingReply = p.Send(ip, 100);
-                        if (pingReply.Status != IPStatus.Success)
+                        if (pingReply.Status == IPStatus.Success)
                         {
                             localIps.Add(ip.ToString());
                         }

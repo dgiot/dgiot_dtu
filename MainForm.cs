@@ -40,9 +40,10 @@ namespace Dgiot_dtu
             "SerialPort",
             "TcpServer",
             "BACnet",
-            "OPCUA_SCAN",
-            "OPCUA_READ",
-            "OPCUA_WRITE",
+            "OPCDA_SCAN",
+            "OPCDA_READ",
+            "OPCDA_WRITE",
+            "OPCUA",
             "MqttClient",
             "MqttServer",
             "TcpClient",
@@ -221,11 +222,12 @@ namespace Dgiot_dtu
             comboBoxLan.Items.Add("简体中文");
             comboBoxLan.Items.Add("English");
             comboBoxLan.SelectedIndex = 0;
+
+            OpcHost();
         }
 
-        private void OpcServer()
+        private void OpcHost()
         {
-            SetConfig("SqlServerTopic", textBoxSqlServerTopic.Text);
             DgiotHelper.GetIps().ForEach((ip) =>
             {
                 comboBoxOpcHost.Items.Add(ip);
@@ -235,6 +237,56 @@ namespace Dgiot_dtu
             {
                 comboBoxOpcHost.SelectedIndex = 0;
             }
+
+            SetConfig("OpcHost", comboBoxOpcHost.Text);
+        }
+
+        private void OpcServer()
+        {
+            OPCDAHelper.GetServer().ForEach((server) =>
+            {
+                comboBoxOpcServer.Items.Add(server);
+            });
+
+            if (comboBoxOpcServer.Items.Count > 0)
+            {
+                comboBoxOpcServer.SelectedIndex = 0;
+            }
+
+            SetConfig("OpcServer", comboBoxOpcServer.Text);
+            OpcGroup();
+        }
+
+        private void OpcGroup()
+        {
+            OPCDAHelper.GetGroup().ForEach((group) =>
+            {
+                comboBoxOpcGroup.Items.Add(group);
+            });
+
+            if (comboBoxOpcGroup.Items.Count > 0)
+            {
+                comboBoxOpcGroup.SelectedIndex = 0;
+            }
+
+            SetConfig("OpcGroup", comboBoxOpcGroup.Text);
+
+            OpcItems();
+        }
+
+        private void OpcItems()
+        {
+            OPCDAHelper.GetItems().ForEach((item) =>
+            {
+                comboBoxOpcItem.Items.Add(item);
+            });
+
+            if (comboBoxOpcItem.Items.Count > 0)
+            {
+                comboBoxOpcItem.SelectedIndex = 0;
+            }
+
+            SetConfig("OpcItems", comboBoxOpcItem.Text);
         }
 
         private void RestoreConfigs(Configuration config)
@@ -432,7 +484,7 @@ namespace Dgiot_dtu
             SetConfig("OpcHost", textBoxOpcIp.Text);
             SetConfig("OpcServer", comboBoxOpcServer.Text);
             SetConfig("OpcGroup", comboBoxOpcServer.Text);
-            SetConfig("OpcItems", textBoxOpcItems.Text);
+            SetConfig("OpcItems", comboBoxOpcItem.Text);
             SetConfig("OPCUATopic", textBoxOPCUATopic.Text);
             SetConfig("BACnetTopic", textBoxBACnetTopic.Text);
             SetConfig("ControlTopic", textBoxControlTopic.Text);
@@ -631,27 +683,29 @@ namespace Dgiot_dtu
         private void TextBoxSqlServerTopic_TextChanged(object sender, EventArgs e)
         {
             SetConfig("SqlServerTopic", textBoxSqlServerTopic.Text);
-            OpcServer();
         }
 
         private void ComboBoxOpcHost_SelectedIndexChanged(object sender, EventArgs e)
         {
             SetConfig("OpcHost", comboBoxOpcHost.Text);
+            OpcServer();
         }
 
         private void ComboBoxOpcServer_SelectedIndexChanged(object sender, EventArgs e)
         {
             SetConfig("OpcServer", comboBoxOpcServer.Text);
+            OpcGroup();
         }
 
         private void ComboBoxOpcGroup_SelectedIndexChanged(object sender, EventArgs e)
         {
-            SetConfig("OpcGroup", comboBoxOpcServer.Text);
+            SetConfig("OpcGroup", comboBoxOpcGroup.Text);
+            OpcItems();
         }
 
-        private void TextBoxOpcItems_TextChanged(object sender, EventArgs e)
+        private void ComboBoxOpcItem_SelectedIndexChanged(object sender, EventArgs e)
         {
-            SetConfig("OpcItems", textBoxOpcItems.Text);
+            SetConfig("OpcItems", comboBoxOpcItem.Text);
         }
 
         private void ComboBoxLogLevel_SelectedIndexChanged(object sender, EventArgs e)
@@ -680,46 +734,46 @@ namespace Dgiot_dtu
             else if (bridges[comboBoxBridge.SelectedIndex] == "PLC")
             {
             }
-            else if (bridges[this.comboBoxBridge.SelectedIndex] == "OPCDA_SCAN")
+            else if (bridges[comboBoxBridge.SelectedIndex] == "OPCDA_SCAN")
             {
                 OPCDAHelper.Scan();
             }
-            else if (bridges[this.comboBoxBridge.SelectedIndex] == "OPCDA_READ")
+            else if (bridges[comboBoxBridge.SelectedIndex] == "OPCDA_READ")
             {
             }
-            else if (bridges[this.comboBoxBridge.SelectedIndex] == "OPCDA_WRITE")
+            else if (bridges[comboBoxBridge.SelectedIndex] == "OPCDA_WRITE")
             {
                 OPCDAHelper.Write();
             }
-            else if (bridges[this.comboBoxBridge.SelectedIndex] == "OPCUA")
+            else if (bridges[comboBoxBridge.SelectedIndex] == "OPCUA")
             {
             }
-            else if (bridges[this.comboBoxBridge.SelectedIndex] == "BACnet")
+            else if (bridges[comboBoxBridge.SelectedIndex] == "BACnet")
             {
                 BACnetHelper.Write(payload, 0, payload.Length);
             }
-            else if (bridges[this.comboBoxBridge.SelectedIndex] == "Control")
+            else if (bridges[comboBoxBridge.SelectedIndex] == "Control")
             {
             }
-            else if (bridges[this.comboBoxBridge.SelectedIndex] == "Access")
+            else if (bridges[comboBoxBridge.SelectedIndex] == "Access")
             {
             }
-            else if (bridges[this.comboBoxBridge.SelectedIndex] == "SqlServer")
+            else if (bridges[comboBoxBridge.SelectedIndex] == "SqlServer")
             {
             }
-            else if (bridges[this.comboBoxBridge.SelectedIndex] == "MqttClient")
+            else if (bridges[comboBoxBridge.SelectedIndex] == "MqttClient")
             {
                 MqttClientHelper.Write(payload, 0, payload.Length);
             }
-            else if (bridges[this.comboBoxBridge.SelectedIndex] == "MqttServer")
+            else if (bridges[comboBoxBridge.SelectedIndex] == "MqttServer")
             {
                 MqttServerHelper.Write(payload, 0, payload.Length);
             }
-            else if (bridges[this.comboBoxBridge.SelectedIndex] == "TcpClient")
+            else if (bridges[comboBoxBridge.SelectedIndex] == "TcpClient")
             {
                 TcpClientHelper.Write(payload, 0, payload.Length);
             }
-            else if (bridges[this.comboBoxBridge.SelectedIndex] == "UdpClient")
+            else if (bridges[comboBoxBridge.SelectedIndex] == "UdpClient")
             {
             }
             else

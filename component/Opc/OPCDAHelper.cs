@@ -11,7 +11,6 @@ namespace Dgiot_dtu
     using System.Configuration;
     using System.Linq;
     using System.Text;
-    using System.Text.RegularExpressions;
     using Da;
     using Newtonsoft.Json;
     using TitaniumAS.Opc.Client.Common;
@@ -102,19 +101,17 @@ namespace Dgiot_dtu
             {
                 serviceProgId = config["OpcServer"].Value;
             }
+
+            if (config["OpcGroup"] != null)
+            {
+                groupId = config["OpcGroup"].Value;
+            }
         }
 
         public static List<string> GetServer()
         {
-            serviceProgIdList.Clear();
-            string[] progIds = opcDa.ScanOPCDa(opchost);
-            foreach (string progId in progIds)
-            {
-                serviceProgIdList.Add(progId);
-                LogHelper.Log("ProgId: " + progId);
-            }
-
-            return serviceProgIdList;
+            opcDa.ScanOPCDa(opchost);
+            return opcDa.GetServices(opchost);
         }
 
         public static List<string> GetGroup()
@@ -124,17 +121,23 @@ namespace Dgiot_dtu
             return groupIdList;
         }
 
+        public static List<string> GetItems()
+        {
+            LogHelper.Log("serviceProgId " + serviceProgId + " groupId " + groupId);
+            return opcDa.GetItems(serviceProgId, groupId);
+        }
+
         public static List<TreeNode> ScanOPCClassicServer()
         {
             opcDaServerList.Clear();
-            string[] opcDaList = opcDa.ScanOPCDa(opchost);
-            if (opcDaList.Length > 0)
+            string[] serverList = opcDa.ScanOPCDa(opchost);
+            if (serverList.Length > 0)
             {
                 TreeNode node = new TreeNode();
                 node.Name = opchost.ToString();
                 node.NodeType = TreeNodeType.Local;
                 List<TreeNode> childNodes = new List<TreeNode>();
-                foreach (var opcItem in opcDaList)
+                foreach (var opcItem in serverList)
                 {
                     childNodes.Add(new TreeNode() { Name = opcItem });
                 }
@@ -146,43 +149,17 @@ namespace Dgiot_dtu
             return opcDaServerList;
         }
 
-        public static List<TreeNode> ScanOPCServerData(List<TreeNode> opcServerNodes)
-        {
-            opcServerNodes.ForEach((service) =>
-            {
-                service.Children.ForEach((opc) =>
-                {
-                    IList<TreeNode> dataNodes = opcDa.GetTreeNodes(opc.Name);
-                    opc.Children.AddRange(dataNodes);
-                });
-            });
-
-            return opcServerNodes;
-        }
-
         public static void Scan()
         {
-            List<TreeNode> servers = ScanOPCClassicServer();
-            foreach (TreeNode server in servers)
+            LogHelper.Log("opchost " + opchost);
+            opcDa.GetServices(opchost).ForEach(service =>
             {
-                Recursion(server);
-            }
-
-            List<TreeNode> tempDataList = ScanOPCServerData(opcDaServerList);
-            treeNodeCaches.Clear();
-            treeNodeCaches.AddRange(tempDataList);
-
-            // OpcDaService server1 = OpcDa.GetOpcDaService(serviceProgId);
-            // if (server1 != null)
-            // {
-            //    LogHelper.Log("Host " + server1.Host + " ServiceId " + server1.ServiceId + " serviceProgId " + serviceProgId);
-            //     treeNodeCaches = (List<TreeNode>)OpcDa.GetTreeNodes(serviceProgId);
-            //    treeNodeCaches.ForEach((node) =>
-            //    {
-            //        Recursion(node);
-            //     });
-            // }
-            Write();
+                LogHelper.Log("service " + service);
+                opcDa.GetGroups(service).ForEach(group =>
+                {
+                    LogHelper.Log("group " + group);
+                });
+            });
         }
 
         public static void Write()
