@@ -14,7 +14,7 @@ namespace Dgiot_dtu
         {
         }
 
-        private static TreeViewHelper instance;
+        private static TreeViewHelper instance = null;
         private static TreeView treeView = null;
         private static TreeNode treenode = new TreeNode();
 
