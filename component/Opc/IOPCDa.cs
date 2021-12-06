@@ -4,7 +4,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Windows.Forms;
 using TitaniumAS.Opc.Client.Da;
 
 namespace Da
@@ -13,7 +13,7 @@ namespace Da
     {
         string[] ScanOPCDa(string host, Boolean isClean = true);
 
-        IList<TreeNode> GetTreeNodes(string service);
+        TreeNode GetTreeNodes(string service);
 
         string StartMonitoringItems(string serviceProgId, List<string> itemIds, string strMd5);
 

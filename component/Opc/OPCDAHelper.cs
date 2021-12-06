@@ -11,6 +11,7 @@ namespace Dgiot_dtu
     using System.Configuration;
     using System.Linq;
     using System.Text;
+    using System.Windows.Forms;
     using Da;
     using Newtonsoft.Json;
     using TitaniumAS.Opc.Client.Common;
@@ -30,9 +31,6 @@ namespace Dgiot_dtu
 
         private static string groupId = "";
         private static List<string> groupIdList = new List<string> { };
-
-        private static List<TreeNode> opcDaServerList = new List<TreeNode>();
-        private static List<TreeNode> treeNodeCaches = new List<TreeNode>();
         private static OPCDAHelper instance = null;
         private static string clientid = string.Empty;
 
@@ -117,7 +115,7 @@ namespace Dgiot_dtu
         public static List<string> GetGroup()
         {
             groupIdList.Clear();
-            groupIdList = opcDa.GetGroups(serviceProgId);
+            groupIdList = opcDa.GetGroups(opchost, serviceProgId);
             return groupIdList;
         }
 
@@ -133,7 +131,7 @@ namespace Dgiot_dtu
             opcDa.GetServices(opchost).ForEach(service =>
             {
                 LogHelper.Log("service " + service);
-                opcDa.GetGroups(service).ForEach(group =>
+                opcDa.GetGroups(opchost, service).ForEach(group =>
                 {
                     LogHelper.Log("group " + group);
                 });

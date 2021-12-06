@@ -1,4 +1,6 @@
-﻿namespace Dgiot_dtu
+﻿using System.Windows.Forms;
+
+namespace Dgiot_dtu
 {
     partial class MainForm
     {
@@ -85,13 +87,8 @@
             this.textBoxMqttSever = new System.Windows.Forms.TextBox();
             this.label22 = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.label36 = new System.Windows.Forms.Label();
-            this.label35 = new System.Windows.Forms.Label();
-            this.comboBoxOpcGroup = new System.Windows.Forms.ComboBox();
-            this.comboBoxOpcHost = new System.Windows.Forms.ComboBox();
-            this.comboBoxOpcServer = new System.Windows.Forms.ComboBox();
-            this.label31 = new System.Windows.Forms.Label();
-            this.label25 = new System.Windows.Forms.Label();
+            this.textBoxOPCDATopic = new System.Windows.Forms.TextBox();
+            this.labelopcda = new System.Windows.Forms.Label();
             this.textBoxOpcIp = new System.Windows.Forms.TextBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.textBoxOPCUATopic = new System.Windows.Forms.TextBox();
@@ -129,8 +126,10 @@
             this.label32 = new System.Windows.Forms.Label();
             this.comboBoxLan = new System.Windows.Forms.ComboBox();
             this.label33 = new System.Windows.Forms.Label();
-            this.label34 = new System.Windows.Forms.Label();
-            this.comboBoxOpcItem = new System.Windows.Forms.ComboBox();
+            this.label_devicelog = new System.Windows.Forms.Label();
+            this.treeView = new System.Windows.Forms.TreeView();
+            this.label_devcietree = new System.Windows.Forms.Label();
+            this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.groupBoxSerialPort.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -147,7 +146,7 @@
             // 
             // buttonStartStop
             // 
-            this.buttonStartStop.Location = new System.Drawing.Point(937, 827);
+            this.buttonStartStop.Location = new System.Drawing.Point(738, 831);
             this.buttonStartStop.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.buttonStartStop.Name = "buttonStartStop";
             this.buttonStartStop.Size = new System.Drawing.Size(80, 31);
@@ -164,7 +163,7 @@
             this.textBoxLog.Multiline = true;
             this.textBoxLog.Name = "textBoxLog";
             this.textBoxLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxLog.Size = new System.Drawing.Size(985, 786);
+            this.textBoxLog.Size = new System.Drawing.Size(677, 780);
             this.textBoxLog.TabIndex = 9;
             // 
             // linkLabel1
@@ -183,7 +182,7 @@
             // checkBoxReconnect
             // 
             this.checkBoxReconnect.AutoSize = true;
-            this.checkBoxReconnect.Location = new System.Drawing.Point(1029, 836);
+            this.checkBoxReconnect.Location = new System.Drawing.Point(1106, 837);
             this.checkBoxReconnect.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.checkBoxReconnect.Name = "checkBoxReconnect";
             this.checkBoxReconnect.Size = new System.Drawing.Size(160, 22);
@@ -206,7 +205,7 @@
             // 
             // buttonClear
             // 
-            this.buttonClear.Location = new System.Drawing.Point(856, 827);
+            this.buttonClear.Location = new System.Drawing.Point(658, 832);
             this.buttonClear.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.buttonClear.Name = "buttonClear";
             this.buttonClear.Size = new System.Drawing.Size(72, 31);
@@ -385,7 +384,7 @@
             this.textBoxMqttPubTopic.Name = "textBoxMqttPubTopic";
             this.textBoxMqttPubTopic.Size = new System.Drawing.Size(202, 28);
             this.textBoxMqttPubTopic.TabIndex = 22;
-            this.textBoxMqttPubTopic.Text = "thing/dgiot/post/";
+            this.textBoxMqttPubTopic.Text = "/{productid}/{devaddr}//properties/read/reply";
             this.textBoxMqttPubTopic.TextChanged += new System.EventHandler(this.TextBoxMqttPubTopic_TextChanged);
             // 
             // label12
@@ -405,7 +404,7 @@
             this.textBoxMqttSubTopic.Name = "textBoxMqttSubTopic";
             this.textBoxMqttSubTopic.Size = new System.Drawing.Size(201, 28);
             this.textBoxMqttSubTopic.TabIndex = 20;
-            this.textBoxMqttSubTopic.Text = "thing/dgiot/";
+            this.textBoxMqttSubTopic.Text = "/{productid}/{devaddr}/#";
             this.textBoxMqttSubTopic.TextChanged += new System.EventHandler(this.TextBoxMqttSubTopic_TextChanged);
             // 
             // label11
@@ -425,7 +424,7 @@
             this.textBoxMqttPassword.Name = "textBoxMqttPassword";
             this.textBoxMqttPassword.Size = new System.Drawing.Size(201, 28);
             this.textBoxMqttPassword.TabIndex = 18;
-            this.textBoxMqttPassword.Text = "secret";
+            this.textBoxMqttPassword.Text = "TTY0Mzg3OTAxNjM4NDIyMjUyMTkw";
             this.textBoxMqttPassword.TextChanged += new System.EventHandler(this.TextBoxMqttPassword_TextChanged);
             // 
             // label10
@@ -445,7 +444,7 @@
             this.textBoxMqttUserName.Name = "textBoxMqttUserName";
             this.textBoxMqttUserName.Size = new System.Drawing.Size(201, 28);
             this.textBoxMqttUserName.TabIndex = 16;
-            this.textBoxMqttUserName.Text = "productid";
+            this.textBoxMqttUserName.Text = "ecfd3a227c";
             this.textBoxMqttUserName.TextChanged += new System.EventHandler(this.TextBoxMqttUserName_TextChanged);
             // 
             // label9
@@ -554,7 +553,7 @@
             // 
             // sendBridge
             // 
-            this.sendBridge.Location = new System.Drawing.Point(776, 827);
+            this.sendBridge.Location = new System.Drawing.Point(579, 830);
             this.sendBridge.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.sendBridge.Name = "sendBridge";
             this.sendBridge.Size = new System.Drawing.Size(71, 31);
@@ -574,7 +573,7 @@
             this.groupBox2.Controls.Add(this.textBoxTcpClientServer);
             this.groupBox2.Controls.Add(this.label18);
             this.groupBox2.Controls.Add(this.checkBoxTcpBridge);
-            this.groupBox2.Location = new System.Drawing.Point(1531, 421);
+            this.groupBox2.Location = new System.Drawing.Point(1531, 419);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
@@ -781,92 +780,37 @@
             // 
             // groupBox4
             // 
-            this.groupBox4.Controls.Add(this.comboBoxOpcItem);
-            this.groupBox4.Controls.Add(this.label36);
-            this.groupBox4.Controls.Add(this.label35);
-            this.groupBox4.Controls.Add(this.comboBoxOpcGroup);
-            this.groupBox4.Controls.Add(this.comboBoxOpcHost);
-            this.groupBox4.Controls.Add(this.comboBoxOpcServer);
-            this.groupBox4.Controls.Add(this.label31);
-            this.groupBox4.Controls.Add(this.label25);
-            this.groupBox4.Location = new System.Drawing.Point(1022, 286);
+            this.groupBox4.Controls.Add(this.textBoxOPCDATopic);
+            this.groupBox4.Controls.Add(this.labelopcda);
+            this.groupBox4.Location = new System.Drawing.Point(1022, 298);
             this.groupBox4.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBox4.Size = new System.Drawing.Size(316, 155);
+            this.groupBox4.Size = new System.Drawing.Size(316, 74);
             this.groupBox4.TabIndex = 18;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "OPC_DA Capture";
             // 
-            // label36
+            // textBoxOPCDATopic
             // 
-            this.label36.AutoSize = true;
-            this.label36.Location = new System.Drawing.Point(6, 120);
-            this.label36.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label36.Name = "label36";
-            this.label36.Size = new System.Drawing.Size(53, 18);
-            this.label36.TabIndex = 44;
-            this.label36.Text = "Items";
+            this.textBoxOPCDATopic.Location = new System.Drawing.Point(62, 28);
+            this.textBoxOPCDATopic.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxOPCDATopic.Name = "textBoxOPCDATopic";
+            this.textBoxOPCDATopic.ReadOnly = true;
+            this.textBoxOPCDATopic.Size = new System.Drawing.Size(238, 28);
+            this.textBoxOPCDATopic.TabIndex = 46;
+            this.textBoxOPCDATopic.Text = "/{productid}/{devaddr}/scan/opcda";
+            this.textBoxOPCDATopic.TextChanged += new System.EventHandler(this.TextBoxOPCDATopic_TextChanged);
             // 
-            // label35
+            // labelopcda
             // 
-            this.label35.AutoSize = true;
-            this.label35.Location = new System.Drawing.Point(7, 89);
-            this.label35.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label35.Name = "label35";
-            this.label35.Size = new System.Drawing.Size(53, 18);
-            this.label35.TabIndex = 43;
-            this.label35.Text = "Group";
-            // 
-            // comboBoxOpcGroup
-            // 
-            this.comboBoxOpcGroup.FormattingEnabled = true;
-            this.comboBoxOpcGroup.Location = new System.Drawing.Point(75, 87);
-            this.comboBoxOpcGroup.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.comboBoxOpcGroup.Name = "comboBoxOpcGroup";
-            this.comboBoxOpcGroup.Size = new System.Drawing.Size(228, 26);
-            this.comboBoxOpcGroup.TabIndex = 42;
-            this.comboBoxOpcGroup.SelectedIndexChanged += new System.EventHandler(this.ComboBoxOpcGroup_SelectedIndexChanged);
-            // 
-            // comboBoxOpcHost
-            // 
-            this.comboBoxOpcHost.FormattingEnabled = true;
-            this.comboBoxOpcHost.Location = new System.Drawing.Point(75, 25);
-            this.comboBoxOpcHost.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.comboBoxOpcHost.Name = "comboBoxOpcHost";
-            this.comboBoxOpcHost.Size = new System.Drawing.Size(228, 26);
-            this.comboBoxOpcHost.TabIndex = 41;
-            this.comboBoxOpcHost.SelectedIndexChanged += new System.EventHandler(this.ComboBoxOpcHost_SelectedIndexChanged);
-            // 
-            // comboBoxOpcServer
-            // 
-            this.comboBoxOpcServer.FormattingEnabled = true;
-            this.comboBoxOpcServer.Location = new System.Drawing.Point(75, 55);
-            this.comboBoxOpcServer.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.comboBoxOpcServer.Name = "comboBoxOpcServer";
-            this.comboBoxOpcServer.Size = new System.Drawing.Size(228, 26);
-            this.comboBoxOpcServer.TabIndex = 40;
-            this.comboBoxOpcServer.SelectedIndexChanged += new System.EventHandler(this.ComboBoxOpcServer_SelectedIndexChanged);
-            // 
-            // label31
-            // 
-            this.label31.AutoSize = true;
-            this.label31.Location = new System.Drawing.Point(3, 28);
-            this.label31.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label31.Name = "label31";
-            this.label31.Size = new System.Drawing.Size(44, 18);
-            this.label31.TabIndex = 7;
-            this.label31.Text = "Host";
-            // 
-            // label25
-            // 
-            this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(5, 60);
-            this.label25.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(62, 18);
-            this.label25.TabIndex = 6;
-            this.label25.Text = "Server";
+            this.labelopcda.AutoSize = true;
+            this.labelopcda.Location = new System.Drawing.Point(9, 28);
+            this.labelopcda.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.labelopcda.Name = "labelopcda";
+            this.labelopcda.Size = new System.Drawing.Size(26, 18);
+            this.labelopcda.TabIndex = 7;
+            this.labelopcda.Text = "To";
             // 
             // textBoxOpcIp
             // 
@@ -879,7 +823,7 @@
             // 
             this.groupBox5.Controls.Add(this.textBoxOPCUATopic);
             this.groupBox5.Controls.Add(this.label19);
-            this.groupBox5.Location = new System.Drawing.Point(1022, 452);
+            this.groupBox5.Location = new System.Drawing.Point(1022, 386);
             this.groupBox5.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
@@ -896,7 +840,7 @@
             this.textBoxOPCUATopic.ReadOnly = true;
             this.textBoxOPCUATopic.Size = new System.Drawing.Size(250, 28);
             this.textBoxOPCUATopic.TabIndex = 5;
-            this.textBoxOPCUATopic.Text = "thing/opdua/clientid";
+            this.textBoxOPCUATopic.Text = "/{productid}/{devaddr}/scan/opdua";
             this.textBoxOPCUATopic.TextChanged += new System.EventHandler(this.TextBoxOPCUATopic_TextChanged);
             // 
             // label19
@@ -913,7 +857,7 @@
             // 
             this.groupBox6.Controls.Add(this.textBoxBACnetTopic);
             this.groupBox6.Controls.Add(this.label23);
-            this.groupBox6.Location = new System.Drawing.Point(1022, 533);
+            this.groupBox6.Location = new System.Drawing.Point(1022, 474);
             this.groupBox6.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
@@ -930,7 +874,7 @@
             this.textBoxBACnetTopic.ReadOnly = true;
             this.textBoxBACnetTopic.Size = new System.Drawing.Size(252, 28);
             this.textBoxBACnetTopic.TabIndex = 5;
-            this.textBoxBACnetTopic.Text = "thing/bacnet/clientid";
+            this.textBoxBACnetTopic.Text = "/{productid}/{devaddr}/scan/bacnet";
             this.textBoxBACnetTopic.TextChanged += new System.EventHandler(this.TextBoxBACnetTopic_TextChanged);
             // 
             // label23
@@ -947,7 +891,7 @@
             // 
             this.groupBox7.Controls.Add(this.textBoxControlTopic);
             this.groupBox7.Controls.Add(this.label8);
-            this.groupBox7.Location = new System.Drawing.Point(1022, 607);
+            this.groupBox7.Location = new System.Drawing.Point(1022, 560);
             this.groupBox7.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
@@ -964,7 +908,7 @@
             this.textBoxControlTopic.ReadOnly = true;
             this.textBoxControlTopic.Size = new System.Drawing.Size(253, 28);
             this.textBoxControlTopic.TabIndex = 5;
-            this.textBoxControlTopic.Text = "thing/control/clientid";
+            this.textBoxControlTopic.Text = "/{productid}/{devaddr}/scan/control";
             this.textBoxControlTopic.TextChanged += new System.EventHandler(this.TextBoxControlTopic_TextChanged);
             // 
             // label8
@@ -1017,7 +961,7 @@
             // 
             this.groupBox8.Controls.Add(this.textBoxAccessTopic);
             this.groupBox8.Controls.Add(this.label6);
-            this.groupBox8.Location = new System.Drawing.Point(1022, 683);
+            this.groupBox8.Location = new System.Drawing.Point(1022, 651);
             this.groupBox8.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox8.Name = "groupBox8";
             this.groupBox8.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
@@ -1034,7 +978,7 @@
             this.textBoxAccessTopic.ReadOnly = true;
             this.textBoxAccessTopic.Size = new System.Drawing.Size(253, 28);
             this.textBoxAccessTopic.TabIndex = 5;
-            this.textBoxAccessTopic.Text = "thing/mdb/clientid";
+            this.textBoxAccessTopic.Text = "/{productid}/{devaddr}/scan/mdb";
             this.textBoxAccessTopic.TextChanged += new System.EventHandler(this.TextBoxAccessTopic_TextChanged);
             // 
             // label6
@@ -1051,7 +995,7 @@
             // 
             this.groupBox9.Controls.Add(this.textBoxSqlServerTopic);
             this.groupBox9.Controls.Add(this.label14);
-            this.groupBox9.Location = new System.Drawing.Point(1022, 758);
+            this.groupBox9.Location = new System.Drawing.Point(1022, 731);
             this.groupBox9.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox9.Name = "groupBox9";
             this.groupBox9.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
@@ -1068,7 +1012,7 @@
             this.textBoxSqlServerTopic.ReadOnly = true;
             this.textBoxSqlServerTopic.Size = new System.Drawing.Size(252, 28);
             this.textBoxSqlServerTopic.TabIndex = 5;
-            this.textBoxSqlServerTopic.Text = "thing/sqlserver/clientid";
+            this.textBoxSqlServerTopic.Text = "/{productid}/{devaddr}/scan/sqlserver";
             this.textBoxSqlServerTopic.TextChanged += new System.EventHandler(this.TextBoxSqlServerTopic_TextChanged);
             // 
             // label14
@@ -1092,7 +1036,7 @@
             this.groupBox10.Controls.Add(this.label24);
             this.groupBox10.Controls.Add(this.textBoxUDPClientServer);
             this.groupBox10.Controls.Add(this.label26);
-            this.groupBox10.Location = new System.Drawing.Point(1531, 624);
+            this.groupBox10.Location = new System.Drawing.Point(1531, 618);
             this.groupBox10.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox10.Name = "groupBox10";
             this.groupBox10.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
@@ -1210,7 +1154,7 @@
             // 
             this.groupBox12.Controls.Add(this.textBoxPLCTopic);
             this.groupBox12.Controls.Add(this.label2);
-            this.groupBox12.Location = new System.Drawing.Point(1022, 211);
+            this.groupBox12.Location = new System.Drawing.Point(1022, 226);
             this.groupBox12.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox12.Name = "groupBox12";
             this.groupBox12.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
@@ -1227,7 +1171,7 @@
             this.textBoxPLCTopic.ReadOnly = true;
             this.textBoxPLCTopic.Size = new System.Drawing.Size(246, 28);
             this.textBoxPLCTopic.TabIndex = 5;
-            this.textBoxPLCTopic.Text = "thing/plc/clientid";
+            this.textBoxPLCTopic.Text = "/{productid}/{devaddr}/scan/plc";
             this.textBoxPLCTopic.TextChanged += new System.EventHandler(this.TextBoxPLCTopic_TextChanged);
             // 
             // label2
@@ -1246,7 +1190,7 @@
             this.pictureBox1.Location = new System.Drawing.Point(1346, 31);
             this.pictureBox1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(148, 786);
+            this.pictureBox1.Size = new System.Drawing.Size(148, 780);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 35;
             this.pictureBox1.TabStop = false;
@@ -1254,28 +1198,28 @@
             // comboBoxLogLevel
             // 
             this.comboBoxLogLevel.FormattingEnabled = true;
-            this.comboBoxLogLevel.Location = new System.Drawing.Point(668, 830);
+            this.comboBoxLogLevel.Location = new System.Drawing.Point(923, 836);
             this.comboBoxLogLevel.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.comboBoxLogLevel.Name = "comboBoxLogLevel";
-            this.comboBoxLogLevel.Size = new System.Drawing.Size(98, 26);
+            this.comboBoxLogLevel.Size = new System.Drawing.Size(162, 26);
             this.comboBoxLogLevel.TabIndex = 36;
             this.comboBoxLogLevel.SelectedIndexChanged += new System.EventHandler(this.ComboBoxLogLevel_SelectedIndexChanged);
             // 
             // label32
             // 
             this.label32.AutoSize = true;
-            this.label32.Location = new System.Drawing.Point(591, 835);
+            this.label32.Location = new System.Drawing.Point(826, 838);
             this.label32.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label32.Name = "label32";
-            this.label32.Size = new System.Drawing.Size(53, 18);
+            this.label32.Size = new System.Drawing.Size(89, 18);
             this.label32.TabIndex = 37;
-            this.label32.Text = "Level";
+            this.label32.Text = "Log Level";
             // 
             // comboBoxLan
             // 
             this.comboBoxLan.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxLan.FormattingEnabled = true;
-            this.comboBoxLan.Location = new System.Drawing.Point(1346, 832);
+            this.comboBoxLan.Location = new System.Drawing.Point(1386, 832);
             this.comboBoxLan.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.comboBoxLan.Name = "comboBoxLan";
             this.comboBoxLan.Size = new System.Drawing.Size(148, 26);
@@ -1285,29 +1229,45 @@
             // label33
             // 
             this.label33.AutoSize = true;
-            this.label33.Location = new System.Drawing.Point(1254, 837);
+            this.label33.Location = new System.Drawing.Point(1286, 837);
             this.label33.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label33.Name = "label33";
             this.label33.Size = new System.Drawing.Size(80, 18);
             this.label33.TabIndex = 39;
             this.label33.Text = "Language";
             // 
-            // label34
+            // label_devicelog
             // 
-            this.label34.Location = new System.Drawing.Point(0, 0);
-            this.label34.Name = "label34";
-            this.label34.Size = new System.Drawing.Size(100, 23);
-            this.label34.TabIndex = 0;
+            this.label_devicelog.Location = new System.Drawing.Point(17, 6);
+            this.label_devicelog.Name = "label_devicelog";
+            this.label_devicelog.Size = new System.Drawing.Size(100, 23);
+            this.label_devicelog.TabIndex = 0;
+            this.label_devicelog.Text = "DeviceLog";
             // 
-            // comboBoxOpcItem
+            // treeView
             // 
-            this.comboBoxOpcItem.FormattingEnabled = true;
-            this.comboBoxOpcItem.Location = new System.Drawing.Point(74, 117);
-            this.comboBoxOpcItem.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.comboBoxOpcItem.Name = "comboBoxOpcItem";
-            this.comboBoxOpcItem.Size = new System.Drawing.Size(228, 26);
-            this.comboBoxOpcItem.TabIndex = 45;
-            this.comboBoxOpcItem.SelectedIndexChanged += new System.EventHandler(this.ComboBoxOpcItem_SelectedIndexChanged);
+            this.treeView.CheckBoxes = true;
+            this.treeView.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+            this.treeView.Location = new System.Drawing.Point(698, 31);
+            this.treeView.Name = "treeView";
+            this.treeView.Size = new System.Drawing.Size(303, 780);
+            this.treeView.TabIndex = 0;
+            this.treeView.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.TreeView_AfterCheck);
+            this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeView_AfterSelect);
+            this.treeView.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.NodeMouseDoubleClick);
+            // 
+            // label_devcietree
+            // 
+            this.label_devcietree.Location = new System.Drawing.Point(698, 5);
+            this.label_devcietree.Name = "label_devcietree";
+            this.label_devcietree.Size = new System.Drawing.Size(100, 23);
+            this.label_devcietree.TabIndex = 41;
+            this.label_devcietree.Text = "DeviceTree";
+            // 
+            // openFileDialog
+            // 
+            this.openFileDialog.FileName = "openFileDialog";
+            this.openFileDialog.Filter = "(*.txt)|*.txt";
             // 
             // MainForm
             // 
@@ -1315,7 +1275,9 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(143)))), ((int)(((byte)(178)))));
             this.ClientSize = new System.Drawing.Size(1910, 872);
-            this.Controls.Add(this.label34);
+            this.Controls.Add(this.label_devcietree);
+            this.Controls.Add(this.treeView);
+            this.Controls.Add(this.label_devicelog);
             this.Controls.Add(this.label33);
             this.Controls.Add(this.comboBoxLan);
             this.Controls.Add(this.label32);
@@ -1383,7 +1345,7 @@
         }
 
         #endregion
-
+        private TreeView treeView;
         private System.Windows.Forms.Button buttonStartStop;
         private System.Windows.Forms.TextBox textBoxLog;
         private System.Windows.Forms.LinkLabel linkLabel1;
@@ -1428,7 +1390,6 @@
         private System.Windows.Forms.Label label22;
         private System.Windows.Forms.CheckBox checkBoxTcpBridge;
         private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.Label label25;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.TextBox textBoxOPCUATopic;
         private System.Windows.Forms.Label label19;
@@ -1473,19 +1434,16 @@
         private System.Windows.Forms.Label label30;
         private System.Windows.Forms.ComboBox comboBoxDevAddr;
         private System.Windows.Forms.TextBox textBoxOpcIp;
-        private System.Windows.Forms.Label label31;
-        private System.Windows.Forms.ComboBox comboBoxOpcServer;
         private System.Windows.Forms.TextBox textBoxMqttSever;
         private System.Windows.Forms.ComboBox comboBoxLogLevel;
         private System.Windows.Forms.Label label32;
         private System.Windows.Forms.ComboBox comboBoxLan;
         private System.Windows.Forms.Label label33;
-        private System.Windows.Forms.Label label34;
-        private System.Windows.Forms.Label label36;
-        private System.Windows.Forms.Label label35;
-        private System.Windows.Forms.ComboBox comboBoxOpcGroup;
-        private System.Windows.Forms.ComboBox comboBoxOpcHost;
-        private System.Windows.Forms.ComboBox comboBoxOpcItem;
+        private System.Windows.Forms.Label label_devicelog;
+        private System.Windows.Forms.Label label_devcietree;
+        private TextBox textBoxOPCDATopic;
+        private Label labelopcda;
+        private OpenFileDialog openFileDialog;
     }
 }
 

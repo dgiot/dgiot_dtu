@@ -8,6 +8,7 @@ namespace Dgiot_dtu
     using System.Collections.Generic;
     using System.Configuration;
     using System.Diagnostics;
+    using System.IO;
     using System.Text.RegularExpressions;
     using System.Windows.Forms;
 
@@ -28,6 +29,7 @@ namespace Dgiot_dtu
         private BACnetHelper bacnet = BACnetHelper.GetInstance();
         private AccessHelper access = AccessHelper.GetInstance();
         private SqlServerHelper sqlserver = SqlServerHelper.GetInstance();
+        private TreeViewHelper treeViewHelper = TreeViewHelper.GetInstance();
 
         private static string clientid = Guid.NewGuid().ToString().Substring(0, 10);
         private static string productid = Guid.NewGuid().ToString().Substring(0, 10);
@@ -64,6 +66,7 @@ namespace Dgiot_dtu
             config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 
             LogHelper.Init(this);
+            TreeViewHelper.Init(treeView);
             SetComboBox();
 
             Text += " v" + System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
@@ -197,17 +200,6 @@ namespace Dgiot_dtu
 
             comboBoxDevAddr.SelectedIndex = 0;
 
-            List<string> opcservers = OPCDAHelper.GetServer();
-            foreach (var opcserver in opcservers)
-            {
-                comboBoxOpcServer.Items.Add(opcserver);
-            }
-
-            if (opcservers.Count > 0)
-            {
-                comboBoxOpcServer.SelectedIndex = 0;
-            }
-
             List<string> loglevels = LogHelper.Levels();
             foreach (var level in loglevels)
             {
@@ -222,75 +214,6 @@ namespace Dgiot_dtu
             comboBoxLan.Items.Add("简体中文");
             comboBoxLan.Items.Add("English");
             comboBoxLan.SelectedIndex = 0;
-
-            OpcHost();
-        }
-
-        private void OpcHost()
-        {
-            DgiotHelper.GetIps().ForEach((ip) =>
-            {
-                comboBoxOpcHost.Items.Add(ip);
-            });
-
-            if (comboBoxOpcHost.Items.Count > 0)
-            {
-                comboBoxOpcHost.SelectedIndex = 0;
-            }
-
-            SetConfig("OpcHost", comboBoxOpcHost.Text);
-        }
-
-        private void OpcServer()
-        {
-            comboBoxOpcServer.Items.Clear();
-            OPCDAHelper.GetServer().ForEach((server) =>
-            {
-                comboBoxOpcServer.Items.Add(server);
-            });
-
-            if (comboBoxOpcServer.Items.Count > 0)
-            {
-                comboBoxOpcServer.SelectedIndex = 0;
-            }
-
-            SetConfig("OpcServer", comboBoxOpcServer.Text);
-            OpcGroup();
-        }
-
-        private void OpcGroup()
-        {
-            comboBoxOpcGroup.Items.Clear();
-            OPCDAHelper.GetGroup().ForEach((group) =>
-            {
-                comboBoxOpcGroup.Items.Add(group);
-            });
-
-            if (comboBoxOpcGroup.Items.Count > 0)
-            {
-                comboBoxOpcGroup.SelectedIndex = 0;
-            }
-
-            SetConfig("OpcGroup", comboBoxOpcGroup.Text);
-
-            OpcItems();
-        }
-
-        private void OpcItems()
-        {
-            comboBoxOpcGroup.Items.Clear();
-
-            OPCDAHelper.GetItems().ForEach((item) =>
-            {
-                comboBoxOpcItem.Items.Add(item);
-            });
-
-            if (comboBoxOpcItem.Items.Count > 0)
-            {
-                comboBoxOpcItem.SelectedIndex = 0;
-            }
-
-            SetConfig("OpcItems", comboBoxOpcItem.Text);
         }
 
         private void RestoreConfigs(Configuration config)
@@ -456,14 +379,14 @@ namespace Dgiot_dtu
             textBoxMqttClientId.Text = clientid;
             textBoxMqttSubTopic.Text = "/" + productid + "/" + devaddr;
             textBoxMqttPubTopic.Text = "/" + productid + "/" + devaddr + "/properties/read/reply";
-            textBoxAccessTopic.Text = "/" + productid + "/" + devaddr + "/child/mdb";
+            textBoxAccessTopic.Text = "/" + productid + "/" + devaddr + "/scan/mdb";
 
-            // textBoxOPCDATopic.Text = "/" + productid + "/" + devaddr + "/child/opcda";
-            textBoxOPCUATopic.Text = "/" + productid + "/" + devaddr + "/child/opcua";
-            textBoxPLCTopic.Text = "/" + productid + "/" + devaddr + "/child/plc";
-            textBoxBACnetTopic.Text = "/" + productid + "/" + devaddr + "/child/bacnet";
-            textBoxControlTopic.Text = "/" + productid + "/" + devaddr + "/child/control";
-            textBoxSqlServerTopic.Text = "/" + productid + "/" + devaddr + "/child/sqlserver";
+            textBoxOPCDATopic.Text = "/" + productid + "/" + devaddr + "/scan/opcda";
+            textBoxOPCUATopic.Text = "/" + productid + "/" + devaddr + "/scan/opcua";
+            textBoxPLCTopic.Text = "/" + productid + "/" + devaddr + "/scan/plc";
+            textBoxBACnetTopic.Text = "/" + productid + "/" + devaddr + "/scan/bacnet";
+            textBoxControlTopic.Text = "/" + productid + "/" + devaddr + "/scan/control";
+            textBoxSqlServerTopic.Text = "/" + productid + "/" + devaddr + "/scan/sqlserver";
         }
 
         private void LinkLabel1LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -485,10 +408,7 @@ namespace Dgiot_dtu
         {
             SetConfig("tcpServerIsCheck", DgiotHelper.BoolTostr(checkBoxTcpBridge.Checked));
             SetConfig("PLCTopic", textBoxPLCTopic.Text);
-            SetConfig("OpcHost", textBoxOpcIp.Text);
-            SetConfig("OpcServer", comboBoxOpcServer.Text);
-            SetConfig("OpcGroup", comboBoxOpcServer.Text);
-            SetConfig("OpcItems", comboBoxOpcItem.Text);
+            SetConfig("OPCDATopic", textBoxOPCDATopic.Text);
             SetConfig("OPCUATopic", textBoxOPCUATopic.Text);
             SetConfig("BACnetTopic", textBoxBACnetTopic.Text);
             SetConfig("ControlTopic", textBoxControlTopic.Text);
@@ -664,6 +584,11 @@ namespace Dgiot_dtu
             SetConfig("PLCTopic", textBoxPLCTopic.Text);
         }
 
+        private void TextBoxOPCDATopic_TextChanged(object sender, EventArgs e)
+        {
+            SetConfig("OPCDATopic", textBoxOPCDATopic.Text);
+        }
+
         private void TextBoxOPCUATopic_TextChanged(object sender, EventArgs e)
         {
             SetConfig("OPCUATopic", textBoxOPCUATopic.Text);
@@ -687,29 +612,6 @@ namespace Dgiot_dtu
         private void TextBoxSqlServerTopic_TextChanged(object sender, EventArgs e)
         {
             SetConfig("SqlServerTopic", textBoxSqlServerTopic.Text);
-        }
-
-        private void ComboBoxOpcHost_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            SetConfig("OpcHost", comboBoxOpcHost.Text);
-            OpcServer();
-        }
-
-        private void ComboBoxOpcServer_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            SetConfig("OpcServer", comboBoxOpcServer.Text);
-            OpcGroup();
-        }
-
-        private void ComboBoxOpcGroup_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            SetConfig("OpcGroup", comboBoxOpcGroup.Text);
-            OpcItems();
-        }
-
-        private void ComboBoxOpcItem_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            SetConfig("OpcItems", comboBoxOpcItem.Text);
         }
 
         private void ComboBoxLogLevel_SelectedIndexChanged(object sender, EventArgs e)
@@ -820,6 +722,7 @@ namespace Dgiot_dtu
             label8.Text = "发至";
             label6.Text = "发至";
             label14.Text = "发至";
+            labelopcda.Text = "发至";
 
             groupBoxSerialPort.Text = "串口捕获";
             groupBox12.Text = "PLC 捕获";
@@ -835,8 +738,7 @@ namespace Dgiot_dtu
             label4.Text = "数据位";
             label13.Text = "校验位";
             label5.Text = "停止位";
-            label31.Text = "扫描";
-            label25.Text = "服务";
+            labelopcda.Text = "服务";
 
             groupBox3.Text = "Mqtt 客户端通道";
             label22.Text = "服务";
@@ -861,6 +763,9 @@ namespace Dgiot_dtu
             label24.Text = "端口";
             label15.Text = "登录";
             label28.Text = "桥接";
+
+            label_devicelog.Text = "设备日志";
+            label_devcietree.Text = "设备树";
         }
 
         private void En()
@@ -881,6 +786,7 @@ namespace Dgiot_dtu
             label8.Text = "To";
             label6.Text = "To";
             label14.Text = "To";
+            labelopcda.Text = "To";
 
             groupBoxSerialPort.Text = "Serial Port Capture";
             groupBox12.Text = "PLC Capture";
@@ -896,8 +802,7 @@ namespace Dgiot_dtu
             label4.Text = "dataBits";
             label13.Text = "Parity";
             label5.Text = "stopBits";
-            label31.Text = "Scan";
-            label25.Text = "Server";
+            labelopcda.Text = "Server";
 
             groupBox3.Text = "Mqtt Client Channel";
             label22.Text = "Server";
@@ -922,6 +827,67 @@ namespace Dgiot_dtu
             label24.Text = "Port";
             label15.Text = "login";
             label28.Text = "bridge";
+
+            label_devicelog.Text = "DeviceLog";
+            label_devcietree.Text = "DeviceTree";
+        }
+
+        private void CheckBoxItemsFromFile_CheckedChanged(object sender, EventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Multiselect = true; // 该值确定是否可以选择多个文件
+            dialog.Title = "请选择文件夹";
+            dialog.Filter = "所有文件(*.*)|*.*";
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                string file = dialog.FileName;
+                LogHelper.Log("file " + file);
+            }
+        }
+
+        private void TreeView_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            // 通过鼠标或者键盘触发事件，防止修改节点的Checked状态时候再次进入
+            if (e.Action != TreeViewAction.Unknown)
+            {
+                LogHelper.Log("select node " + e.Node.Text + " tag " + e.Node.Tag + " path " + e.Node.FullPath.ToString());
+                TreeViewHelper.SetChildNodeCheckedState(e.Node, e.Node.Checked);
+                TreeViewHelper.SetParentNodeCheckedState(e.Node, e.Node.Checked);
+            }
+        }
+
+        private void TreeView_AfterCheck(object sender, TreeViewEventArgs e)
+        {
+            if (e.Action != TreeViewAction.Unknown)
+            {
+                LogHelper.Log("check node " + e.Node.Text + " tag " + e.Node.Tag + " ImageKey " + e.Node.ImageKey);
+                TreeViewHelper.SetChildNodeCheckedState(e.Node, e.Node.Checked);
+                TreeViewHelper.SetParentNodeCheckedState(e.Node, e.Node.Checked);
+            }
+        }
+
+        private void NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right) // 单击鼠标右键才响应
+            {
+                LogHelper.Log("Right node " + e.Node.Text + " tag " + e.Node.Tag + " Level " + e.Node.Level.ToString());
+                if (e.Node.Level == 1) // 判断子节点才响应
+                {
+                    if (openFileDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        string filename = openFileDialog.FileName;
+                        StreamReader sr = new StreamReader(filename);
+                        LogHelper.Log("filename " + filename);
+                        while (!sr.EndOfStream)
+                        {
+                            string line = sr.ReadLine();
+                            LogHelper.Log("line " + line);
+                        }
+
+                        sr.Close();
+                    }
+                }
+            }
         }
     }
 }

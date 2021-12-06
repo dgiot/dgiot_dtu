@@ -8,6 +8,7 @@ namespace Da
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
+    using System.Windows.Forms;
     using Dgiot_dtu;
     using TitaniumAS.Opc.Client.Common;
     using TitaniumAS.Opc.Client.Da;
@@ -22,6 +23,92 @@ namespace Da
         private Dictionary<string, GroupEntity> groupCollection = new Dictionary<string, GroupEntity>();
         private IItemsValueChangedCallBack callBack;
         private List<OpcDaService> opcDaServices = new List<OpcDaService>();
+        private TreeNode treeNode = new TreeNode("opcda", 0, 0);
+
+        private string Key(string key)
+        {
+            return DgiotHelper.Md5(key);
+        }
+
+        private bool CheckHost(string host)
+        {
+            return treeNode.Nodes.ContainsKey(Key("opcda_host_" + host));
+        }
+
+        private void AddHost(string host)
+        {
+            if (!CheckHost(host))
+            {
+                treeNode.Nodes.Add(Key("opcda_host_" + host), host, "opcda");
+                treeNode.Nodes[Key("opcda_host_" + host)].Tag = "HOST";
+            }
+        }
+
+        private bool CheckService(string host, string service)
+        {
+            bool result = false;
+            if (CheckHost(host))
+            {
+                return treeNode.Nodes[Key("opcda_host_" + host)].Nodes.ContainsKey(Key("opcda_service_" + service));
+            }
+
+            return result;
+        }
+
+        private void AddService(string host, string service)
+        {
+            AddHost(host);
+            if (!CheckService(host, service))
+            {
+                treeNode.Nodes[Key("opcda_host_" + host)].Nodes.Add(Key("opcda_service_" + service), service, "opcda");
+                treeNode.Nodes[Key("opcda_host_" + host)].Nodes[Key("opcda_service_" + service)].Tag = "SERVICE";
+            }
+        }
+
+        private bool CheckGroup(string host, string service, string group)
+        {
+            bool result = false;
+            if (CheckService(host, service))
+            {
+                return treeNode.Nodes[Key("opcda_host_" + host)].Nodes[Key("opcda_service_" + service)].Nodes.ContainsKey(Key("opcda_group_" + group));
+            }
+
+            return result;
+        }
+
+        private void AddGroup(string host, string service, string group)
+        {
+            AddHost(host);
+            AddService(host, service);
+            if (!CheckGroup(host, service, group))
+            {
+                treeNode.Nodes[Key("opcda_host_" + host)].Nodes[Key("opcda_service_" + service)].Nodes.Add(Key("opcda_group_" + group), group, "opcda");
+                treeNode.Nodes[Key("opcda_host_" + host)].Nodes[Key("opcda_service_" + service)].Nodes[Key("opcda_group_" + group)].Tag = "GROUP";
+            }
+        }
+
+        private bool CheckItem(string host, string service, string group, string item)
+        {
+            bool result = false;
+            if (CheckGroup(host, service, group))
+            {
+                return treeNode.Nodes[Key("opcda_host_" + host)].Nodes[Key("opcda_service_" + service)].Nodes[Key("opcda_group_" + group)].Nodes.ContainsKey(Key("opcda_item_" + item));
+            }
+
+            return result;
+        }
+
+        private void AddItem(string host, string service, string group, string item)
+        {
+            AddHost(host);
+            AddService(host, service);
+            AddGroup(host, service, group);
+            if (!CheckItem(host, service, group, item))
+            {
+                treeNode.Nodes[Key("opcda_host_" + host)].Nodes[Key("opcda_service_" + service)].Nodes[Key("opcda_group_" + group)].Nodes.Add(Key("opcda_item_" + item), item, "opcda");
+                treeNode.Nodes[Key("opcda_host_" + host)].Nodes[Key("opcda_service_" + service)].Nodes[Key("opcda_group_" + group)].Nodes[Key("opcda_item_" + item)].Tag = "ITEM";
+            }
+        }
 
         public string[] ScanOPCDa(string host, Boolean isClean = true)
         {
@@ -54,6 +141,14 @@ namespace Da
                     {
                         serviceCollection.Add(new ServiceCollection() { Host = host, ServiceIds = serviceList.ToList() });
                     }
+
+                    AddHost(host);
+                    foreach (string progId in serviceList)
+                    {
+                        AddService(host, progId);
+                    }
+
+                    TreeViewHelper.AddNode(treeNode);
                 }
 
                 return opcServers.Select(a => a.ProgId).ToArray();
@@ -131,7 +226,7 @@ namespace Da
             return s1.ServiceIds;
         }
 
-        private static List<string> groupfilter = new List<string>
+        private static readonly List<string> Groupfilter = new List<string>
         {
             "_AdvancedTags",
             "_ConnectionSharing",
@@ -152,7 +247,7 @@ namespace Da
         private static bool IsGroupfilter(string group)
         {
             bool result = false;
-            foreach (string filter in groupfilter)
+            foreach (string filter in Groupfilter)
             {
                 if (-1 != group.LastIndexOf(filter))
                 {
@@ -163,7 +258,7 @@ namespace Da
             return result;
         }
 
-        private static List<string> itemfilter = new List<string>
+        private static readonly List<string> Itemfilter = new List<string>
         {
             "._Statistics",
             "._System",
@@ -173,7 +268,7 @@ namespace Da
         private static bool IsItemsfilter(string item)
         {
             bool result = false;
-            foreach (string filter in itemfilter)
+            foreach (string filter in Itemfilter)
             {
                 if (-1 != item.LastIndexOf(filter))
                 {
@@ -184,7 +279,7 @@ namespace Da
             return result;
         }
 
-        public List<string> GetGroups(string serviceProgId)
+        public List<string> GetGroups(string host, string serviceProgId)
         {
             List<string> groups = new List<string>();
             Uri url = UrlBuilder.Build(serviceProgId);
@@ -202,19 +297,25 @@ namespace Da
                         {
                             if (!IsGroupfilter(element.Name))
                             {
-                                LogHelper.Log("group  " + element.ItemId);
+                                // LogHelper.Log("group  " + element.Name);
+                                AddGroup(host, serviceProgId, element.Name);
                                 string deviceAddr = GetDevAddr(serviceProgId, element.Name);
-                                GroupEntity group = new GroupEntity();
-                                group.Name = element.Name;
+                                GroupEntity group = new GroupEntity
+                                {
+                                    Name = element.Name
+                                };
                                 OpcDaBrowseElement[] childElements = browser.GetElements(element.Name);
                                 List<Item> items = new List<Item>();
                                 foreach (OpcDaBrowseElement childElement in childElements)
                                 {
                                     if (!IsItemsfilter(childElement.ItemId))
                                     {
-                                        LogHelper.Log("Item  " + childElement.ItemId);
-                                        Item item = new Item();
-                                        item.ItemId = childElement.ItemId;
+                                        // LogHelper.Log("Item  " + childElement.ItemId );
+                                        AddItem(host, serviceProgId, element.Name, childElement.ItemId);
+                                        Item item = new Item
+                                        {
+                                            ItemId = childElement.ItemId
+                                        };
                                         items.Add(item);
                                     }
                                 }
@@ -276,40 +377,44 @@ namespace Da
             return DgiotHelper.Md5(serviceProgId + "_" + group);
         }
 
-        public IList<TreeNode> GetTreeNodes(string serviceProgId)
+        public TreeNode GetTreeNodes(string serviceProgId)
         {
             // var service =  _serviceCollection.Where(a => a.ServiceIds.Contains(serviceProgId))
             // .FirstOrDefault();
             var server = GetOpcDaService(serviceProgId);
 
-            List<TreeNode> nodes = new List<TreeNode>();
+            TreeNode node = new TreeNode(serviceProgId);
+            node.Text = serviceProgId;
             try
             {
                 OpcDaBrowserAuto browserAuto = new OpcDaBrowserAuto(server.Service);
-                BrowseChildren(browserAuto, nodes);
+                BrowseChildren(browserAuto, node);
             }
             catch (Exception)
             {
-                return new List<TreeNode>();
+                return new TreeNode();
             }
 
-            return nodes;
+            return node;
         }
 
-        public void BrowseChildren(IOpcDaBrowser browser, IList<TreeNode> items, string itemId = null, int indent = 0)
+        public void BrowseChildren(IOpcDaBrowser browser, TreeNode node, string itemId = null, int indent = 0)
         {
             OpcDaBrowseElement[] elements = browser.GetElements(itemId);
-
             foreach (OpcDaBrowseElement element in elements)
             {
+                LogHelper.Log(element.Name + " " + element.ItemId);
                 if (!(element.ItemId.IndexOf('$') == 0))
                 {
-                    TreeNode treeNode = new TreeNode() { Name = element.Name, NodeType = TreeNodeType.Property };
-                    items.Add(treeNode);
+                    TreeNode treeNode = new TreeNode() { Text = element.Name, Name = element.Name, Tag = (indent / 2).ToString() };
                     if (element.HasChildren)
                     {
-                        BrowseChildren(browser, treeNode.Children, element.ItemId, indent + 2);
+                        TreeNode childnode = new TreeNode();
+                        BrowseChildren(browser, childnode, element.ItemId, indent + 2);
+                        treeNode.Nodes[0].Nodes.Add(childnode);
                     }
+
+                    node.Nodes.Add(treeNode);
                 }
             }
         }
