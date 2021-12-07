@@ -8,7 +8,6 @@ namespace Dgiot_dtu
     using System.Collections.Generic;
     using System.Configuration;
     using System.Diagnostics;
-    using System.IO;
     using System.Text.RegularExpressions;
     using System.Windows.Forms;
 
@@ -16,21 +15,6 @@ namespace Dgiot_dtu
     {
         private delegate void LogHandler(string text);
 
-        private LogHelper log = LogHelper.GetInstance();
-        private MqttClientHelper mqtt = MqttClientHelper.GetInstance();
-        private TcpClientHelper tcpclient = TcpClientHelper.GetInstance();
-        private UDPClientHelper udplient = UDPClientHelper.GetInstance();
-
-        private SerialPortHelper serialport = SerialPortHelper.GetInstance();
-        private TcpServerHelper tcpserver = TcpServerHelper.GetInstance();
-        private PLCHelper plc = PLCHelper.GetInstance();
-        private OPCDAHelper opcda = OPCDAHelper.GetInstance();
-        private OPCUAHelper opcua = OPCUAHelper.GetInstance();
-        private BACnetHelper bacnet = BACnetHelper.GetInstance();
-        private AccessHelper access = AccessHelper.GetInstance();
-        private SqlServerHelper sqlserver = SqlServerHelper.GetInstance();
-        private TreeViewHelper treeViewHelper = TreeViewHelper.GetInstance();
-        private FileHelper fileHelper = FileHelper.GetInstance();
         private static string clientid = Guid.NewGuid().ToString().Substring(0, 10);
         private static string productid = Guid.NewGuid().ToString().Substring(0, 10);
         private static string devaddr = Guid.NewGuid().ToString().Substring(0, 10);

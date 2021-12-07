@@ -10,13 +10,33 @@ namespace Dgiot_dtu
 
     public class TreeViewHelper
     {
+        private static readonly string[] NodeTypeValue = new string[]
+        {
+            "BACnet",
+            "OPCDA",
+            "OPCUA",
+            "PLC",
+            "Control",
+            "Access",
+            "SqlServer",
+        };
+
+        public enum NodeType
+        {
+            BACnet = 0,
+            OPCDA = 1,
+            OPCUA = 2,
+            Control = 3,
+            Access = 4,
+            SqlServer = 5
+        }
+
         private TreeViewHelper()
         {
         }
 
         private static TreeViewHelper instance = null;
         private static TreeView treeView = null;
-        private static TreeNode treenode = new TreeNode();
 
         public static TreeViewHelper GetInstance()
         {
@@ -31,23 +51,23 @@ namespace Dgiot_dtu
         public static void Init(TreeView treeView)
         {
             TreeViewHelper.treeView = treeView;
-        }
-
-        public static void UpdateTreeView()
-        {
-            treeView.BeginUpdate();
-            treeView.Nodes.Add(treenode);
-            treeView.EndUpdate();
+            OPCDAViewHelper.View();
         }
 
         public static void Config(KeyValueConfigurationCollection config)
         {
         }
 
+        public static string Type(NodeType type)
+        {
+            int index = (int)type;
+            return NodeTypeValue[index];
+        }
+
         public static void AddNode(TreeNode node)
         {
             treeView.BeginUpdate();
-            treeView.Nodes.Clear();
+            treeView.Nodes.Remove(node);
             treeView.Nodes.Add(node);
             treeView.EndUpdate();
         }

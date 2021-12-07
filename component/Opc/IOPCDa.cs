@@ -11,7 +11,7 @@ namespace Da
 {
     public interface IOPCDa
     {
-        string[] ScanOPCDa(string host, Boolean isClean = true);
+        List<string> ScanOPCDa(string host, Boolean isClean = true);
 
         TreeNode GetTreeNodes(string service);
 

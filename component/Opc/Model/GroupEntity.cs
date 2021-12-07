@@ -8,6 +8,8 @@ namespace Da
 {
     internal class GroupEntity
     {
+        public string Path { get; set; }
+
         public string Name { get; set; }
 
         public List<Item> Items { get; set; }

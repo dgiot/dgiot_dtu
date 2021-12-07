@@ -201,6 +201,7 @@
     <Compile Include="component\Opc\Protocol\StartMonitoringItemsRsp.cs" />
     <Compile Include="component\Opc\Protocol\StopMonitoringItemsReq.cs" />
     <Compile Include="component\Opc\Protocol\WriteNodesValuesReq.cs" />
+    <Compile Include="component\Opc\View\OPCDAViewHelper.cs" />
     <Compile Include="component\Plc\PLCHelper.cs" />
     <Compile Include="component\SerialPort\SerialPortHelper.cs" />
     <Compile Include="component\Sqlserver\SqlServerHelper.cs" />
