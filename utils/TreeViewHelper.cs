@@ -146,9 +146,9 @@ namespace Dgiot_dtu
             if (buttons == MouseButtons.Right) // 单击鼠标右键才响应
             {
                 LogHelper.Log("Right node " + node.Text + " tag " + node.Tag + " Level " + node.Level.ToString());
+                FileHelper.OpenFile();
                 if (node.Level == 1) // 判断子节点才响应
                 {
-                    FileHelper.OpenFile();
                 }
             }
         }
