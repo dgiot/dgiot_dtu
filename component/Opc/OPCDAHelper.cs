@@ -34,6 +34,8 @@ namespace Dgiot_dtu
         private static OPCDAHelper instance = null;
         private static string clientid = string.Empty;
 
+        private static bool bChecked = false;
+
         private static readonly List<string> Filter = new List<string>
         {
             "_AdvancedTags",
@@ -77,6 +79,7 @@ namespace Dgiot_dtu
         public static void Start(KeyValueConfigurationCollection config)
         {
             Config(config);
+            Scan();
         }
 
         public static void Stop()
@@ -104,6 +107,11 @@ namespace Dgiot_dtu
             {
                 groupId = config["OpcGroup"].Value;
             }
+
+            if (config["OPCDACheck"] != null)
+            {
+                bChecked = DgiotHelper.StrTobool(config["OPCDACheck"].Value);
+            }
         }
 
         public static List<string> GetServer()
@@ -127,15 +135,20 @@ namespace Dgiot_dtu
 
         public static void Scan()
         {
-            LogHelper.Log("opchost " + opchost);
-            opcDa.GetServices(opchost).ForEach(service =>
+            if (bChecked)
             {
-                LogHelper.Log("service " + service);
-                opcDa.GetGroups(opchost, service).ForEach(group =>
+                DgiotHelper.GetIps().ForEach(ip =>
                 {
-                    LogHelper.Log("group " + group);
+                    opcDa.GetServices(ip).ForEach(service =>
+                    {
+                        LogHelper.Log("service " + service);
+                        opcDa.GetGroups(opchost, service).ForEach(group =>
+                        {
+                            LogHelper.Log("group " + group);
+                        });
+                    });
                 });
-            });
+            }
         }
 
         public static void Write()

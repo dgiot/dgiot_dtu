@@ -201,7 +201,6 @@
     <Compile Include="component\Opc\Protocol\StartMonitoringItemsRsp.cs" />
     <Compile Include="component\Opc\Protocol\StopMonitoringItemsReq.cs" />
     <Compile Include="component\Opc\Protocol\WriteNodesValuesReq.cs" />
-    <Compile Include="component\Opc\StructUtility.cs" />
     <Compile Include="component\Plc\PLCHelper.cs" />
     <Compile Include="component\SerialPort\SerialPortHelper.cs" />
     <Compile Include="component\Sqlserver\SqlServerHelper.cs" />
@@ -223,6 +222,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="utils\DgiotHelper.cs" />
+    <Compile Include="utils\FileHelper.cs" />
     <Compile Include="utils\JsonArray.cs" />
     <Compile Include="utils\JsonObject.cs" />
     <Compile Include="utils\LogHelper.cs" />

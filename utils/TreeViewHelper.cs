@@ -99,6 +99,52 @@ namespace Dgiot_dtu
             return tn;
         }
 
+        public static void TreeView_AfterSelect(TreeViewAction action, TreeNode node)
+        {
+            // 通过鼠标或者键盘触发事件，防止修改节点的Checked状态时候再次进入
+            if (action != TreeViewAction.Unknown)
+            {
+                LogHelper.Log("select node " + node.Text + " tag " + node.Tag + " path " + node.FullPath.ToString());
+
+                // TreeViewHelper.SetChildNodeCheckedState(e.Node, e.Node.Checked);
+                // TreeViewHelper.SetParentNodeCheckedState(e.Node, e.Node.Checked);
+            }
+        }
+
+        public static void TreeView_AfterCheck(TreeViewAction action, TreeNode node)
+        {
+            if (action != TreeViewAction.Unknown)
+            {
+                LogHelper.Log("check node " + node.Text + " tag " + node.Tag + " ImageKey " + node.ImageKey);
+                SetChildNodeCheckedState(node, node.Checked);
+                SetParentNodeCheckedState(node, node.Checked);
+            }
+        }
+
+        public static void NodeMouseDoubleClick(MouseButtons buttons, TreeNode node)
+        {
+            if (buttons == MouseButtons.Right) // 单击鼠标右键才响应
+            {
+                LogHelper.Log("Right node " + node.Text + " tag " + node.Tag + " Level " + node.Level.ToString());
+                if (node.Level == 1) // 判断子节点才响应
+                {
+                    FileHelper.OpenFile();
+                }
+            }
+        }
+
+        public static bool CheckLabelEdit(string label, TreeNode node)
+        {
+            LogHelper.Log("AfterLabelEdit " + node.Text + " label  " + label);
+            if (label.IndexOfAny(new char[] { '@', '.', ',', '!' }) == -1)
+            {
+                // Stop editing without canceling the label change.
+                return false;
+            }
+
+            return false;
+        }
+
         // 设置子节点状态
         public static void SetChildNodeCheckedState(TreeNode currNode, bool isCheckedOrNot)
         {

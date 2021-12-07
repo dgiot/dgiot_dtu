@@ -30,7 +30,7 @@ namespace Dgiot_dtu
         private AccessHelper access = AccessHelper.GetInstance();
         private SqlServerHelper sqlserver = SqlServerHelper.GetInstance();
         private TreeViewHelper treeViewHelper = TreeViewHelper.GetInstance();
-
+        private FileHelper fileHelper = FileHelper.GetInstance();
         private static string clientid = Guid.NewGuid().ToString().Substring(0, 10);
         private static string productid = Guid.NewGuid().ToString().Substring(0, 10);
         private static string devaddr = Guid.NewGuid().ToString().Substring(0, 10);
@@ -42,9 +42,6 @@ namespace Dgiot_dtu
             "SerialPort",
             "TcpServer",
             "BACnet",
-            "OPCDA_SCAN",
-            "OPCDA_READ",
-            "OPCDA_WRITE",
             "OPCUA",
             "MqttClient",
             "MqttServer",
@@ -67,6 +64,7 @@ namespace Dgiot_dtu
 
             LogHelper.Init(this);
             TreeViewHelper.Init(treeView);
+            FileHelper.Init(openFileDialog);
             SetComboBox();
 
             Text += " v" + System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
@@ -640,17 +638,6 @@ namespace Dgiot_dtu
             else if (bridges[comboBoxBridge.SelectedIndex] == "PLC")
             {
             }
-            else if (bridges[comboBoxBridge.SelectedIndex] == "OPCDA_SCAN")
-            {
-                OPCDAHelper.Scan();
-            }
-            else if (bridges[comboBoxBridge.SelectedIndex] == "OPCDA_READ")
-            {
-            }
-            else if (bridges[comboBoxBridge.SelectedIndex] == "OPCDA_WRITE")
-            {
-                OPCDAHelper.Write();
-            }
             else if (bridges[comboBoxBridge.SelectedIndex] == "OPCUA")
             {
             }
@@ -717,7 +704,7 @@ namespace Dgiot_dtu
 
             label7.Text = "发至";
             label2.Text = "发至";
-            label19.Text = "发至";
+            labelopcua.Text = "发至";
             label23.Text = "发至";
             label8.Text = "发至";
             label6.Text = "发至";
@@ -738,7 +725,6 @@ namespace Dgiot_dtu
             label4.Text = "数据位";
             label13.Text = "校验位";
             label5.Text = "停止位";
-            labelopcda.Text = "服务";
 
             groupBox3.Text = "Mqtt 客户端通道";
             label22.Text = "服务";
@@ -781,7 +767,7 @@ namespace Dgiot_dtu
 
             label7.Text = "To";
             label2.Text = "To";
-            label19.Text = "To";
+            labelopcua.Text = "To";
             label23.Text = "To";
             label8.Text = "To";
             label6.Text = "To";
@@ -832,62 +818,55 @@ namespace Dgiot_dtu
             label_devcietree.Text = "DeviceTree";
         }
 
-        private void CheckBoxItemsFromFile_CheckedChanged(object sender, EventArgs e)
-        {
-            OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Multiselect = true; // 该值确定是否可以选择多个文件
-            dialog.Title = "请选择文件夹";
-            dialog.Filter = "所有文件(*.*)|*.*";
-            if (dialog.ShowDialog() == DialogResult.OK)
-            {
-                string file = dialog.FileName;
-                LogHelper.Log("file " + file);
-            }
-        }
-
         private void TreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            // 通过鼠标或者键盘触发事件，防止修改节点的Checked状态时候再次进入
-            if (e.Action != TreeViewAction.Unknown)
-            {
-                LogHelper.Log("select node " + e.Node.Text + " tag " + e.Node.Tag + " path " + e.Node.FullPath.ToString());
-                TreeViewHelper.SetChildNodeCheckedState(e.Node, e.Node.Checked);
-                TreeViewHelper.SetParentNodeCheckedState(e.Node, e.Node.Checked);
-            }
+            TreeViewHelper.TreeView_AfterCheck(e.Action, e.Node);
         }
 
         private void TreeView_AfterCheck(object sender, TreeViewEventArgs e)
         {
-            if (e.Action != TreeViewAction.Unknown)
-            {
-                LogHelper.Log("check node " + e.Node.Text + " tag " + e.Node.Tag + " ImageKey " + e.Node.ImageKey);
-                TreeViewHelper.SetChildNodeCheckedState(e.Node, e.Node.Checked);
-                TreeViewHelper.SetParentNodeCheckedState(e.Node, e.Node.Checked);
-            }
+            TreeViewHelper.TreeView_AfterCheck(e.Action, e.Node);
         }
 
         private void NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            if (e.Button == MouseButtons.Right) // 单击鼠标右键才响应
-            {
-                LogHelper.Log("Right node " + e.Node.Text + " tag " + e.Node.Tag + " Level " + e.Node.Level.ToString());
-                if (e.Node.Level == 1) // 判断子节点才响应
-                {
-                    if (openFileDialog.ShowDialog() == DialogResult.OK)
-                    {
-                        string filename = openFileDialog.FileName;
-                        StreamReader sr = new StreamReader(filename);
-                        LogHelper.Log("filename " + filename);
-                        while (!sr.EndOfStream)
-                        {
-                            string line = sr.ReadLine();
-                            LogHelper.Log("line " + line);
-                        }
+            TreeViewHelper.NodeMouseDoubleClick(e.Button, e.Node);
+        }
 
-                        sr.Close();
+        private void AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
+        {
+            if (e.Label != null)
+            {
+                if (e.Label.Length > 0)
+                {
+                    if (TreeViewHelper.CheckLabelEdit(e.Label, e.Node))
+                    {
+                        // Stop editing without canceling the label change.
+                        e.Node.EndEdit(false);
+                    }
+                    else
+                    {
+                        /* Cancel the label edit action, inform the user, and
+                           place the node in edit mode again. */
+                        e.CancelEdit = true;
+                        e.Node.BeginEdit();
                     }
                 }
+                else
+                {
+                    /* Cancel the label edit action, inform the user, and
+                       place the node in edit mode again. */
+                    e.CancelEdit = true;
+                    e.Node.BeginEdit();
+                }
             }
+        }
+
+        private void CheckBoxOPCDA_CheckedChanged(object sender, EventArgs e)
+        {
+            LogHelper.Log("checkBoxOPCDA " + DgiotHelper.BoolTostr(checkBoxOPCDA.Checked));
+            SetConfig("OPCDACheck", DgiotHelper.BoolTostr(checkBoxOPCDA.Checked));
+            OPCDAHelper.Scan();
         }
     }
 }
