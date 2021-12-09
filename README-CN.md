@@ -23,9 +23,9 @@ dgiot_dtu 用[vc2019](https://dgiot-dev-1306147891.cos.ap-nanjing.myqcloud.com/d
 
 # 数据映射
 
-|  TreeNode | TAG     | Text          | Level   | Index  | FullPath  | Action   |
-| --------  | ------  | ----          |  -----  | -----  | --------  | -------- |
-| OPCDA     | Proctol | ItemId（Name）|  Type   | {Id}    | Path     |  API    |
+|  TreeNode | TAG     | Text   | Name | Level   | Index  | FullPath  | Action   |
+| --------  | ------  | ----   |----- |  -----  | -----  | --------  | -------- |
+| OPCDA     | Proctol | ItemId | Name |  Type   | {Id}    | Path     |  API    |
 
 
 ## 设备树Level映射到设备Type
