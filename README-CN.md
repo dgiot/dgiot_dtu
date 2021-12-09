@@ -1,4 +1,4 @@
-# dgiot_dtu
+`# dgiot_dtu
 
  [dgiot_dtu](http://dgiot-1253666439.cos.ap-shanghai-fsi.myqcloud.com/dgiot4.0/dgiot_dtu.zip) 是dgiot工业物联网整体解决方案中边缘侧的桌面实用工具
  + 可以部署在企业内网,通过多个dgiot_dtu的mqtt/tcp/udp等级联的方式,打通企业内网与云端服务器的通讯通道
@@ -20,6 +20,18 @@ dgiot_dtu 依赖[.net4.5](https://dgiot-dev-1306147891.cos.ap-nanjing.myqcloud.c
 
 # 编译环境
 dgiot_dtu 用[vc2019](https://dgiot-dev-1306147891.cos.ap-nanjing.myqcloud.com/dgiot_dtu/visualstudio2019.zip)编译调试
+
+# 数据映射
+
+|  TreeNode | TAG     | Text          | Level   | Index  | FullPath  | Action   |
+| --------  | ------  | ----          |  -----  | -----  | --------  | -------- |
+| OPCDA     | Proctol | ItemId（Name）|  Type   | {Id}    | Path     |  API    |
+
+
+## 设备树Level映射到设备Type
+| TreeNode | Level0  | Level1  | Level2  | Level3  |  Level4 | Level5 |  Level6 |
+| -------- | ------- | ------- | ------- | ------- | ------- | ------ | ------- |
+| OPCDA    | OPCDA   | HOST    | Service | Device  | Group   |Item    | Property|
 
 
 # 测试环境
