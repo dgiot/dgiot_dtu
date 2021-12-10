@@ -12,7 +12,6 @@ namespace Da
     using Dgiot_dtu;
     using TitaniumAS.Opc.Client.Common;
     using TitaniumAS.Opc.Client.Da;
-    using TitaniumAS.Opc.Client.Da.Browsing;
 
     // 不在一开始读取节点结构时创建缓存的原因：用户不一定会全部都读取所有节点属性值 仅仅在需要关注的时候 才读取
     public class OPCDaImp : IOPCDa
@@ -146,7 +145,7 @@ namespace Da
             groupKeys.Clear();
         }
 
-        public void StartGroup(TreeNode currNode)
+        public void StartGroup(TreeNode currNode, int interval)
         {
             if (currNode.Nodes == null && currNode.Checked)
             {
@@ -171,19 +170,19 @@ namespace Da
 
                     TreeNode serviceNode = deviceNode.Parent;
                     TreeNode hostNode = serviceNode.Parent;
-                    StartMonitoringItems(hostNode.Text, serviceNode.Text, currNode);
+                    StartMonitoringItems(hostNode.Text, serviceNode.Text, currNode, interval);
                 }
             }
             else
             {
                 foreach (TreeNode tmpNode in currNode.Nodes)
                 {
-                    StartGroup(tmpNode);
+                    StartGroup(tmpNode, interval);
                 }
             }
         }
 
-        public string StartMonitoringItems(string host, string serviceProgId, TreeNode groupNode)
+        public string StartMonitoringItems(string host, string serviceProgId, TreeNode groupNode, int interval)
         {
             OpcDaService server = GetOpcDaService(host, serviceProgId);
             string groupKey = OPCDAViewHelper.Key(groupNode.Text);
@@ -196,7 +195,7 @@ namespace Da
             if (server.OpcDaGroupS.Count == 0)
             {
                 LogHelper.Log("StartMonitoringItems  is host opcda://" + host + "/" + serviceProgId);
-                AddGroup(server, groupKey, groupNode);
+                AddGroup(server, groupKey, groupNode, interval);
             }
             else
             {
@@ -206,14 +205,14 @@ namespace Da
                 }
                 else
                 {
-                    AddGroup(server, groupKey, groupNode);
+                    AddGroup(server, groupKey, groupNode, interval);
                 }
             }
 
             return groupKey;
         }
 
-        public void AddGroup(OpcDaService server, string groupKey, TreeNode groupNode)
+        public void AddGroup(OpcDaService server, string groupKey, TreeNode groupNode, int interval)
         {
             if (server.Service == null)
             {
@@ -236,14 +235,16 @@ namespace Da
                         IsActive = true
                     };
                     itemDefList.Add(def);
+
+                    // LogHelper.Log("StartMonitor ItemId " + tmpNode.Text);
                 }
             }
 
             OpcDaItemResult[] opcDaItemResults = group.AddItems(itemDefList);
             daGroupKeyPairs.Add(groupKey, group);
             groupKeys.Add(groupKey);
-            LogHelper.Log("StartMonitoringItems  is groupId " + groupKey);
-            group.UpdateRate = TimeSpan.FromMilliseconds(1000); // 1000毫秒触发一次
+            LogHelper.Log("StartMonitoring  is groupId " + groupKey + " interval " + interval.ToString() + " ms");
+            group.UpdateRate = TimeSpan.FromMilliseconds(interval); // 1000毫秒触发一次
             group.ValuesChanged += MonitorValuesChanged;
             GroupEntity groupEntity = new GroupEntity()
             {
@@ -317,9 +318,9 @@ namespace Da
             return null;
         }
 
-        public void WriteValues(string host, string serverID, string groupKey, Dictionary<string, object> itemValuePairs)
+        public void WriteValues(string host, string serviceProgId, string groupKey, Dictionary<string, object> itemValuePairs)
         {
-            OpcDaService server = GetOpcDaService(host, serverID);
+            OpcDaService server = GetOpcDaService(host, serviceProgId);
             if (server == null)
             {
                 return;

@@ -317,6 +317,16 @@ namespace Dgiot_dtu
                 comboBoxLogLevel.SelectedIndex = comboBoxLogLevel.Items.IndexOf(tmp);
             }
 
+            if (config.AppSettings.Settings["OPCDAInterval"] != null)
+            {
+                textBoxOPCDAInterval.Text = config.AppSettings.Settings["OPCDAInterval"].Value;
+            }
+
+            if (config.AppSettings.Settings["OPCDACheck"] != null)
+            {
+                checkBoxOPCDA.Text = config.AppSettings.Settings["OPCDACheck"].Value;
+            }
+
             Resh_Topic();
             Resh_Config();
         }
@@ -416,6 +426,9 @@ namespace Dgiot_dtu
             SetConfig("UDPClientLogin", textBoxUDPClientLogin.Text);
             SetConfig("tcpServerPort", textBoxTcpServerPort.Text);
             SetConfig("LogLevel", comboBoxLogLevel.Text);
+            SetConfig("OPCDAInterval", textBoxOPCDAInterval.Text);
+            SetConfig("OPCDACheck", checkBoxOPCDA.Text);
+
             config.Save(ConfigurationSaveMode.Full);
             ConfigurationManager.RefreshSection("appSettings");
         }
@@ -736,6 +749,9 @@ namespace Dgiot_dtu
 
             label_devicelog.Text = "设备日志";
             label_devcietree.Text = "设备树";
+            checkBoxOPCDA.Text = "主动上报";
+            labelOPCDAMonitor.Text = "采集间隔";
+            labelSecond.Text = "秒";
         }
 
         private void En()
@@ -800,6 +816,10 @@ namespace Dgiot_dtu
 
             label_devicelog.Text = "DeviceLog";
             label_devcietree.Text = "DeviceTree";
+
+            checkBoxOPCDA.Text = "Monitor";
+            labelOPCDAMonitor.Text = "Interval";
+            labelSecond.Text = "Second";
         }
 
         private void TreeView_AfterSelect(object sender, TreeViewEventArgs e)
@@ -850,7 +870,12 @@ namespace Dgiot_dtu
         {
             LogHelper.Log("checkBoxOPCDA " + DgiotHelper.BoolTostr(checkBoxOPCDA.Checked));
             SetConfig("OPCDACheck", DgiotHelper.BoolTostr(checkBoxOPCDA.Checked));
-            OPCDAHelper.StartMonitor(checkBoxOPCDA.Checked);
+            OPCDAHelper.StartMonitor();
+        }
+
+        private void TextBoxOPCDAInterval_TextChanged(object sender, EventArgs e)
+        {
+            SetConfig("OPCDAInterval", textBoxOPCDAInterval.Text);
         }
     }
 }

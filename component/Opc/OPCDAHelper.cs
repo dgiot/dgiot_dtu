@@ -19,8 +19,10 @@ namespace Dgiot_dtu
         private static string topic = "thing/opcda/";
         private static OPCDaImp opcDa = new OPCDaImp();
         private static OPCDAHelper instance = null;
-        private static string clientid = string.Empty;
+        private static string productId = string.Empty;
+        private static string devAddr = string.Empty;
         private static bool bChecked = false;
+        private static int interval = 1000;
 
         public OPCDAHelper()
         {
@@ -57,13 +59,30 @@ namespace Dgiot_dtu
             {
                 bChecked = DgiotHelper.StrTobool(config["OPCDACheck"].Value);
             }
+
+            if (config["OPCDAInterval"] != null)
+            {
+                interval = int.Parse(config["OPCDAInterval"].Value) * 1000;
+            }
+
+            if (config["mqttUserName"] != null)
+            {
+                productId = config["mqttUserName"].Value;
+            }
+
+            if (config["mqttClientId"] != null)
+            {
+                devAddr = config["mqttClientId"].Value;
+            }
+
+            topic = "/" + productId + "/" + devAddr + "/scan/opcda";
         }
 
-        public static void StartMonitor(bool isCheck)
+        public static void StartMonitor()
         {
-            if (isCheck)
+            if (bChecked)
             {
-                opcDa.StartGroup(OPCDAViewHelper.GetRootNode());
+                opcDa.StartGroup(OPCDAViewHelper.GetRootNode(), interval);
             }
             else
             {
@@ -86,9 +105,8 @@ namespace Dgiot_dtu
         public void ValueChangedCallBack(string groupKey, OpcDaItemValue[] values)
         {
             Thing thing = new Thing();
-            thing.Proctol = "OPCDA";
-            thing.Device = groupKey;
-            LogHelper.Log("groupKey: " + groupKey);
+            thing.Proctol = TreeViewHelper.Type(TreeViewHelper.NodeType.OPCDA);
+            thing.Group = groupKey;
             List<Item> collection = new List<Item>();
             values.ToList().ForEach(v =>
             {

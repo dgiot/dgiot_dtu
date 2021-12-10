@@ -8,11 +8,11 @@ namespace Da
 {
     internal class Thing
     {
-        public string Product { get; set; }
+        public string Device { get; set; }
 
         public string Proctol { get; set; }
 
-        public string Device { get; set; }
+        public string Group { get; set; }
 
         public List<Item> Items { get; set; }
     }

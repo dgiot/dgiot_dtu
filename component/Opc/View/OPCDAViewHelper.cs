@@ -112,6 +112,19 @@ namespace Dgiot_dtu
             }
         }
 
+        public static void AddItems(TreeNode parentNode)
+        {
+            if (parentNode.ForeColor == System.Drawing.Color.Blue)
+            {
+                List<string> items = FileHelper.OpenFile();
+                items.ForEach(item =>
+                {
+                    AddNode(parentNode, item, item);
+                    LogHelper.Log("item " + item);
+                });
+            }
+        }
+
         public static TreeNode AddNode(TreeNode parentNode, string name, string itemid)
         {
             if (parentNode == null)
@@ -119,7 +132,7 @@ namespace Dgiot_dtu
                 return null;
             }
 
-            if (!opcdaNode.Nodes.ContainsKey(Key(parentNode, itemid)))
+            if (!parentNode.Nodes.ContainsKey(Key(parentNode, itemid)))
             {
                 parentNode.Nodes.Add(Key(parentNode, itemid), itemid);
             }
@@ -164,8 +177,8 @@ namespace Dgiot_dtu
                     break;
                 case (int)NodeType.Property: // property
                     parentNode.Nodes[Key(parentNode, itemid)].ForeColor = System.Drawing.Color.Green;
-                    parentNode.Nodes[Key(parentNode, itemid)].Parent.ForeColor = System.Drawing.Color.Red;
-                    parentNode.Nodes[Key(parentNode, itemid)].Parent.Parent.ForeColor = System.Drawing.Color.Gray;
+                    parentNode.Nodes[Key(parentNode, itemid)].Parent.ForeColor = System.Drawing.Color.Blue;
+                    parentNode.Nodes[Key(parentNode, itemid)].Parent.Parent.ForeColor = System.Drawing.Color.Black;
                     break;
                 default:
                     break;

@@ -87,6 +87,10 @@ namespace Dgiot_dtu
             this.textBoxMqttSever = new System.Windows.Forms.TextBox();
             this.label22 = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.labelSecond = new System.Windows.Forms.Label();
+            this.labelOPCDAMonitor = new System.Windows.Forms.Label();
+            this.textBoxOPCDAInterval = new System.Windows.Forms.TextBox();
+            this.checkBoxOPCDA = new System.Windows.Forms.CheckBox();
             this.textBoxOPCDATopic = new System.Windows.Forms.TextBox();
             this.labelopcda = new System.Windows.Forms.Label();
             this.textBoxOpcIp = new System.Windows.Forms.TextBox();
@@ -130,7 +134,6 @@ namespace Dgiot_dtu
             this.treeView = new System.Windows.Forms.TreeView();
             this.label_devcietree = new System.Windows.Forms.Label();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.checkBoxOPCDA = new System.Windows.Forms.CheckBox();
             this.groupBoxSerialPort.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -231,7 +234,7 @@ namespace Dgiot_dtu
             this.groupBoxSerialPort.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBoxSerialPort.Name = "groupBoxSerialPort";
             this.groupBoxSerialPort.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBoxSerialPort.Size = new System.Drawing.Size(332, 179);
+            this.groupBoxSerialPort.Size = new System.Drawing.Size(317, 179);
             this.groupBoxSerialPort.TabIndex = 13;
             this.groupBoxSerialPort.TabStop = false;
             this.groupBoxSerialPort.Text = "Serial Port Capture";
@@ -781,21 +784,66 @@ namespace Dgiot_dtu
             // 
             // groupBox4
             // 
+            this.groupBox4.Controls.Add(this.labelSecond);
+            this.groupBox4.Controls.Add(this.labelOPCDAMonitor);
+            this.groupBox4.Controls.Add(this.textBoxOPCDAInterval);
             this.groupBox4.Controls.Add(this.checkBoxOPCDA);
             this.groupBox4.Controls.Add(this.textBoxOPCDATopic);
             this.groupBox4.Controls.Add(this.labelopcda);
-            this.groupBox4.Location = new System.Drawing.Point(1077, 307);
+            this.groupBox4.Location = new System.Drawing.Point(1077, 282);
             this.groupBox4.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBox4.Size = new System.Drawing.Size(332, 74);
+            this.groupBox4.Size = new System.Drawing.Size(317, 112);
             this.groupBox4.TabIndex = 18;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "OPC_DA Capture";
             // 
+            // labelSecond
+            // 
+            this.labelSecond.AutoSize = true;
+            this.labelSecond.Location = new System.Drawing.Point(140, 75);
+            this.labelSecond.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.labelSecond.Name = "labelSecond";
+            this.labelSecond.Size = new System.Drawing.Size(62, 18);
+            this.labelSecond.TabIndex = 50;
+            this.labelSecond.Text = "Second";
+            // 
+            // labelOPCDAMonitor
+            // 
+            this.labelOPCDAMonitor.AutoSize = true;
+            this.labelOPCDAMonitor.Location = new System.Drawing.Point(8, 74);
+            this.labelOPCDAMonitor.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.labelOPCDAMonitor.Name = "labelOPCDAMonitor";
+            this.labelOPCDAMonitor.Size = new System.Drawing.Size(80, 18);
+            this.labelOPCDAMonitor.TabIndex = 49;
+            this.labelOPCDAMonitor.Text = "Interval";
+            // 
+            // textBoxOPCDAInterval
+            // 
+            this.textBoxOPCDAInterval.Location = new System.Drawing.Point(90, 69);
+            this.textBoxOPCDAInterval.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxOPCDAInterval.Name = "textBoxOPCDAInterval";
+            this.textBoxOPCDAInterval.ReadOnly = true;
+            this.textBoxOPCDAInterval.Size = new System.Drawing.Size(48, 28);
+            this.textBoxOPCDAInterval.TabIndex = 48;
+            this.textBoxOPCDAInterval.Text = "3";
+            this.textBoxOPCDAInterval.TextChanged += new System.EventHandler(this.TextBoxOPCDAInterval_TextChanged);
+            // 
+            // checkBoxOPCDA
+            // 
+            this.checkBoxOPCDA.AutoSize = true;
+            this.checkBoxOPCDA.Location = new System.Drawing.Point(206, 75);
+            this.checkBoxOPCDA.Name = "checkBoxOPCDA";
+            this.checkBoxOPCDA.Size = new System.Drawing.Size(97, 22);
+            this.checkBoxOPCDA.TabIndex = 47;
+            this.checkBoxOPCDA.Text = "Monitor";
+            this.checkBoxOPCDA.UseVisualStyleBackColor = true;
+            this.checkBoxOPCDA.CheckedChanged += new System.EventHandler(this.CheckBoxOPCDA_CheckedChanged);
+            // 
             // textBoxOPCDATopic
             // 
-            this.textBoxOPCDATopic.Location = new System.Drawing.Point(59, 28);
+            this.textBoxOPCDATopic.Location = new System.Drawing.Point(54, 28);
             this.textBoxOPCDATopic.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.textBoxOPCDATopic.Name = "textBoxOPCDATopic";
             this.textBoxOPCDATopic.ReadOnly = true;
@@ -825,11 +873,11 @@ namespace Dgiot_dtu
             // 
             this.groupBox5.Controls.Add(this.textBoxOPCUATopic);
             this.groupBox5.Controls.Add(this.labelopcua);
-            this.groupBox5.Location = new System.Drawing.Point(1077, 395);
+            this.groupBox5.Location = new System.Drawing.Point(1077, 402);
             this.groupBox5.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBox5.Size = new System.Drawing.Size(332, 67);
+            this.groupBox5.Size = new System.Drawing.Size(317, 67);
             this.groupBox5.TabIndex = 19;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "OPC_UA Capture";
@@ -863,7 +911,7 @@ namespace Dgiot_dtu
             this.groupBox6.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBox6.Size = new System.Drawing.Size(332, 63);
+            this.groupBox6.Size = new System.Drawing.Size(317, 63);
             this.groupBox6.TabIndex = 20;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "BACnet Capture";
@@ -897,7 +945,7 @@ namespace Dgiot_dtu
             this.groupBox7.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBox7.Size = new System.Drawing.Size(332, 71);
+            this.groupBox7.Size = new System.Drawing.Size(317, 71);
             this.groupBox7.TabIndex = 21;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Control Capture";
@@ -967,7 +1015,7 @@ namespace Dgiot_dtu
             this.groupBox8.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox8.Name = "groupBox8";
             this.groupBox8.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBox8.Size = new System.Drawing.Size(332, 64);
+            this.groupBox8.Size = new System.Drawing.Size(317, 64);
             this.groupBox8.TabIndex = 22;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Access Capture";
@@ -1001,7 +1049,7 @@ namespace Dgiot_dtu
             this.groupBox9.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox9.Name = "groupBox9";
             this.groupBox9.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBox9.Size = new System.Drawing.Size(332, 63);
+            this.groupBox9.Size = new System.Drawing.Size(317, 63);
             this.groupBox9.TabIndex = 23;
             this.groupBox9.TabStop = false;
             this.groupBox9.Text = "Sql Server Capture";
@@ -1156,11 +1204,11 @@ namespace Dgiot_dtu
             // 
             this.groupBox12.Controls.Add(this.textBoxPLCTopic);
             this.groupBox12.Controls.Add(this.label2);
-            this.groupBox12.Location = new System.Drawing.Point(1077, 235);
+            this.groupBox12.Location = new System.Drawing.Point(1077, 221);
             this.groupBox12.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox12.Name = "groupBox12";
             this.groupBox12.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBox12.Size = new System.Drawing.Size(332, 66);
+            this.groupBox12.Size = new System.Drawing.Size(317, 66);
             this.groupBox12.TabIndex = 19;
             this.groupBox12.TabStop = false;
             this.groupBox12.Text = "PLC Capture";
@@ -1189,10 +1237,10 @@ namespace Dgiot_dtu
             // pictureBox1
             // 
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(1389, 26);
+            this.pictureBox1.Location = new System.Drawing.Point(1401, 30);
             this.pictureBox1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(159, 780);
+            this.pictureBox1.Size = new System.Drawing.Size(147, 762);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 35;
             this.pictureBox1.TabStop = false;
@@ -1249,15 +1297,15 @@ namespace Dgiot_dtu
             // treeView
             // 
             this.treeView.CheckBoxes = true;
-            this.treeView.LabelEdit = true;
             this.treeView.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+            this.treeView.LabelEdit = true;
             this.treeView.Location = new System.Drawing.Point(657, 34);
             this.treeView.Name = "treeView";
             this.treeView.Size = new System.Drawing.Size(413, 780);
             this.treeView.TabIndex = 0;
+            this.treeView.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.AfterLabelEdit);
             this.treeView.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.TreeView_AfterCheck);
             this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeView_AfterSelect);
-            this.treeView.AfterLabelEdit += new NodeLabelEditEventHandler(this.AfterLabelEdit);
             this.treeView.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.NodeMouseDoubleClick);
             // 
             // label_devcietree
@@ -1272,17 +1320,6 @@ namespace Dgiot_dtu
             // 
             this.openFileDialog.FileName = "openFileDialog";
             this.openFileDialog.Filter = "(*.txt)|*.txt";
-            // 
-            // checkBoxOPCDA
-            // 
-            this.checkBoxOPCDA.AutoSize = true;
-            this.checkBoxOPCDA.Location = new System.Drawing.Point(304, 32);
-            this.checkBoxOPCDA.Name = "checkBoxOPCDA";
-            this.checkBoxOPCDA.Size = new System.Drawing.Size(115, 22);
-            this.checkBoxOPCDA.TabIndex = 47;
-            this.checkBoxOPCDA.Text = "checkBox1";
-            this.checkBoxOPCDA.UseVisualStyleBackColor = true;
-            this.checkBoxOPCDA.CheckedChanged += new System.EventHandler(this.CheckBoxOPCDA_CheckedChanged);
             // 
             // MainForm
             // 
@@ -1311,7 +1348,6 @@ namespace Dgiot_dtu
             this.Controls.Add(this.comboBoxLan);
             this.Controls.Add(this.label32);
             this.Controls.Add(this.comboBoxLogLevel);
-            this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.comboBoxBridge);
             this.Controls.Add(this.checkBoxDisplayHex);
@@ -1324,6 +1360,7 @@ namespace Dgiot_dtu
             this.Controls.Add(this.linkLabel1);
             this.Controls.Add(this.textBoxLog);
             this.Controls.Add(this.buttonStartStop);
+            this.Controls.Add(this.pictureBox1);
             this.ForeColor = System.Drawing.SystemColors.ControlText;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -1460,6 +1497,9 @@ namespace Dgiot_dtu
         private Label labelopcda;
         private OpenFileDialog openFileDialog;
         private CheckBox checkBoxOPCDA;
+        private Label labelSecond;
+        private Label labelOPCDAMonitor;
+        private TextBox textBoxOPCDAInterval;
     }
 }
 

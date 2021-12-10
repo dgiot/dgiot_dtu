@@ -17,7 +17,6 @@ namespace Dgiot_dtu
         private static SerialPort port = null;
         private static SerialPortHelper instance = null;
         private static bool bIsRunning = false;
-        private static bool bIsCheck = false;
         private static string portName;
         private static int baudRate;
         private static Parity parity;
@@ -72,32 +71,27 @@ namespace Dgiot_dtu
         {
             if (config["portName"] != null)
             {
-                portName = (string)config["portName"].Value;
+                portName = config["portName"].Value;
             }
 
             if (config["BaudRate"] != null)
             {
-                baudRate = int.Parse((string)config["BaudRate"].Value);
+                baudRate = int.Parse(config["BaudRate"].Value);
             }
 
             if (config["DataBits"] != null)
             {
-                dataBits = int.Parse((string)config["DataBits"].Value);
+                dataBits = int.Parse(config["DataBits"].Value);
             }
 
             if (config["Parity"] != null)
             {
-                parity = (Parity)StrToParity(config["Parity"].Value);
+                parity = StrToParity(config["Parity"].Value);
             }
 
             if (config["StopBits"] != null)
             {
                 stopBits = StrToStopBits(config["StopBits"].Value);
-            }
-
-            if (config["SerialPortIsCheck"] != null)
-            {
-                bIsCheck = DgiotHelper.StrTobool(config["SerialPortIsCheck"].Value);
             }
         }
 

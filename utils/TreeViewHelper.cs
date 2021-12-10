@@ -125,9 +125,6 @@ namespace Dgiot_dtu
             if ((action == TreeViewAction.ByMouse || action == TreeViewAction.ByKeyboard ) && node.Checked)
             {
                 LogHelper.Log("select node " + node.Text + " tag " + node.Tag + " path " + node.FullPath.ToString());
-
-                // TreeViewHelper.SetChildNodeCheckedState(e.Node, e.Node.Checked);
-                // TreeViewHelper.SetParentNodeCheckedState(e.Node, e.Node.Checked);
             }
         }
 
@@ -147,7 +144,10 @@ namespace Dgiot_dtu
             if (buttons == MouseButtons.Right && node.Checked) // 单击鼠标右键写
             {
                 LogHelper.Log("Right node " + node.Text + " tag " + node.Tag + " Level " + node.Level.ToString());
-                FileHelper.OpenFile();
+                if (node.Tag.ToString() == NodeTypeValue[(int)NodeType.OPCDA])
+                {
+                    OPCDAViewHelper.AddItems(node);
+                }
             }
             else if (buttons == MouseButtons.Left && node.Checked) // 双击鼠标左键读
             {

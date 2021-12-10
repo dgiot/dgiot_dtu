@@ -13,13 +13,13 @@ namespace Da
     {
         List<string> ScanOPCDa(string host, bool isClean = true);
 
-        string StartMonitoringItems(string host, string serviceProgId, TreeNode groupNode);
+        string StartMonitoringItems(string host, string serviceProgId, TreeNode groupNode, int interval);
 
         void SetItemsValueChangedCallBack(IItemsValueChangedCallBack callBack);
 
         void StopMonitoringItems(string groupKey);
 
-        List<Item> ReadItemsValues(string host, string serverID, string groupKey);
+        List<Item> ReadItemsValues(string host, string serviceProgId, string groupKey);
 
         void WriteValues(string host, string serviceProgId, string groupKey, Dictionary<string, object> itemValuePairs);
     }
