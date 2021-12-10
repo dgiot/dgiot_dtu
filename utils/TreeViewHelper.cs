@@ -122,7 +122,7 @@ namespace Dgiot_dtu
         public static void TreeView_AfterSelect(TreeViewAction action, TreeNode node)
         {
             // 通过鼠标或者键盘触发事件，防止修改节点的Checked状态时候再次进入
-            if (action != TreeViewAction.Unknown)
+            if ((action == TreeViewAction.ByMouse || action == TreeViewAction.ByKeyboard ) && node.Checked)
             {
                 LogHelper.Log("select node " + node.Text + " tag " + node.Tag + " path " + node.FullPath.ToString());
 
@@ -135,7 +135,8 @@ namespace Dgiot_dtu
         {
             if (action != TreeViewAction.Unknown)
             {
-                LogHelper.Log("check node " + node.Text + " tag " + node.Tag + " ImageKey " + node.ImageKey);
+                LogHelper.Log("check node " + node.Text + " tag " + node.Tag + " Level " + node.Level.ToString());
+
                 SetChildNodeCheckedState(node, node.Checked);
                 SetParentNodeCheckedState(node, node.Checked);
             }
@@ -143,19 +144,19 @@ namespace Dgiot_dtu
 
         public static void NodeMouseDoubleClick(MouseButtons buttons, TreeNode node)
         {
-            if (buttons == MouseButtons.Right) // 单击鼠标右键才响应
+            if (buttons == MouseButtons.Right && node.Checked) // 单击鼠标右键写
             {
                 LogHelper.Log("Right node " + node.Text + " tag " + node.Tag + " Level " + node.Level.ToString());
                 FileHelper.OpenFile();
-                if (node.Level == 1) // 判断子节点才响应
-                {
-                }
+            }
+            else if (buttons == MouseButtons.Left && node.Checked) // 双击鼠标左键读
+            {
+                LogHelper.Log("Left node " + node.Text + " ToolTipText " + node.ToolTipText + " Level " + node.Level.ToString());
             }
         }
 
         public static bool CheckLabelEdit(string label, TreeNode node)
         {
-            LogHelper.Log("AfterLabelEdit " + node.Text + " label  " + label);
             if (label.IndexOfAny(new char[] { '@', '.', ',', '!' }) == -1)
             {
                 // Stop editing without canceling the label change.
@@ -175,7 +176,6 @@ namespace Dgiot_dtu
 
             foreach (TreeNode tmpNode in currNode.Nodes)
             {
-                LogHelper.Log("node  " + tmpNode.Text);
                 tmpNode.Checked = isCheckedOrNot;
                 SetChildNodeCheckedState(tmpNode, isCheckedOrNot);
             }

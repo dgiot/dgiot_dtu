@@ -4,23 +4,39 @@
 
 namespace Dgiot_dtu
 {
+    using System;
+    using System.Collections.Generic;
     using System.Windows.Forms;
+    using Da;
+    using TitaniumAS.Opc.Client.Da.Browsing;
 
     public class OPCDAViewHelper
     {
+        public enum NodeType
+        {
+            OPCDA = 0,
+            Host = 1,
+            Service = 2,
+            Device = 3,
+            Group = 4,
+            Item = 5,
+            Property = 6
+        }
+
         private OPCDAViewHelper()
         {
         }
 
         private static OPCDAViewHelper instance = null;
-        private static TreeNode treeNode = new TreeNode(Type(), 0, 0);
+        private static TreeNode opcdaNode = new TreeNode(Type(), 0, 0);
 
         public static OPCDAViewHelper GetInstance()
         {
             if (instance == null)
             {
                 instance = new OPCDAViewHelper();
-                treeNode.Tag = Type();
+                opcdaNode.Tag = Type();
+                opcdaNode.ForeColor = System.Drawing.Color.Red;
             }
 
             return instance;
@@ -33,147 +49,222 @@ namespace Dgiot_dtu
 
         public static void View()
         {
-            TreeViewHelper.AddNode(treeNode);
+            TreeViewHelper.AddNode(opcdaNode);
             OPCDAHelper.View();
         }
 
-        public static string HostKey(string key)
+        public static string Key(TreeNode parentNode, string itemid)
         {
-            return DgiotHelper.Md5("opcda_host_" + key);
+            return DgiotHelper.Md5(parentNode.FullPath + "/" + itemid).Substring(0, 10);
         }
 
-        public static string ServiceKey(string key)
+        public static string Key(string path)
         {
-            return DgiotHelper.Md5("opcda_service_" + key);
+            return DgiotHelper.Md5(path).Substring(0, 10);
         }
 
-        public static string DeviceKey(string key)
+        public static TreeNode GetRootNode()
         {
-            return DgiotHelper.Md5("opcda_device_" + key);
+            return opcdaNode;
         }
 
-        public static string GroupKey(string key)
+        public static TreeNode GetNode(string path)
         {
-            return DgiotHelper.Md5("opcda_group_" + key);
-        }
-
-        public static string ItemKey(string key)
-        {
-            return DgiotHelper.Md5("opcda_item_" + key);
-        }
-
-        public static bool CheckHost(string host)
-        {
-            return treeNode.Nodes.ContainsKey(HostKey(host));
-        }
-
-        public static TreeNode AddHost(string host)
-        {
-            if (!CheckHost(host))
+            TreeNode[] nodes = opcdaNode.Nodes.Find(Key(path), true);
+            if (nodes.Length > 0)
             {
-                treeNode.Nodes.Add(HostKey(host), host, "opcda");
-                treeNode.Nodes[HostKey(host)].Tag = Type();
+                return nodes[0];
             }
 
-            return treeNode.Nodes[HostKey(host)];
+            return null;
         }
 
-        public static bool CheckService(string host, string service)
+        public static TreeNode GetTreeNodes(OpcDaService server)
+        {
+            TreeNode hostNode = GetNode(opcdaNode.FullPath + "/" + server.Host);
+            TreeNode serviceNode = GetNode(hostNode.FullPath + "/" + server.ServiceId);
+            try
+            {
+                OpcDaBrowserAuto browserAuto = new OpcDaBrowserAuto(server.Service);
+                BrowseChildren(browserAuto, serviceNode);
+            }
+            catch (Exception)
+            {
+                return serviceNode;
+            }
+
+            return serviceNode;
+        }
+
+        public static void BrowseChildren(IOpcDaBrowser browser, TreeNode node, string itemId = null, int indent = 0)
+        {
+            OpcDaBrowseElement[] elements = browser.GetElements(itemId);
+            foreach (OpcDaBrowseElement element in elements)
+            {
+                if (!(element.ItemId.IndexOf('$') == 0))
+                {
+                    TreeNode curNode = AddNode(node, element.Name, element.ItemId);
+                    if (element.HasChildren && curNode != null)
+                    {
+                        BrowseChildren(browser, curNode, element.ItemId, indent + 2);
+                    }
+                }
+            }
+        }
+
+        public static TreeNode AddNode(TreeNode parentNode, string name, string itemid)
+        {
+            if (parentNode == null)
+            {
+                return null;
+            }
+
+            if (!opcdaNode.Nodes.ContainsKey(Key(parentNode, itemid)))
+            {
+                parentNode.Nodes.Add(Key(parentNode, itemid), itemid);
+            }
+
+            switch (parentNode.Level + 1)
+            {
+                case (int)NodeType.OPCDA: // OPCDA
+                    parentNode.Nodes[Key(parentNode, itemid)].ForeColor = System.Drawing.Color.Black;
+                    break;
+                case (int)NodeType.Host: // host
+                    parentNode.Nodes[Key(parentNode, itemid)].ForeColor = System.Drawing.Color.Black;
+                    break;
+                case (int)NodeType.Service: // service
+                    parentNode.Nodes[Key(parentNode, itemid)].ForeColor = System.Drawing.Color.Black;
+                    break;
+                case (int)NodeType.Device: // device
+                    if (IsDevicefilter(name) || IsDevicefilter(itemid))
+                    {
+                        parentNode.Nodes.RemoveByKey(Key(parentNode, itemid));
+                        return null;
+                    }
+
+                    parentNode.Nodes[Key(parentNode, itemid)].ForeColor = System.Drawing.Color.Black;
+                    break;
+                case (int)NodeType.Group: // group
+                    if (IsGroupfilter(name) || IsGroupfilter(itemid))
+                    {
+                        parentNode.Nodes.RemoveByKey(Key(parentNode, itemid));
+                        return null;
+                    }
+
+                    parentNode.Nodes[Key(parentNode, itemid)].ForeColor = System.Drawing.Color.Blue;
+                    break;
+                case (int)NodeType.Item: // item
+                    if (IsItemsfilter(name) || IsItemsfilter(itemid))
+                    {
+                        parentNode.Nodes.RemoveByKey(Key(parentNode, itemid));
+                        return null;
+                    }
+
+                    parentNode.Nodes[Key(parentNode, itemid)].ForeColor = System.Drawing.Color.Green;
+                    break;
+                case (int)NodeType.Property: // property
+                    parentNode.Nodes[Key(parentNode, itemid)].ForeColor = System.Drawing.Color.Green;
+                    parentNode.Nodes[Key(parentNode, itemid)].Parent.ForeColor = System.Drawing.Color.Red;
+                    parentNode.Nodes[Key(parentNode, itemid)].Parent.Parent.ForeColor = System.Drawing.Color.Gray;
+                    break;
+                default:
+                    break;
+            }
+
+            parentNode.Nodes[Key(parentNode, itemid)].Tag = Type();
+            parentNode.Nodes[Key(parentNode, itemid)].ToolTipText = name;
+            return parentNode.Nodes[Key(parentNode, itemid)];
+        }
+
+        private static readonly List<string> DeviceFilter = new List<string>
+        {
+            "_AdvancedTags",
+            "_ConnectionSharing",
+            "_CustomAlarms",
+            "_DataLogger",
+            "_EFMExporter",
+            "_IDF_for_Splunk",
+            "_IoT_Gateway",
+            "_LocalHistorian",
+            "_Redundancy",
+            "_Scheduler",
+            "_SecurityPolicies",
+            "_SNMP Agent",
+            "_System",
+            "_ThingWorx",
+            "._Statistics",
+            "._System",
+            ".SystemVariable"
+        };
+
+        private static bool IsDevicefilter(string device)
         {
             bool result = false;
-            if (CheckHost(host))
+            foreach (string filter in DeviceFilter)
             {
-                return treeNode.Nodes[HostKey(host)].Nodes.ContainsKey(ServiceKey(service));
+                if (-1 != device.LastIndexOf(filter))
+                {
+                    return true;
+                }
             }
 
             return result;
         }
 
-        public static TreeNode AddService(string host, string service)
+        private static readonly List<string> Groupfilter = new List<string>
         {
-            TreeNode hostNode = AddHost(host);
-            if (!CheckService(host, service))
-            {
-                hostNode.Nodes.Add(ServiceKey(service), service, "opcda");
-                hostNode.Nodes[ServiceKey(service)].Tag = Type();
-            }
+            "_AdvancedTags",
+            "_ConnectionSharing",
+            "_CustomAlarms",
+            "_DataLogger",
+            "_EFMExporter",
+            "_IDF_for_Splunk",
+            "_IoT_Gateway",
+            "_LocalHistorian",
+            "_Redundancy",
+            "_Scheduler",
+            "_SecurityPolicies",
+            "_SNMP Agent",
+            "_System",
+            "_ThingWorx",
+            "._Statistics",
+            "._System",
+            ".SystemVariable"
+        };
 
-            return hostNode.Nodes[ServiceKey(service)];
-        }
-
-        public static bool CheckDevice(string host, string service, string device)
+        private static bool IsGroupfilter(string group)
         {
             bool result = false;
-            if (CheckService(host, service))
+            foreach (string filter in Groupfilter)
             {
-                return treeNode.Nodes[HostKey(host)].Nodes[ServiceKey(service)].Nodes.ContainsKey(DeviceKey(device));
+                if (-1 != group.LastIndexOf(filter))
+                {
+                    return true;
+                }
             }
 
             return result;
         }
 
-        public static TreeNode AddDevice(string host, string service, string device)
+        private static readonly List<string> Itemfilter = new List<string>
         {
-            AddHost(host);
-            TreeNode servicepNode = AddService(host, service);
-            if (!CheckDevice(host, service, device))
-            {
-                servicepNode.Nodes.Add(DeviceKey(device), device, "opcda");
-                servicepNode.Nodes[DeviceKey(device)].Tag = Type();
-            }
+            "._Statistics",
+            "._System",
+            ".SystemVariable"
+        };
 
-            return servicepNode.Nodes[DeviceKey(device)];
-        }
-
-        public static bool CheckGroup(string host, string service, string device, string group)
+        private static bool IsItemsfilter(string item)
         {
             bool result = false;
-            if (CheckDevice(host, device, service))
+            foreach (string filter in Itemfilter)
             {
-                return treeNode.Nodes[HostKey(host)].Nodes[ServiceKey(service)].Nodes[DeviceKey(device)].Nodes.ContainsKey(GroupKey(group));
+                if (-1 != item.LastIndexOf(filter))
+                {
+                    return true;
+                }
             }
 
             return result;
-        }
-
-        public static TreeNode AddGroup(string host, string service, string device,  string group)
-        {
-            AddHost(host);
-            AddService(host, service);
-            TreeNode deviceNode = AddDevice(host, service, device);
-            if (!CheckGroup(host, service, device, group))
-            {
-                deviceNode.Nodes.Add(GroupKey(group), group, "opcda");
-                deviceNode.Nodes[GroupKey(group)].Tag = Type();
-            }
-
-            return deviceNode.Nodes[GroupKey(group)];
-        }
-
-        public static bool CheckItem(string host, string service, string device, string group, string item)
-        {
-            bool result = false;
-            if (CheckGroup(host, service, device, group))
-            {
-                return treeNode.Nodes[HostKey(host)].Nodes[ServiceKey(service)].Nodes[DeviceKey(device)].Nodes[GroupKey(group)].Nodes.ContainsKey(ItemKey(item));
-            }
-
-            return result;
-        }
-
-        public static TreeNode AddItem(string host, string service, string device, string group, string item)
-        {
-            AddHost(host);
-            AddService(host, service);
-            AddDevice(host, service, device);
-            TreeNode groupNode = AddGroup(host, device, service, group);
-            if (!CheckItem(host, service, device, group, item))
-            {
-                groupNode.Nodes.Add(ItemKey(item), item, "opcda");
-                groupNode.Nodes[ItemKey(item)].Tag = Type();
-            }
-
-            return groupNode.Nodes[ItemKey(item)];
         }
     }
 }

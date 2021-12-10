@@ -3,15 +3,14 @@
 // </copyright>
 
 using System.Collections.Generic;
+using System.Windows.Forms;
 
 namespace Da
 {
     internal class GroupEntity
     {
-        public string Path { get; set; }
+        public string Host { get; set; }
 
-        public string Name { get; set; }
-
-        public List<Item> Items { get; set; }
+        public string ProgId { get; set; }
     }
 }

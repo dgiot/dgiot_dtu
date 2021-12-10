@@ -1,4 +1,4 @@
-﻿// <copyright file="ServiceCollection.cs" company="PlaceholderCompany">
+﻿// <copyright file="HostCollection.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Da
 {
-    internal class ServiceCollection
+    internal class HostCollection
     {
         public string Host { get; set; }
 

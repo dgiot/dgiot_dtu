@@ -11,19 +11,17 @@ namespace Da
 {
     public interface IOPCDa
     {
-        List<string> ScanOPCDa(string host, Boolean isClean = true);
+        List<string> ScanOPCDa(string host, bool isClean = true);
 
-        TreeNode GetTreeNodes(string service);
-
-        string StartMonitoringItems(string serviceProgId, List<string> itemIds, string strMd5);
+        string StartMonitoringItems(string host, string serviceProgId, TreeNode groupNode);
 
         void SetItemsValueChangedCallBack(IItemsValueChangedCallBack callBack);
 
-        void StopMonitoringItems(string serviceProgId, string groupId);
+        void StopMonitoringItems(string groupKey);
 
-        List<Item> ReadItemsValues(string serverID, string groupId, List<string> items,  string strMd5);
+        List<Item> ReadItemsValues(string host, string serverID, string groupKey);
 
-        void WriteValues(string serviceProgId, string groupId, Dictionary<string, object> itemValuePairs);
+        void WriteValues(string host, string serviceProgId, string groupKey, Dictionary<string, object> itemValuePairs);
     }
 
     public interface IItemsValueChangedCallBack

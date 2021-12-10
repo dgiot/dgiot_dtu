@@ -6,29 +6,20 @@
 // https://github.com/chkr1011/MQTTnet
 namespace Dgiot_dtu
 {
-    using System;
     using System.Collections.Generic;
     using System.Configuration;
     using System.Linq;
-    using System.Text;
+    using System.Windows.Forms;
     using Da;
     using Newtonsoft.Json;
-    using TitaniumAS.Opc.Client.Common;
     using TitaniumAS.Opc.Client.Da;
-    using TitaniumAS.Opc.Client.Da.Browsing;
 
     public class OPCDAHelper : IItemsValueChangedCallBack
     {
         private static string topic = "thing/opcda/";
         private static OPCDaImp opcDa = new OPCDaImp();
-
-        private static string opchost = "127.0.0.1";
-        private static string serviceProgId = "";
-        private static string groupId = "";
-        private static List<string> serviceList = new List<string> { };
         private static OPCDAHelper instance = null;
         private static string clientid = string.Empty;
-
         private static bool bChecked = false;
 
         public OPCDAHelper()
@@ -43,13 +34,12 @@ namespace Dgiot_dtu
                 instance = new OPCDAHelper();
             }
 
-         return instance;
+            return instance;
         }
 
         public static void Start(KeyValueConfigurationCollection config)
         {
             Config(config);
-            Scan();
         }
 
         public static void Stop()
@@ -63,73 +53,42 @@ namespace Dgiot_dtu
                 topic = config["OPCDATopic"].Value;
             }
 
-            if (config["OpcHost"] != null)
-            {
-                opchost = config["OpcHost"].Value;
-            }
-
-            if (config["OpcServer"] != null)
-            {
-                serviceProgId = config["OpcServer"].Value;
-            }
-
-            if (config["OpcGroup"] != null)
-            {
-                groupId = config["OpcGroup"].Value;
-            }
-
             if (config["OPCDACheck"] != null)
             {
                 bChecked = DgiotHelper.StrTobool(config["OPCDACheck"].Value);
             }
         }
 
-        public static List<string> GetItems()
+        public static void StartMonitor(bool isCheck)
         {
-            LogHelper.Log("serviceProgId " + serviceProgId + " groupId " + groupId);
-            return opcDa.GetItems(serviceProgId, groupId);
+            if (isCheck)
+            {
+                opcDa.StartGroup(OPCDAViewHelper.GetRootNode());
+            }
+            else
+            {
+                opcDa.StopGroup();
+            }
         }
 
         public static void View()
         {
-            DgiotHelper.GetIps().ForEach(ip =>
+            DgiotHelper.GetIps().ForEach(host =>
             {
-                serviceList.AddRange(opcDa.ScanOPCDa(ip, true));
+                opcDa.ScanOPCDa(host, true).ForEach(service =>
+                {
+                    OpcDaService server = opcDa.GetOpcDaService(host, service);
+                    OPCDAViewHelper.GetTreeNodes(server);
+                });
             });
         }
 
-        public static void Scan()
+        public void ValueChangedCallBack(string groupKey, OpcDaItemValue[] values)
         {
-            serviceList.ForEach(service =>
-            {
-                opcDa.GetTreeNodes(service);
-            });
-        }
-
-        public static void Read()
-        {
-            JsonObject items = new JsonObject();
-            List<string> arry = new List<string>();
-            arry.Add("GCU331_YJ.SX_PZ96_U_55");
-            arry.Add("GCU331_YJ.SX_PZ96_I_55");
-            arry.Add("GCU331_YJ.SX_PZ96_P_55");
-            arry.Add("GCU331_YJ.SX_PZ96_U_160");
-            arry.Add("GCU331_YJ.SX_PZ96_I_160");
-            arry.Add("GCU331_YJ.SX_PZ96_P_160");
-            arry.Add("GCU331_YJ.p_L_1");
-            arry.Add("GCU331_YJ.p_L_2");
-            arry.Add("GCU331_YJ.p_Q_2");
-            arry.Add("GCU331_YJ.Q_Q_DN65");
-            arry.Add("GCU331_YJ.Q_Q_DN100");
-            arry.Add("GCU331_YJ.Q_Q_DN125");
-
-            // Read_group(serviceProgId, "GCU331_YJ", arry, items);
-        }
-
-        public void ValueChangedCallBack(string group, OpcDaItemValue[] values)
-        {
-            GroupEntity entity = new GroupEntity();
-            entity.Name = group;
+            Thing thing = new Thing();
+            thing.Proctol = "OPCDA";
+            thing.Device = groupKey;
+            LogHelper.Log("groupKey: " + groupKey);
             List<Item> collection = new List<Item>();
             values.ToList().ForEach(v =>
             {
@@ -143,9 +102,10 @@ namespace Dgiot_dtu
                 }
             });
 
-            entity.Items = collection;
-            string json = JsonConvert.SerializeObject(entity);
-            LogHelper.Log("Group: " + json.ToString());
+            thing.Items = collection;
+            string json = JsonConvert.SerializeObject(thing);
+
+            LogHelper.Log("thing: " + json);
         }
     }
  }

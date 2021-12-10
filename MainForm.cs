@@ -18,7 +18,7 @@ namespace Dgiot_dtu
         private static string clientid = Guid.NewGuid().ToString().Substring(0, 10);
         private static string productid = Guid.NewGuid().ToString().Substring(0, 10);
         private static string devaddr = Guid.NewGuid().ToString().Substring(0, 10);
-
+        private static OPCDAHelper oPCDAHelper = new OPCDAHelper();
         private bool bAutoReconnect = false;
         private bool bIsRunning = false;
         private readonly string[] bridges = new string[]
@@ -804,7 +804,7 @@ namespace Dgiot_dtu
 
         private void TreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            TreeViewHelper.TreeView_AfterCheck(e.Action, e.Node);
+            TreeViewHelper.TreeView_AfterSelect(e.Action, e.Node);
         }
 
         private void TreeView_AfterCheck(object sender, TreeViewEventArgs e)
@@ -850,7 +850,7 @@ namespace Dgiot_dtu
         {
             LogHelper.Log("checkBoxOPCDA " + DgiotHelper.BoolTostr(checkBoxOPCDA.Checked));
             SetConfig("OPCDACheck", DgiotHelper.BoolTostr(checkBoxOPCDA.Checked));
-            OPCDAHelper.Scan();
+            OPCDAHelper.StartMonitor(checkBoxOPCDA.Checked);
         }
     }
 }

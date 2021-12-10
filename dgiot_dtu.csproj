@@ -190,7 +190,8 @@
     <Compile Include="component\Opc\Model\Header.cs" />
     <Compile Include="component\Opc\Model\Item.cs" />
     <Compile Include="component\Opc\Model\OpcDaService.cs" />
-    <Compile Include="component\Opc\Model\ServiceCollection.cs" />
+    <Compile Include="component\Opc\Model\HostCollection.cs" />
+    <Compile Include="component\Opc\Model\Thing.cs" />
     <Compile Include="component\Opc\OPCDAHelper.cs" />
     <Compile Include="component\Opc\OPCDaImp.cs" />
     <Compile Include="component\Opc\OPCUAHelper.cs" />
