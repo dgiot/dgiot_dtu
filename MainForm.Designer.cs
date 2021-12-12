@@ -577,11 +577,11 @@ namespace Dgiot_dtu
             this.groupBox2.Controls.Add(this.textBoxTcpClientServer);
             this.groupBox2.Controls.Add(this.label18);
             this.groupBox2.Controls.Add(this.checkBoxTcpBridge);
-            this.groupBox2.Location = new System.Drawing.Point(1524, 419);
+            this.groupBox2.Location = new System.Drawing.Point(1529, 399);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBox2.Size = new System.Drawing.Size(325, 191);
+            this.groupBox2.Size = new System.Drawing.Size(320, 191);
             this.groupBox2.TabIndex = 18;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "TCP Client Channel";
@@ -660,7 +660,7 @@ namespace Dgiot_dtu
             this.groupBox3.Controls.Add(this.textBoxMqttPassword);
             this.groupBox3.Controls.Add(this.label9);
             this.groupBox3.Controls.Add(this.label10);
-            this.groupBox3.Location = new System.Drawing.Point(1523, 23);
+            this.groupBox3.Location = new System.Drawing.Point(1523, 10);
             this.groupBox3.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
@@ -1086,7 +1086,7 @@ namespace Dgiot_dtu
             this.groupBox10.Controls.Add(this.label24);
             this.groupBox10.Controls.Add(this.textBoxUDPClientServer);
             this.groupBox10.Controls.Add(this.label26);
-            this.groupBox10.Location = new System.Drawing.Point(1527, 618);
+            this.groupBox10.Location = new System.Drawing.Point(1527, 603);
             this.groupBox10.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox10.Name = "groupBox10";
             this.groupBox10.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
@@ -1170,7 +1170,7 @@ namespace Dgiot_dtu
             // 
             this.radioButtonMqttClient.AutoSize = true;
             this.radioButtonMqttClient.Checked = true;
-            this.radioButtonMqttClient.Location = new System.Drawing.Point(1501, 42);
+            this.radioButtonMqttClient.Location = new System.Drawing.Point(1505, 110);
             this.radioButtonMqttClient.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.radioButtonMqttClient.Name = "radioButtonMqttClient";
             this.radioButtonMqttClient.Size = new System.Drawing.Size(21, 20);
@@ -1182,7 +1182,7 @@ namespace Dgiot_dtu
             // radioButtonTcpClient
             // 
             this.radioButtonTcpClient.AutoSize = true;
-            this.radioButtonTcpClient.Location = new System.Drawing.Point(1501, 416);
+            this.radioButtonTcpClient.Location = new System.Drawing.Point(1501, 409);
             this.radioButtonTcpClient.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.radioButtonTcpClient.Name = "radioButtonTcpClient";
             this.radioButtonTcpClient.Size = new System.Drawing.Size(21, 20);
@@ -1193,7 +1193,7 @@ namespace Dgiot_dtu
             // radioButtonUDPClient
             // 
             this.radioButtonUDPClient.AutoSize = true;
-            this.radioButtonUDPClient.Location = new System.Drawing.Point(1501, 641);
+            this.radioButtonUDPClient.Location = new System.Drawing.Point(1501, 597);
             this.radioButtonUDPClient.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.radioButtonUDPClient.Name = "radioButtonUDPClient";
             this.radioButtonUDPClient.Size = new System.Drawing.Size(21, 20);
@@ -1240,7 +1240,7 @@ namespace Dgiot_dtu
             this.pictureBox1.Location = new System.Drawing.Point(1401, 30);
             this.pictureBox1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(147, 762);
+            this.pictureBox1.Size = new System.Drawing.Size(125, 762);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 35;
             this.pictureBox1.TabStop = false;

@@ -26,6 +26,6 @@ namespace Da
 
     public interface IItemsValueChangedCallBack
     {
-        void ValueChangedCallBack(string group, OpcDaItemValue[] values);
+        void ValueChangedCallBack(OpcDaGroup opcGroup, OpcDaItemValue[] values);
     }
 }

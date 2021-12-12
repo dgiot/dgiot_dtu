@@ -18,7 +18,8 @@ namespace Dgiot_dtu
         private static string clientid = Guid.NewGuid().ToString().Substring(0, 10);
         private static string productid = Guid.NewGuid().ToString().Substring(0, 10);
         private static string devaddr = Guid.NewGuid().ToString().Substring(0, 10);
-        private static OPCDAHelper oPCDAHelper = new OPCDAHelper();
+        private static OPCDAHelper oPCDAHelper = OPCDAHelper.GetInstance();
+        private static OPCDAViewHelper oPCDAViewHelper = OPCDAViewHelper.GetInstance();
         private bool bAutoReconnect = false;
         private bool bIsRunning = false;
         private readonly string[] bridges = new string[]
@@ -373,12 +374,12 @@ namespace Dgiot_dtu
             textBoxMqttPubTopic.Text = "/" + productid + "/" + devaddr + "/properties/read/reply";
             textBoxAccessTopic.Text = "/" + productid + "/" + devaddr + "/scan/mdb";
 
-            textBoxOPCDATopic.Text = "/" + productid + "/" + devaddr + "/scan/opcda";
-            textBoxOPCUATopic.Text = "/" + productid + "/" + devaddr + "/scan/opcua";
-            textBoxPLCTopic.Text = "/" + productid + "/" + devaddr + "/scan/plc";
-            textBoxBACnetTopic.Text = "/" + productid + "/" + devaddr + "/scan/bacnet";
-            textBoxControlTopic.Text = "/" + productid + "/" + devaddr + "/scan/control";
-            textBoxSqlServerTopic.Text = "/" + productid + "/" + devaddr + "/scan/sqlserver";
+            textBoxOPCDATopic.Text = "/" + productid + "/" + devaddr + "/scan/opcda/reply";
+            textBoxOPCUATopic.Text = "/" + productid + "/" + devaddr + "/scan/opcua/reply";
+            textBoxPLCTopic.Text = "/" + productid + "/" + devaddr + "/scan/plc/reply";
+            textBoxBACnetTopic.Text = "/" + productid + "/" + devaddr + "/scan/bacnet/reply";
+            textBoxControlTopic.Text = "/" + productid + "/" + devaddr + "/scan/control/reply";
+            textBoxSqlServerTopic.Text = "/" + productid + "/" + devaddr + "/scan/sqlserver/reply";
         }
 
         private void LinkLabel1LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)

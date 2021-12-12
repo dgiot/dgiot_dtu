@@ -158,7 +158,7 @@ namespace Dgiot_dtu
             {
                 MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
                 byte[] bytValue, bytHash;
-                bytValue = System.Text.Encoding.UTF8.GetBytes(str);
+                bytValue = Encoding.UTF8.GetBytes(str);
                 bytHash = md5.ComputeHash(bytValue);
                 md5.Clear();
                 string sTemp = "";
@@ -175,6 +175,33 @@ namespace Dgiot_dtu
             }
 
             return str;
+        }
+
+        private static readonly DateTime BaseTime = new DateTime(1970, 1, 1);
+
+        /// <summary>
+        /// 将unixtime转换为.NET的DateTime
+        /// </summary>
+        /// <param name="timeStamp">秒数</param>
+        /// <returns>转换后的时间</returns>
+        public static DateTime FromUnixTime(long timeStamp)
+        {
+            return TimeZone.CurrentTimeZone.ToLocalTime(new DateTime((timeStamp * 10000000) + BaseTime.Ticks));
+        }
+
+        /// <summary>
+        /// 将.NET的DateTime转换为unix time
+        /// </summary>
+        /// <param name="dateTime">待转换的时间</param>
+        /// <returns>转换后的unix time</returns>
+        public static long FromDateTime(DateTime dateTime)
+        {
+            return (TimeZone.CurrentTimeZone.ToUniversalTime(dateTime).Ticks - BaseTime.Ticks) / 10000000;
+        }
+
+        public static long Now()
+        {
+            return (TimeZone.CurrentTimeZone.ToUniversalTime(DateTime.Now).Ticks - BaseTime.Ticks) / 10000000;
         }
     }
 }

@@ -23,7 +23,7 @@ namespace Dgiot_dtu
             Property = 6
         }
 
-        private OPCDAViewHelper()
+        public OPCDAViewHelper()
         {
         }
 
@@ -36,7 +36,7 @@ namespace Dgiot_dtu
             {
                 instance = new OPCDAViewHelper();
                 opcdaNode.Tag = Type();
-                opcdaNode.ForeColor = System.Drawing.Color.Red;
+                opcdaNode.ForeColor = System.Drawing.Color.Black;
             }
 
             return instance;
@@ -68,9 +68,9 @@ namespace Dgiot_dtu
             return opcdaNode;
         }
 
-        public static TreeNode GetNode(string path)
+        public static TreeNode GetNode(string key)
         {
-            TreeNode[] nodes = opcdaNode.Nodes.Find(Key(path), true);
+            TreeNode[] nodes = opcdaNode.Nodes.Find(key, true);
             if (nodes.Length > 0)
             {
                 return nodes[0];
@@ -81,8 +81,8 @@ namespace Dgiot_dtu
 
         public static TreeNode GetTreeNodes(OpcDaService server)
         {
-            TreeNode hostNode = GetNode(opcdaNode.FullPath + "/" + server.Host);
-            TreeNode serviceNode = GetNode(hostNode.FullPath + "/" + server.ServiceId);
+            TreeNode hostNode = GetNode(Key(opcdaNode.FullPath + "/" + server.Host));
+            TreeNode serviceNode = GetNode(Key(hostNode.FullPath + "/" + server.ServiceId));
             try
             {
                 OpcDaBrowserAuto browserAuto = new OpcDaBrowserAuto(server.Service);
@@ -155,7 +155,7 @@ namespace Dgiot_dtu
                         return null;
                     }
 
-                    parentNode.Nodes[Key(parentNode, itemid)].ForeColor = System.Drawing.Color.Black;
+                    parentNode.Nodes[Key(parentNode, itemid)].ForeColor = System.Drawing.Color.Gold;
                     break;
                 case (int)NodeType.Group: // group
                     if (IsGroupfilter(name) || IsGroupfilter(itemid))
@@ -178,7 +178,8 @@ namespace Dgiot_dtu
                 case (int)NodeType.Property: // property
                     parentNode.Nodes[Key(parentNode, itemid)].ForeColor = System.Drawing.Color.Green;
                     parentNode.Nodes[Key(parentNode, itemid)].Parent.ForeColor = System.Drawing.Color.Blue;
-                    parentNode.Nodes[Key(parentNode, itemid)].Parent.Parent.ForeColor = System.Drawing.Color.Black;
+                    parentNode.Nodes[Key(parentNode, itemid)].Parent.Parent.ForeColor = System.Drawing.Color.Gold;
+                    parentNode.Nodes[Key(parentNode, itemid)].Parent.Parent.Parent.ForeColor = System.Drawing.Color.Black;
                     break;
                 default:
                     break;

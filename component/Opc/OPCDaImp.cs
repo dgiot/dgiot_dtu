@@ -136,15 +136,6 @@ namespace Da
           return opcDaServices.Any(item => { return item.Host == service.Host && item.ServiceId == serviceProgId; });
         }
 
-        public void StopGroup()
-        {
-            groupKeys.ForEach(groupKey =>
-            {
-                StopMonitoringItems(groupKey);
-            });
-            groupKeys.Clear();
-        }
-
         public void StartGroup(TreeNode currNode, int interval)
         {
             if (currNode.Nodes == null && currNode.Checked)
@@ -180,6 +171,15 @@ namespace Da
                     StartGroup(tmpNode, interval);
                 }
             }
+        }
+
+        public void StopGroup()
+        {
+            groupKeys.ForEach(groupKey =>
+            {
+                StopMonitoringItems(groupKey);
+            });
+            groupKeys.Clear();
         }
 
         public string StartMonitoringItems(string host, string serviceProgId, TreeNode groupNode, int interval)
@@ -222,6 +222,7 @@ namespace Da
             OpcDaGroup group = server.Service.AddGroup(groupKey);  // maybe cost lot of time
             Thread.Sleep(100);
             group.IsActive = true;
+            group.UserData = groupNode;
             server.OpcDaGroupS.Add(groupKey, group);
 
             List<OpcDaItemDefinition> itemDefList = new List<OpcDaItemDefinition>();
@@ -232,6 +233,7 @@ namespace Da
                     var def = new OpcDaItemDefinition
                     {
                         ItemId = tmpNode.Text,
+                        UserData = tmpNode,
                         IsActive = true
                     };
                     itemDefList.Add(def);
@@ -243,7 +245,7 @@ namespace Da
             OpcDaItemResult[] opcDaItemResults = group.AddItems(itemDefList);
             daGroupKeyPairs.Add(groupKey, group);
             groupKeys.Add(groupKey);
-            LogHelper.Log("StartMonitoring  is groupId " + groupKey + " interval " + interval.ToString() + " ms");
+            LogHelper.Log("StartMonitoring  is groupId " + groupKey + " interval " + interval.ToString() + " ms", (int)LogHelper.Level.INFO);
             group.UpdateRate = TimeSpan.FromMilliseconds(interval); // 1000毫秒触发一次
             group.ValuesChanged += MonitorValuesChanged;
             GroupEntity groupEntity = new GroupEntity()
@@ -252,6 +254,13 @@ namespace Da
                 ProgId = server.ServiceId
             };
             groupCollection.Add(groupKey, groupEntity);
+            JsonObject result = new JsonObject();
+            result.Add("timestamp", DgiotHelper.Now());
+            result.Add("deviceName", groupNode.Parent.Text);
+            result.Add("deviceAddr", OPCDAViewHelper.Key(groupNode.Parent.FullPath));
+            JsonArray properties = ScanItemsValues(server.Host, server.ServiceId, groupKey, groupNode);
+            result.Add("properties", properties);
+            LogHelper.Log("StartMonitoring  result " + result, (int)LogHelper.Level.INFO);
         }
 
         public void StopMonitoringItems(string groupKey)
@@ -277,6 +286,55 @@ namespace Da
         public void SetItemsValueChangedCallBack(IItemsValueChangedCallBack callBack)
         {
             this.callBack = callBack;
+        }
+
+        public JsonArray ScanItemsValues(string host, string serverID, string groupKey, TreeNode groupNode)
+        {
+            JsonArray properties = new JsonArray();
+
+            OpcDaService server = GetOpcDaService(host, serverID);
+            if (server == null)
+            {
+                return properties;
+            }
+
+            if (server.OpcDaGroupS.ContainsKey(groupKey) == true)
+            {
+                OpcDaGroup group = server.OpcDaGroupS[groupKey];
+                OpcDaItemValue[] values = group.Read(group.Items, OpcDaDataSource.Cache);
+
+                if (values.Length != group.Items.Count)
+                {
+                    LogHelper.Log($"values.Length(${values.Length}) != group.Items.Count(${group.Items.Count}) ");
+                    return properties;
+                }
+
+                for (int i = 0; i < values.Length; ++i)
+                {
+                    if (values[i].Value != null)
+                    {
+                        JsonObject json = new JsonObject();
+                        TreeNode node = values[i].Item.UserData as TreeNode;
+                        json.Add("name", node.Text);
+                        json.Add("devicetype", groupNode.ToolTipText);
+                        json.Add("identifier", node.ToolTipText);
+                        JsonObject dataForm = new JsonObject();
+                        dataForm.Add("slaveid", groupKey);
+                        dataForm.Add("protocol", node.Tag);
+                        dataForm.Add("address", values[i].Item.ItemId);
+                        dataForm.Add("data", values[i].Value);
+                        json.Add("dataForm", dataForm);
+                        JsonObject dataType = new JsonObject();
+                        dataType.Add("type", values[i].Value.GetType().ToString());
+                        json.Add("dataType", dataType);
+                        properties.Add(json);
+                    }
+                }
+
+                return properties;
+            }
+
+            return properties;
         }
 
         public List<Item> ReadItemsValues(string host, string serverID, string groupKey)
@@ -350,8 +408,9 @@ namespace Da
         {
             if (callBack != null)
             {
-               var opcGroup = sender as OpcDaGroup;
-               callBack.ValueChangedCallBack(opcGroup.Name, e.Values);
+                var opcGroup = sender as OpcDaGroup;
+
+                callBack.ValueChangedCallBack(opcGroup, e.Values);
             }
         }
     }

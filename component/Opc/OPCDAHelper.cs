@@ -9,15 +9,14 @@ namespace Dgiot_dtu
     using System.Collections.Generic;
     using System.Configuration;
     using System.Linq;
+    using System.Text;
     using System.Windows.Forms;
     using Da;
-    using Newtonsoft.Json;
     using TitaniumAS.Opc.Client.Da;
 
     public class OPCDAHelper : IItemsValueChangedCallBack
     {
-        private static string topic = "thing/opcda/";
-        private static OPCDaImp opcDa = new OPCDaImp();
+        private static readonly OPCDaImp OpcDa = new OPCDaImp();
         private static OPCDAHelper instance = null;
         private static string productId = string.Empty;
         private static string devAddr = string.Empty;
@@ -26,7 +25,7 @@ namespace Dgiot_dtu
 
         public OPCDAHelper()
         {
-            opcDa.SetItemsValueChangedCallBack(this);
+            OpcDa.SetItemsValueChangedCallBack(this);
         }
 
         public static OPCDAHelper GetInstance()
@@ -50,11 +49,6 @@ namespace Dgiot_dtu
 
         public static void Config(KeyValueConfigurationCollection config)
         {
-            if (config["OPCDATopic"] != null)
-            {
-                topic = config["OPCDATopic"].Value;
-            }
-
             if (config["OPCDACheck"] != null)
             {
                 bChecked = DgiotHelper.StrTobool(config["OPCDACheck"].Value);
@@ -70,23 +64,21 @@ namespace Dgiot_dtu
                 productId = config["mqttUserName"].Value;
             }
 
-            if (config["mqttClientId"] != null)
+            if (config["devAddr"] != null)
             {
-                devAddr = config["mqttClientId"].Value;
+                devAddr = config["devAddr"].Value;
             }
-
-            topic = "/" + productId + "/" + devAddr + "/scan/opcda";
         }
 
         public static void StartMonitor()
         {
             if (bChecked)
             {
-                opcDa.StartGroup(OPCDAViewHelper.GetRootNode(), interval);
+                OpcDa.StartGroup(OPCDAViewHelper.GetRootNode(), interval);
             }
             else
             {
-                opcDa.StopGroup();
+                OpcDa.StopGroup();
             }
         }
 
@@ -94,36 +86,39 @@ namespace Dgiot_dtu
         {
             DgiotHelper.GetIps().ForEach(host =>
             {
-                opcDa.ScanOPCDa(host, true).ForEach(service =>
+                OpcDa.ScanOPCDa(host, true).ForEach(service =>
                 {
-                    OpcDaService server = opcDa.GetOpcDaService(host, service);
+                    OpcDaService server = OpcDa.GetOpcDaService(host, service);
                     OPCDAViewHelper.GetTreeNodes(server);
                 });
             });
         }
 
-        public void ValueChangedCallBack(string groupKey, OpcDaItemValue[] values)
+        public void ValueChangedCallBack(OpcDaGroup group, OpcDaItemValue[] values)
         {
-            Thing thing = new Thing();
-            thing.Proctol = TreeViewHelper.Type(TreeViewHelper.NodeType.OPCDA);
-            thing.Group = groupKey;
+            JsonObject result = new JsonObject();
+            result.Add("timestamp", DgiotHelper.Now());
+
+            if (group.UserData != null)
+            {
+                TreeNode node = group.UserData as TreeNode;
+                result.Add("deviceAddr", DgiotHelper.Now());
+            }
+
+            JsonObject properties = new JsonObject();
             List<Item> collection = new List<Item>();
             values.ToList().ForEach(v =>
             {
                 Item i = new Item();
                 if (v.Item != null)
                 {
-                    i.ItemId = v.Item.ItemId;
-                    i.Data = v.Value;
-                    i.Type = v.Value.GetType().ToString();
-                    collection.Add(i);
+                    properties.Add(v.Item.ItemId, v.Value);
                 }
             });
-
-            thing.Items = collection;
-            string json = JsonConvert.SerializeObject(thing);
-
-            LogHelper.Log("thing: " + json);
+            result.Add("properties", properties);
+            string topic = "/" + productId + "/" + devAddr + "/topo/" + group.Name + "/post";
+            LogHelper.Log("topic " + topic + " payload: " + result);
+            MqttClientHelper.Publish(topic, Encoding.UTF8.GetBytes(result.ToString()));
         }
     }
  }

@@ -219,43 +219,5 @@ namespace Dgiot_dtu
                 mqttServer.Publish(appMsg);
             }
         }
-
-        private static Dictionary<string, object> Get_payload(byte[] payload)
-        {
-            string data = Encoding.UTF8.GetString(payload);
-            JavaScriptSerializer serializer = new JavaScriptSerializer();
-            Dictionary<string, object> json = (Dictionary<string, object>)serializer.DeserializeObject(data);
-            return json;
-        }
-
-        private static Dictionary<string, object> Get_payload(byte[] payload, int offset, int len)
-        {
-            string data = Encoding.UTF8.GetString(payload, offset, len);
-            JavaScriptSerializer serializer = new JavaScriptSerializer();
-            Dictionary<string, object> json = (Dictionary<string, object>)serializer.DeserializeObject(data);
-            return json;
-        }
-
-        private static readonly DateTime BaseTime = new DateTime(1970, 1, 1);
-
-        /// <summary>
-        /// 将unixtime转换为.NET的DateTime
-        /// </summary>
-        /// <param name="timeStamp">秒数</param>
-        /// <returns>转换后的时间</returns>
-        public static DateTime FromUnixTime(long timeStamp)
-        {
-            return TimeZone.CurrentTimeZone.ToLocalTime(new DateTime((timeStamp * 10000000) + BaseTime.Ticks));
-        }
-
-        /// <summary>
-        /// 将.NET的DateTime转换为unix time
-        /// </summary>
-        /// <param name="dateTime">待转换的时间</param>
-        /// <returns>转换后的unix time</returns>
-        public static long FromDateTime(DateTime dateTime)
-        {
-            return (TimeZone.CurrentTimeZone.ToUniversalTime(dateTime).Ticks - BaseTime.Ticks) / 10000000;
-        }
     }
 }
