@@ -50,7 +50,6 @@ namespace Dgiot_dtu
         public static void View()
         {
             TreeViewHelper.AddNode(opcdaNode);
-            OPCDAHelper.View();
         }
 
         public static string Key(TreeNode parentNode, string itemid)
@@ -125,69 +124,89 @@ namespace Dgiot_dtu
             }
         }
 
+        public static string GetItemId(string name, string itemid)
+        {
+            if (itemid == "" || itemid == null)
+            {
+                if (name == "" || name == null)
+                {
+                    return "itemidIsNull";
+                }
+                else
+                {
+                    return name;
+                }
+            }
+            else
+            {
+                return itemid;
+            }
+        }
+
         public static TreeNode AddNode(TreeNode parentNode, string name, string itemid)
         {
-            if (parentNode == null)
+            if (parentNode == null || parentNode.Level == 6)
             {
                 return null;
             }
 
-            if (!parentNode.Nodes.ContainsKey(Key(parentNode, itemid)))
+            string newItemId = GetItemId(name, itemid);
+            if (!parentNode.Nodes.ContainsKey(Key(parentNode, newItemId)))
             {
-                parentNode.Nodes.Add(Key(parentNode, itemid), itemid);
+               parentNode.Nodes.Add(Key(parentNode, newItemId), newItemId);
             }
 
             switch (parentNode.Level + 1)
             {
                 case (int)NodeType.OPCDA: // OPCDA
-                    parentNode.Nodes[Key(parentNode, itemid)].ForeColor = System.Drawing.Color.Black;
+                    parentNode.Nodes[Key(parentNode, newItemId)].ForeColor = System.Drawing.Color.Black;
                     break;
                 case (int)NodeType.Host: // host
-                    parentNode.Nodes[Key(parentNode, itemid)].ForeColor = System.Drawing.Color.Black;
+                    parentNode.Nodes[Key(parentNode, newItemId)].ForeColor = System.Drawing.Color.Black;
                     break;
                 case (int)NodeType.Service: // service
-                    parentNode.Nodes[Key(parentNode, itemid)].ForeColor = System.Drawing.Color.Black;
+                    parentNode.Nodes[Key(parentNode, newItemId)].ForeColor = System.Drawing.Color.Black;
                     break;
                 case (int)NodeType.Device: // device
-                    if (IsDevicefilter(name) || IsDevicefilter(itemid))
+                    if (IsDevicefilter(name) || IsDevicefilter(newItemId))
                     {
-                        parentNode.Nodes.RemoveByKey(Key(parentNode, itemid));
+                        parentNode.Nodes.RemoveByKey(Key(parentNode, newItemId));
                         return null;
                     }
 
-                    parentNode.Nodes[Key(parentNode, itemid)].ForeColor = System.Drawing.Color.Gold;
+                    parentNode.Nodes[Key(parentNode, newItemId)].ForeColor = System.Drawing.Color.Gold;
                     break;
                 case (int)NodeType.Group: // group
-                    if (IsGroupfilter(name) || IsGroupfilter(itemid))
+                    if (IsGroupfilter(name) || IsGroupfilter(newItemId))
                     {
-                        parentNode.Nodes.RemoveByKey(Key(parentNode, itemid));
+                        parentNode.Nodes.RemoveByKey(Key(parentNode, newItemId));
                         return null;
                     }
 
                     parentNode.Nodes[Key(parentNode, itemid)].ForeColor = System.Drawing.Color.Blue;
                     break;
                 case (int)NodeType.Item: // item
-                    if (IsItemsfilter(name) || IsItemsfilter(itemid))
+                    if (IsItemsfilter(name) || IsItemsfilter(newItemId))
                     {
-                        parentNode.Nodes.RemoveByKey(Key(parentNode, itemid));
+                        parentNode.Nodes.RemoveByKey(Key(parentNode, newItemId));
                         return null;
                     }
 
-                    parentNode.Nodes[Key(parentNode, itemid)].ForeColor = System.Drawing.Color.Green;
+                    parentNode.Nodes[Key(parentNode, newItemId)].ForeColor = System.Drawing.Color.Green;
                     break;
                 case (int)NodeType.Property: // property
-                    parentNode.Nodes[Key(parentNode, itemid)].ForeColor = System.Drawing.Color.Green;
-                    parentNode.Nodes[Key(parentNode, itemid)].Parent.ForeColor = System.Drawing.Color.Blue;
-                    parentNode.Nodes[Key(parentNode, itemid)].Parent.Parent.ForeColor = System.Drawing.Color.Gold;
-                    parentNode.Nodes[Key(parentNode, itemid)].Parent.Parent.Parent.ForeColor = System.Drawing.Color.Black;
+                    parentNode.Nodes[Key(parentNode, newItemId)].ForeColor = System.Drawing.Color.Green;
+                    parentNode.Nodes[Key(parentNode, newItemId)].Parent.ForeColor = System.Drawing.Color.Blue;
+                    parentNode.Nodes[Key(parentNode, newItemId)].Parent.Parent.ForeColor = System.Drawing.Color.Gold;
+                    parentNode.Nodes[Key(parentNode, newItemId)].Parent.Parent.Parent.ForeColor = System.Drawing.Color.Black;
                     break;
                 default:
                     break;
             }
 
-            parentNode.Nodes[Key(parentNode, itemid)].Tag = Type();
-            parentNode.Nodes[Key(parentNode, itemid)].ToolTipText = name;
-            return parentNode.Nodes[Key(parentNode, itemid)];
+            parentNode.Nodes[Key(parentNode, newItemId)].Tag = Type();
+            parentNode.Nodes[Key(parentNode, newItemId)].ToolTipText = name;
+            return parentNode.Nodes[Key(parentNode, newItemId)];
         }
 
         private static readonly List<string> DeviceFilter = new List<string>

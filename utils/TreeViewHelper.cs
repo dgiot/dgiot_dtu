@@ -52,6 +52,7 @@ namespace Dgiot_dtu
         {
             TreeViewHelper.treeView = treeView;
             OPCDAViewHelper.View();
+            OPCDAHelper.View();
         }
 
         public static void Config(KeyValueConfigurationCollection config)

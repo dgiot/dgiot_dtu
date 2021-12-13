@@ -34,6 +34,7 @@ namespace Dgiot_dtu
                 }
             }
 
+            localIps.Clear();
             localIps.Add("127.0.0.1");
             return localIps;
         }

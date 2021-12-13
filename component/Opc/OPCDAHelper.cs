@@ -77,9 +77,9 @@ namespace Dgiot_dtu
                 OpcDa.StartGroup(OPCDAViewHelper.GetRootNode(), interval);
             }
             else
-            {
+           {
                 OpcDa.StopGroup();
-            }
+           }
         }
 
         public static void View()
