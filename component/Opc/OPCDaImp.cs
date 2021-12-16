@@ -301,34 +301,41 @@ namespace Da
             if (server.OpcDaGroupS.ContainsKey(groupKey) == true)
             {
                 OpcDaGroup group = server.OpcDaGroupS[groupKey];
-                OpcDaItemValue[] values = group.Read(group.Items, OpcDaDataSource.Cache);
-
-                if (values.Length != group.Items.Count)
+                try
                 {
-                    LogHelper.Log($"values.Length(${values.Length}) != group.Items.Count(${group.Items.Count}) ");
-                    return properties;
-                }
+                    OpcDaItemValue[] values = group.Read(group.Items, OpcDaDataSource.Device);
 
-                for (int i = 0; i < values.Length; ++i)
-                {
-                    if (values[i].Value != null)
+                    if (values.Length != group.Items.Count)
                     {
-                        JsonObject json = new JsonObject();
-                        TreeNode node = values[i].Item.UserData as TreeNode;
-                        json.Add("name", node.Text);
-                        json.Add("devicetype", groupNode.ToolTipText);
-                        json.Add("identifier", node.ToolTipText);
-                        JsonObject dataForm = new JsonObject();
-                        dataForm.Add("slaveid", groupKey);
-                        dataForm.Add("protocol", node.Tag);
-                        dataForm.Add("address", values[i].Item.ItemId);
-                        dataForm.Add("data", values[i].Value);
-                        json.Add("dataForm", dataForm);
-                        JsonObject dataType = new JsonObject();
-                        dataType.Add("type", values[i].Value.GetType().ToString());
-                        json.Add("dataType", dataType);
-                        properties.Add(json);
+                        LogHelper.Log($"values.Length(${values.Length}) != group.Items.Count(${group.Items.Count}) ");
+                        return properties;
                     }
+
+                    for (int i = 0; i < values.Length; ++i)
+                    {
+                        if (values[i].Value != null)
+                        {
+                            JsonObject json = new JsonObject();
+                            TreeNode node = values[i].Item.UserData as TreeNode;
+                            json.Add("name", node.Text);
+                            json.Add("devicetype", groupNode.ToolTipText);
+                            json.Add("identifier", node.ToolTipText);
+                            JsonObject dataForm = new JsonObject();
+                            dataForm.Add("slaveid", groupKey);
+                            dataForm.Add("protocol", node.Tag);
+                            dataForm.Add("address", values[i].Item.ItemId);
+                            dataForm.Add("data", values[i].Value);
+                            json.Add("dataForm", dataForm);
+                            JsonObject dataType = new JsonObject();
+                            dataType.Add("type", values[i].Value.GetType().ToString());
+                            json.Add("dataType", dataType);
+                            properties.Add(json);
+                        }
+                    }
+                }
+                 catch (Exception)
+                {
+                    return properties;
                 }
 
                 return properties;

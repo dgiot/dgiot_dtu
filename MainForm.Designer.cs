@@ -621,7 +621,6 @@ namespace Dgiot_dtu
             // 
             this.textBoxOPCDAInterval.Location = new System.Drawing.Point(60, 46);
             this.textBoxOPCDAInterval.Name = "textBoxOPCDAInterval";
-            this.textBoxOPCDAInterval.ReadOnly = true;
             this.textBoxOPCDAInterval.Size = new System.Drawing.Size(33, 21);
             this.textBoxOPCDAInterval.TabIndex = 48;
             this.textBoxOPCDAInterval.Text = "3";
@@ -906,10 +905,10 @@ namespace Dgiot_dtu
             // pictureBox1
             // 
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(511, -41);
+            this.pictureBox1.Location = new System.Drawing.Point(511, -43);
             this.pictureBox1.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(53, 510);
+            this.pictureBox1.Size = new System.Drawing.Size(53, 512);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 35;
             this.pictureBox1.TabStop = false;

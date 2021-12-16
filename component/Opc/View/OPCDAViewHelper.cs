@@ -113,7 +113,7 @@ namespace Dgiot_dtu
 
         public static void AddItems(TreeNode parentNode)
         {
-            if (parentNode.ForeColor == System.Drawing.Color.Blue)
+            if (parentNode.ForeColor == System.Drawing.Color.Blue || parentNode.ForeColor == System.Drawing.Color.Gold)
             {
                 List<string> items = FileHelper.OpenFile();
                 items.ForEach(item =>
@@ -130,7 +130,7 @@ namespace Dgiot_dtu
             {
                 if (name == "" || name == null)
                 {
-                    return "itemidIsNull";
+                    return null;
                 }
                 else
                 {
@@ -145,7 +145,7 @@ namespace Dgiot_dtu
 
         public static TreeNode AddNode(TreeNode parentNode, string name, string itemid)
         {
-            if (parentNode == null || parentNode.Level == 6)
+            if (parentNode == null || parentNode.Level == 6 || null == GetItemId(name, itemid))
             {
                 return null;
             }
