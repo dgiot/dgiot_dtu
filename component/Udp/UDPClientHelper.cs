@@ -29,10 +29,9 @@ namespace Dgiot_dtu
             return instance;
         }
 
-        public static void Start(KeyValueConfigurationCollection config, bool bAutoReconnect)
+        public static void Start()
         {
-            UDPClientHelper.bAutoReconnect = bAutoReconnect;
-            Config(config);
+            Config();
 
             if (bIsCheck)
             {
@@ -68,22 +67,12 @@ namespace Dgiot_dtu
             }
         }
 
-        public static void Config(KeyValueConfigurationCollection config)
+        public static void Config()
         {
-            if (config["UDPClientServer"] != null)
-            {
-               server = (string)config["UDPClientServer"].Value;
-            }
-
-            if (config["UDPClientPort"] != null)
-            {
-                port = int.Parse((string)config["UDPClientPort"].Value);
-            }
-
-            if (config["UDPClientIsCheck"] != null)
-            {
-                bIsCheck = DgiotHelper.StrTobool(config["UDPClientIsCheck"].Value);
-            }
+            server = ConfigHelper.GetConfig("DgiotSever");
+            port = int.Parse(ConfigHelper.GetConfig("DgiotPort"));
+            bIsCheck = DgiotHelper.StrTobool(ConfigHelper.GetConfig("UDPClientIsCheck"));
+            bAutoReconnect = DgiotHelper.StrTobool(ConfigHelper.GetConfig("ReconnectChecked"));
         }
 
         public static void Write(byte[] data, int offset, int len)

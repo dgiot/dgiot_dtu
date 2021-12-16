@@ -37,10 +37,9 @@ namespace Dgiot_dtu
             return instance;
         }
 
-        public static void Start(KeyValueConfigurationCollection config, bool bAutoReconnect)
+        public static void Start()
         {
-            Config(config);
-            TcpClientHelper.bAutoReconnect = bAutoReconnect;
+            Config();
             if (bIsCheck)
             {
                 CreateConnect();
@@ -60,27 +59,13 @@ namespace Dgiot_dtu
             }
         }
 
-        public static void Config(KeyValueConfigurationCollection config)
+        public static void Config()
         {
-            if (config["tcpClientServer"] != null)
-            {
-                server = (string)config["tcpClientServer"].Value;
-            }
-
-            if (config["tcpClientPort"] != null)
-            {
-                port = int.Parse((string)config["tcpClientPort"].Value);
-            }
-
-            if (config["tcpClientLogin"] != null)
-            {
-                login = config["tcpClientLogin"].Value;
-            }
-
-            if (config["tcpClientIsCheck"] != null)
-            {
-                bIsCheck = DgiotHelper.StrTobool(config["tcpClientIsCheck"].Value);
-            }
+            server = ConfigHelper.GetConfig("DgiotSever");
+            port = int.Parse(ConfigHelper.GetConfig("DgiotPort"));
+            bAutoReconnect = DgiotHelper.StrTobool(ConfigHelper.GetConfig("ReconnectChecked"));
+            bIsCheck = DgiotHelper.StrTobool(ConfigHelper.GetConfig("TcpClientIsCheck"));
+            login = ConfigHelper.GetConfig("TcpClientLogin");
         }
 
         public static void CreateConnect()

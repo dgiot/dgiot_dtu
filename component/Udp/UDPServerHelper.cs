@@ -83,14 +83,14 @@ namespace Dgiot_dtu
 
         public static void Config(KeyValueConfigurationCollection config)
         {
-            if (config["updServerPort"] != null)
+            port = int.Parse(ConfigHelper.GetConfig("DgiotPort"));
+            if (DgiotHelper.StrTobool(ConfigHelper.GetConfig("UDPClient_Checked")) && DgiotHelper.StrTobool(ConfigHelper.GetConfig("Bridge_Checked")))
             {
-                port = int.Parse((string)config["UDPClientPort"].Value);
+                bIsCheck = true;
             }
-
-            if (config["updbridgeIsCheck"] != null)
+            else
             {
-                bIsCheck = DgiotHelper.StrTobool(config["updbridgeIsCheck"].Value);
+                bIsCheck = false;
             }
         }
 

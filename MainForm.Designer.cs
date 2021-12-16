@@ -33,7 +33,6 @@ namespace Dgiot_dtu
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.buttonStartStop = new System.Windows.Forms.Button();
             this.textBoxLog = new System.Windows.Forms.TextBox();
-            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.checkBoxReconnect = new System.Windows.Forms.CheckBox();
             this.checkBoxDisplayHex = new System.Windows.Forms.CheckBox();
             this.buttonClear = new System.Windows.Forms.Button();
@@ -48,8 +47,7 @@ namespace Dgiot_dtu
             this.comboBoxBaudRate = new System.Windows.Forms.ComboBox();
             this.labelSerialPort = new System.Windows.Forms.Label();
             this.comboBoxSerialPort = new System.Windows.Forms.ComboBox();
-            this.textBoxTcpServerPort = new System.Windows.Forms.TextBox();
-            this.labelTargetPort = new System.Windows.Forms.Label();
+            this.textBoxBridgePort = new System.Windows.Forms.TextBox();
             this.textBoxMqttPubTopic = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
             this.textBoxMqttSubTopic = new System.Windows.Forms.TextBox();
@@ -58,41 +56,32 @@ namespace Dgiot_dtu
             this.label10 = new System.Windows.Forms.Label();
             this.textBoxMqttUserName = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
             this.linkLabel2 = new System.Windows.Forms.LinkLabel();
             this.textToPayload = new System.Windows.Forms.TextBox();
             this.textBoxTcpClientLogin = new System.Windows.Forms.TextBox();
-            this.textBoxTcpClientPort = new System.Windows.Forms.TextBox();
             this.textBoxMqttClientId = new System.Windows.Forms.TextBox();
-            this.textBoxMqttPort = new System.Windows.Forms.TextBox();
+            this.textBoxDgiotPort = new System.Windows.Forms.TextBox();
             this.textBoxUDPClientLogin = new System.Windows.Forms.TextBox();
-            this.textBoxUDPCLientPort = new System.Windows.Forms.TextBox();
             this.sendBridge = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label16 = new System.Windows.Forms.Label();
-            this.label17 = new System.Windows.Forms.Label();
-            this.textBoxTcpClientServer = new System.Windows.Forms.TextBox();
-            this.label18 = new System.Windows.Forms.Label();
-            this.checkBoxTcpBridge = new System.Windows.Forms.CheckBox();
+            this.checkBoxBridge = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.comboBoxDevAddr = new System.Windows.Forms.ComboBox();
-            this.label30 = new System.Windows.Forms.Label();
             this.label29 = new System.Windows.Forms.Label();
             this.comboBoxCmdProdxy = new System.Windows.Forms.ComboBox();
-            this.checkBoxMqttBridge = new System.Windows.Forms.CheckBox();
-            this.textBoxMqttServerPort = new System.Windows.Forms.TextBox();
-            this.label27 = new System.Windows.Forms.Label();
             this.label20 = new System.Windows.Forms.Label();
+            this.comboBoxDtuAddr = new System.Windows.Forms.ComboBox();
+            this.label30 = new System.Windows.Forms.Label();
             this.label21 = new System.Windows.Forms.Label();
-            this.textBoxMqttSever = new System.Windows.Forms.TextBox();
+            this.textBoxDgiotSever = new System.Windows.Forms.TextBox();
             this.label22 = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.labelSecond = new System.Windows.Forms.Label();
             this.labelOPCDAMonitor = new System.Windows.Forms.Label();
             this.textBoxOPCDAInterval = new System.Windows.Forms.TextBox();
             this.checkBoxOPCDA = new System.Windows.Forms.CheckBox();
-            this.textBoxOPCDATopic = new System.Windows.Forms.TextBox();
-            this.labelopcda = new System.Windows.Forms.Label();
+            this.textBoxOPCDAHost = new System.Windows.Forms.TextBox();
+            this.labelOPCDAHost = new System.Windows.Forms.Label();
             this.textBoxOpcIp = new System.Windows.Forms.TextBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.textBoxOPCUATopic = new System.Windows.Forms.TextBox();
@@ -108,17 +97,8 @@ namespace Dgiot_dtu
             this.groupBox8 = new System.Windows.Forms.GroupBox();
             this.textBoxAccessTopic = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
-            this.groupBox9 = new System.Windows.Forms.GroupBox();
-            this.textBoxSqlServerTopic = new System.Windows.Forms.TextBox();
-            this.label14 = new System.Windows.Forms.Label();
             this.groupBox10 = new System.Windows.Forms.GroupBox();
-            this.checkBoxUdpBridge = new System.Windows.Forms.CheckBox();
-            this.label28 = new System.Windows.Forms.Label();
-            this.textBoxUdpServerPort = new System.Windows.Forms.TextBox();
             this.label15 = new System.Windows.Forms.Label();
-            this.label24 = new System.Windows.Forms.Label();
-            this.textBoxUDPClientServer = new System.Windows.Forms.TextBox();
-            this.label26 = new System.Windows.Forms.Label();
             this.radioButtonMqttClient = new System.Windows.Forms.RadioButton();
             this.radioButtonTcpClient = new System.Windows.Forms.RadioButton();
             this.radioButtonUDPClient = new System.Windows.Forms.RadioButton();
@@ -130,10 +110,10 @@ namespace Dgiot_dtu
             this.label32 = new System.Windows.Forms.Label();
             this.comboBoxLan = new System.Windows.Forms.ComboBox();
             this.label33 = new System.Windows.Forms.Label();
-            this.label_devicelog = new System.Windows.Forms.Label();
             this.treeView = new System.Windows.Forms.TreeView();
             this.label_devcietree = new System.Windows.Forms.Label();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBoxSerialPort.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -142,18 +122,17 @@ namespace Dgiot_dtu
             this.groupBox6.SuspendLayout();
             this.groupBox7.SuspendLayout();
             this.groupBox8.SuspendLayout();
-            this.groupBox9.SuspendLayout();
             this.groupBox10.SuspendLayout();
             this.groupBox12.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // buttonStartStop
             // 
-            this.buttonStartStop.Location = new System.Drawing.Point(1576, 823);
-            this.buttonStartStop.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.buttonStartStop.Location = new System.Drawing.Point(151, 125);
             this.buttonStartStop.Name = "buttonStartStop";
-            this.buttonStartStop.Size = new System.Drawing.Size(80, 31);
+            this.buttonStartStop.Size = new System.Drawing.Size(53, 21);
             this.buttonStartStop.TabIndex = 4;
             this.buttonStartStop.Text = "Start";
             this.buttonStartStop.UseVisualStyleBackColor = true;
@@ -162,34 +141,19 @@ namespace Dgiot_dtu
             // textBoxLog
             // 
             this.textBoxLog.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(107)))), ((int)(((byte)(170)))), ((int)(((byte)(55)))));
-            this.textBoxLog.Location = new System.Drawing.Point(13, 34);
-            this.textBoxLog.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxLog.Location = new System.Drawing.Point(3, 233);
             this.textBoxLog.Multiline = true;
             this.textBoxLog.Name = "textBoxLog";
             this.textBoxLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxLog.Size = new System.Drawing.Size(643, 780);
+            this.textBoxLog.Size = new System.Drawing.Size(289, 253);
             this.textBoxLog.TabIndex = 9;
-            // 
-            // linkLabel1
-            // 
-            this.linkLabel1.AutoSize = true;
-            this.linkLabel1.LinkColor = System.Drawing.Color.Silver;
-            this.linkLabel1.Location = new System.Drawing.Point(1459, 829);
-            this.linkLabel1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.linkLabel1.Name = "linkLabel1";
-            this.linkLabel1.Size = new System.Drawing.Size(89, 18);
-            this.linkLabel1.TabIndex = 10;
-            this.linkLabel1.TabStop = true;
-            this.linkLabel1.Text = "dgiot Ltd";
-            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel1LinkClicked);
             // 
             // checkBoxReconnect
             // 
             this.checkBoxReconnect.AutoSize = true;
-            this.checkBoxReconnect.Location = new System.Drawing.Point(1702, 828);
-            this.checkBoxReconnect.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.checkBoxReconnect.Location = new System.Drawing.Point(10, 129);
             this.checkBoxReconnect.Name = "checkBoxReconnect";
-            this.checkBoxReconnect.Size = new System.Drawing.Size(160, 22);
+            this.checkBoxReconnect.Size = new System.Drawing.Size(108, 16);
             this.checkBoxReconnect.TabIndex = 5;
             this.checkBoxReconnect.Text = "Auto Reconnect";
             this.checkBoxReconnect.UseVisualStyleBackColor = true;
@@ -198,10 +162,9 @@ namespace Dgiot_dtu
             // checkBoxDisplayHex
             // 
             this.checkBoxDisplayHex.AutoSize = true;
-            this.checkBoxDisplayHex.Location = new System.Drawing.Point(226, 831);
-            this.checkBoxDisplayHex.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.checkBoxDisplayHex.Location = new System.Drawing.Point(330, 493);
             this.checkBoxDisplayHex.Name = "checkBoxDisplayHex";
-            this.checkBoxDisplayHex.Size = new System.Drawing.Size(61, 22);
+            this.checkBoxDisplayHex.Size = new System.Drawing.Size(42, 16);
             this.checkBoxDisplayHex.TabIndex = 11;
             this.checkBoxDisplayHex.Text = "Hex";
             this.checkBoxDisplayHex.UseVisualStyleBackColor = true;
@@ -209,10 +172,9 @@ namespace Dgiot_dtu
             // 
             // buttonClear
             // 
-            this.buttonClear.Location = new System.Drawing.Point(664, 826);
-            this.buttonClear.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.buttonClear.Location = new System.Drawing.Point(436, 490);
             this.buttonClear.Name = "buttonClear";
-            this.buttonClear.Size = new System.Drawing.Size(72, 31);
+            this.buttonClear.Size = new System.Drawing.Size(48, 21);
             this.buttonClear.TabIndex = 12;
             this.buttonClear.Text = "Clear";
             this.buttonClear.UseVisualStyleBackColor = true;
@@ -230,11 +192,9 @@ namespace Dgiot_dtu
             this.groupBoxSerialPort.Controls.Add(this.comboBoxBaudRate);
             this.groupBoxSerialPort.Controls.Add(this.labelSerialPort);
             this.groupBoxSerialPort.Controls.Add(this.comboBoxSerialPort);
-            this.groupBoxSerialPort.Location = new System.Drawing.Point(1077, 32);
-            this.groupBoxSerialPort.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.groupBoxSerialPort.Location = new System.Drawing.Point(293, 17);
             this.groupBoxSerialPort.Name = "groupBoxSerialPort";
-            this.groupBoxSerialPort.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBoxSerialPort.Size = new System.Drawing.Size(317, 179);
+            this.groupBoxSerialPort.Size = new System.Drawing.Size(213, 88);
             this.groupBoxSerialPort.TabIndex = 13;
             this.groupBoxSerialPort.TabStop = false;
             this.groupBoxSerialPort.Text = "Serial Port Capture";
@@ -248,50 +208,45 @@ namespace Dgiot_dtu
             "Even",
             "Mark",
             "Space"});
-            this.comboBoxParity.Location = new System.Drawing.Point(142, 113);
-            this.comboBoxParity.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.comboBoxParity.Location = new System.Drawing.Point(64, 59);
             this.comboBoxParity.Name = "comboBoxParity";
-            this.comboBoxParity.Size = new System.Drawing.Size(162, 26);
+            this.comboBoxParity.Size = new System.Drawing.Size(41, 20);
             this.comboBoxParity.TabIndex = 14;
             this.comboBoxParity.SelectedIndexChanged += new System.EventHandler(this.ComboBoxParity_SelectedIndexChanged);
             // 
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(25, 113);
-            this.label13.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label13.Location = new System.Drawing.Point(4, 61);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(62, 18);
+            this.label13.Size = new System.Drawing.Size(41, 12);
             this.label13.TabIndex = 13;
             this.label13.Text = "Parity";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(25, 145);
-            this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label5.Location = new System.Drawing.Point(109, 64);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(80, 18);
+            this.label5.Size = new System.Drawing.Size(53, 12);
             this.label5.TabIndex = 12;
             this.label5.Text = "stopBits";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(25, 83);
-            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label4.Location = new System.Drawing.Point(109, 39);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(80, 18);
+            this.label4.Size = new System.Drawing.Size(53, 12);
             this.label4.TabIndex = 12;
             this.label4.Text = "dataBits";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(25, 54);
-            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label1.Location = new System.Drawing.Point(3, 39);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(89, 18);
+            this.label1.Size = new System.Drawing.Size(59, 12);
             this.label1.TabIndex = 12;
             this.label1.Text = "Baud Rate";
             // 
@@ -302,10 +257,9 @@ namespace Dgiot_dtu
             "1",
             "2",
             "1.5"});
-            this.comboBoxStopBits.Location = new System.Drawing.Point(142, 143);
-            this.comboBoxStopBits.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.comboBoxStopBits.Location = new System.Drawing.Point(165, 64);
             this.comboBoxStopBits.Name = "comboBoxStopBits";
-            this.comboBoxStopBits.Size = new System.Drawing.Size(162, 26);
+            this.comboBoxStopBits.Size = new System.Drawing.Size(39, 20);
             this.comboBoxStopBits.TabIndex = 11;
             this.comboBoxStopBits.SelectedIndexChanged += new System.EventHandler(this.ComboBoxStopBits_SelectedIndexChanged);
             // 
@@ -317,10 +271,9 @@ namespace Dgiot_dtu
             "7",
             "6",
             "5"});
-            this.comboBoxDataBits.Location = new System.Drawing.Point(142, 83);
-            this.comboBoxDataBits.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.comboBoxDataBits.Location = new System.Drawing.Point(165, 39);
             this.comboBoxDataBits.Name = "comboBoxDataBits";
-            this.comboBoxDataBits.Size = new System.Drawing.Size(162, 26);
+            this.comboBoxDataBits.Size = new System.Drawing.Size(39, 20);
             this.comboBoxDataBits.TabIndex = 11;
             this.comboBoxDataBits.SelectedIndexChanged += new System.EventHandler(this.ComboBoxDataBits_SelectedIndexChanged);
             // 
@@ -336,77 +289,59 @@ namespace Dgiot_dtu
             "38400",
             "57600",
             "115200"});
-            this.comboBoxBaudRate.Location = new System.Drawing.Point(142, 50);
-            this.comboBoxBaudRate.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.comboBoxBaudRate.Location = new System.Drawing.Point(63, 37);
             this.comboBoxBaudRate.Name = "comboBoxBaudRate";
-            this.comboBoxBaudRate.Size = new System.Drawing.Size(162, 26);
+            this.comboBoxBaudRate.Size = new System.Drawing.Size(43, 20);
             this.comboBoxBaudRate.TabIndex = 11;
             // 
             // labelSerialPort
             // 
             this.labelSerialPort.AutoSize = true;
-            this.labelSerialPort.Location = new System.Drawing.Point(25, 24);
-            this.labelSerialPort.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.labelSerialPort.Location = new System.Drawing.Point(6, 17);
             this.labelSerialPort.Name = "labelSerialPort";
-            this.labelSerialPort.Size = new System.Drawing.Size(44, 18);
+            this.labelSerialPort.Size = new System.Drawing.Size(29, 12);
             this.labelSerialPort.TabIndex = 10;
             this.labelSerialPort.Text = "Port";
             // 
             // comboBoxSerialPort
             // 
             this.comboBoxSerialPort.FormattingEnabled = true;
-            this.comboBoxSerialPort.Location = new System.Drawing.Point(142, 22);
-            this.comboBoxSerialPort.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.comboBoxSerialPort.Location = new System.Drawing.Point(61, 15);
             this.comboBoxSerialPort.Name = "comboBoxSerialPort";
-            this.comboBoxSerialPort.Size = new System.Drawing.Size(162, 26);
+            this.comboBoxSerialPort.Size = new System.Drawing.Size(143, 20);
             this.comboBoxSerialPort.TabIndex = 9;
             // 
-            // textBoxTcpServerPort
+            // textBoxBridgePort
             // 
-            this.textBoxTcpServerPort.Location = new System.Drawing.Point(120, 146);
-            this.textBoxTcpServerPort.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.textBoxTcpServerPort.Name = "textBoxTcpServerPort";
-            this.textBoxTcpServerPort.Size = new System.Drawing.Size(202, 28);
-            this.textBoxTcpServerPort.TabIndex = 7;
-            this.textBoxTcpServerPort.Text = "5080";
-            this.textBoxTcpServerPort.TextChanged += new System.EventHandler(this.TextBoxTcpServerPort_TextChanged);
-            // 
-            // labelTargetPort
-            // 
-            this.labelTargetPort.AutoSize = true;
-            this.labelTargetPort.Location = new System.Drawing.Point(34, 150);
-            this.labelTargetPort.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.labelTargetPort.Name = "labelTargetPort";
-            this.labelTargetPort.Size = new System.Drawing.Size(62, 18);
-            this.labelTargetPort.TabIndex = 8;
-            this.labelTargetPort.Text = "bridge";
+            this.textBoxBridgePort.Location = new System.Drawing.Point(134, 97);
+            this.textBoxBridgePort.Name = "textBoxBridgePort";
+            this.textBoxBridgePort.Size = new System.Drawing.Size(75, 21);
+            this.textBoxBridgePort.TabIndex = 7;
+            this.textBoxBridgePort.Text = "5080";
             // 
             // textBoxMqttPubTopic
             // 
-            this.textBoxMqttPubTopic.Location = new System.Drawing.Point(120, 276);
-            this.textBoxMqttPubTopic.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxMqttPubTopic.Location = new System.Drawing.Point(80, 119);
             this.textBoxMqttPubTopic.Name = "textBoxMqttPubTopic";
-            this.textBoxMqttPubTopic.Size = new System.Drawing.Size(202, 28);
+            this.textBoxMqttPubTopic.Size = new System.Drawing.Size(132, 21);
             this.textBoxMqttPubTopic.TabIndex = 22;
-            this.textBoxMqttPubTopic.Text = "/{productid}/{devaddr}//properties/read/reply";
+            this.textBoxMqttPubTopic.Text = "/{productid}/{devaddr}/properties/read/reply";
             this.textBoxMqttPubTopic.TextChanged += new System.EventHandler(this.TextBoxMqttPubTopic_TextChanged);
             // 
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(12, 283);
-            this.label12.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label12.Location = new System.Drawing.Point(9, 119);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(80, 18);
+            this.label12.Size = new System.Drawing.Size(53, 12);
             this.label12.TabIndex = 21;
             this.label12.Text = "PubTopic";
             // 
             // textBoxMqttSubTopic
             // 
-            this.textBoxMqttSubTopic.Location = new System.Drawing.Point(121, 241);
-            this.textBoxMqttSubTopic.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxMqttSubTopic.Location = new System.Drawing.Point(81, 95);
             this.textBoxMqttSubTopic.Name = "textBoxMqttSubTopic";
-            this.textBoxMqttSubTopic.Size = new System.Drawing.Size(201, 28);
+            this.textBoxMqttSubTopic.Size = new System.Drawing.Size(131, 21);
             this.textBoxMqttSubTopic.TabIndex = 20;
             this.textBoxMqttSubTopic.Text = "/{productid}/{devaddr}/#";
             this.textBoxMqttSubTopic.TextChanged += new System.EventHandler(this.TextBoxMqttSubTopic_TextChanged);
@@ -414,19 +349,17 @@ namespace Dgiot_dtu
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(10, 245);
-            this.label11.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label11.Location = new System.Drawing.Point(9, 96);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(80, 18);
+            this.label11.Size = new System.Drawing.Size(53, 12);
             this.label11.TabIndex = 19;
             this.label11.Text = "SubTopic";
             // 
             // textBoxMqttPassword
             // 
-            this.textBoxMqttPassword.Location = new System.Drawing.Point(121, 136);
-            this.textBoxMqttPassword.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxMqttPassword.Location = new System.Drawing.Point(81, 44);
             this.textBoxMqttPassword.Name = "textBoxMqttPassword";
-            this.textBoxMqttPassword.Size = new System.Drawing.Size(201, 28);
+            this.textBoxMqttPassword.Size = new System.Drawing.Size(131, 21);
             this.textBoxMqttPassword.TabIndex = 18;
             this.textBoxMqttPassword.Text = "TTY0Mzg3OTAxNjM4NDIyMjUyMTkw";
             this.textBoxMqttPassword.TextChanged += new System.EventHandler(this.TextBoxMqttPassword_TextChanged);
@@ -434,19 +367,17 @@ namespace Dgiot_dtu
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(12, 140);
-            this.label10.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label10.Location = new System.Drawing.Point(8, 47);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(80, 18);
+            this.label10.Size = new System.Drawing.Size(53, 12);
             this.label10.TabIndex = 17;
             this.label10.Text = "PassWord";
             // 
             // textBoxMqttUserName
             // 
-            this.textBoxMqttUserName.Location = new System.Drawing.Point(121, 100);
-            this.textBoxMqttUserName.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxMqttUserName.Location = new System.Drawing.Point(81, 20);
             this.textBoxMqttUserName.Name = "textBoxMqttUserName";
-            this.textBoxMqttUserName.Size = new System.Drawing.Size(201, 28);
+            this.textBoxMqttUserName.Size = new System.Drawing.Size(131, 21);
             this.textBoxMqttUserName.TabIndex = 16;
             this.textBoxMqttUserName.Text = "ecfd3a227c";
             this.textBoxMqttUserName.TextChanged += new System.EventHandler(this.TextBoxMqttUserName_TextChanged);
@@ -454,32 +385,19 @@ namespace Dgiot_dtu
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(9, 106);
-            this.label9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label9.Location = new System.Drawing.Point(6, 24);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(80, 18);
+            this.label9.Size = new System.Drawing.Size(53, 12);
             this.label9.TabIndex = 15;
             this.label9.Text = "UserName";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.ForeColor = System.Drawing.Color.Silver;
-            this.label3.Location = new System.Drawing.Point(1310, 831);
-            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(71, 18);
-            this.label3.TabIndex = 15;
-            this.label3.Text = "Author:";
             // 
             // linkLabel2
             // 
             this.linkLabel2.AutoSize = true;
             this.linkLabel2.LinkColor = System.Drawing.Color.Silver;
-            this.linkLabel2.Location = new System.Drawing.Point(1389, 832);
-            this.linkLabel2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.linkLabel2.Location = new System.Drawing.Point(515, 449);
             this.linkLabel2.Name = "linkLabel2";
-            this.linkLabel2.Size = new System.Drawing.Size(62, 18);
+            this.linkLabel2.Size = new System.Drawing.Size(41, 12);
             this.linkLabel2.TabIndex = 16;
             this.linkLabel2.TabStop = true;
             this.linkLabel2.Text = "DG-IoT";
@@ -487,80 +405,54 @@ namespace Dgiot_dtu
             // 
             // textToPayload
             // 
-            this.textToPayload.Location = new System.Drawing.Point(294, 826);
-            this.textToPayload.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textToPayload.Location = new System.Drawing.Point(127, 491);
             this.textToPayload.Name = "textToPayload";
-            this.textToPayload.Size = new System.Drawing.Size(283, 28);
+            this.textToPayload.Size = new System.Drawing.Size(190, 21);
             this.textToPayload.TabIndex = 14;
             this.textToPayload.Text = "12345678";
             this.textToPayload.TextChanged += new System.EventHandler(this.TextToPayload_TextChanged);
             // 
             // textBoxTcpClientLogin
             // 
-            this.textBoxTcpClientLogin.Location = new System.Drawing.Point(120, 108);
-            this.textBoxTcpClientLogin.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxTcpClientLogin.Location = new System.Drawing.Point(79, 21);
             this.textBoxTcpClientLogin.Name = "textBoxTcpClientLogin";
-            this.textBoxTcpClientLogin.Size = new System.Drawing.Size(202, 28);
+            this.textBoxTcpClientLogin.Size = new System.Drawing.Size(131, 21);
             this.textBoxTcpClientLogin.TabIndex = 12;
             this.textBoxTcpClientLogin.Text = "login";
             this.textBoxTcpClientLogin.TextChanged += new System.EventHandler(this.TextBoxTcpClientLogin_TextChanged);
             // 
-            // textBoxTcpClientPort
-            // 
-            this.textBoxTcpClientPort.Location = new System.Drawing.Point(120, 67);
-            this.textBoxTcpClientPort.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.textBoxTcpClientPort.Name = "textBoxTcpClientPort";
-            this.textBoxTcpClientPort.Size = new System.Drawing.Size(202, 28);
-            this.textBoxTcpClientPort.TabIndex = 7;
-            this.textBoxTcpClientPort.Text = "5080";
-            this.textBoxTcpClientPort.TextChanged += new System.EventHandler(this.TextBoxTcpClientPort_TextChanged);
-            // 
             // textBoxMqttClientId
             // 
-            this.textBoxMqttClientId.Location = new System.Drawing.Point(121, 205);
-            this.textBoxMqttClientId.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxMqttClientId.Location = new System.Drawing.Point(81, 71);
             this.textBoxMqttClientId.Name = "textBoxMqttClientId";
-            this.textBoxMqttClientId.Size = new System.Drawing.Size(201, 28);
+            this.textBoxMqttClientId.Size = new System.Drawing.Size(131, 21);
             this.textBoxMqttClientId.TabIndex = 12;
             this.textBoxMqttClientId.Text = "clientid";
             this.textBoxMqttClientId.TextChanged += new System.EventHandler(this.TextBoxMqttClientId_TextChanged);
             // 
-            // textBoxMqttPort
+            // textBoxDgiotPort
             // 
-            this.textBoxMqttPort.Location = new System.Drawing.Point(121, 64);
-            this.textBoxMqttPort.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.textBoxMqttPort.Name = "textBoxMqttPort";
-            this.textBoxMqttPort.Size = new System.Drawing.Size(201, 28);
-            this.textBoxMqttPort.TabIndex = 7;
-            this.textBoxMqttPort.Text = "1883";
-            this.textBoxMqttPort.TextChanged += new System.EventHandler(this.TextBoxMqttPort_TextChanged);
+            this.textBoxDgiotPort.Location = new System.Drawing.Point(77, 46);
+            this.textBoxDgiotPort.Name = "textBoxDgiotPort";
+            this.textBoxDgiotPort.Size = new System.Drawing.Size(133, 21);
+            this.textBoxDgiotPort.TabIndex = 7;
+            this.textBoxDgiotPort.Text = "1883";
+            this.textBoxDgiotPort.TextChanged += new System.EventHandler(this.TextBoxDgiotPort_TextChanged);
             // 
             // textBoxUDPClientLogin
             // 
-            this.textBoxUDPClientLogin.Location = new System.Drawing.Point(120, 106);
-            this.textBoxUDPClientLogin.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxUDPClientLogin.Location = new System.Drawing.Point(74, 21);
             this.textBoxUDPClientLogin.Name = "textBoxUDPClientLogin";
-            this.textBoxUDPClientLogin.Size = new System.Drawing.Size(202, 28);
+            this.textBoxUDPClientLogin.Size = new System.Drawing.Size(136, 21);
             this.textBoxUDPClientLogin.TabIndex = 12;
             this.textBoxUDPClientLogin.Text = "login";
             this.textBoxUDPClientLogin.TextChanged += new System.EventHandler(this.TextBoxUDPClientLogin_TextChanged);
             // 
-            // textBoxUDPCLientPort
-            // 
-            this.textBoxUDPCLientPort.Location = new System.Drawing.Point(120, 65);
-            this.textBoxUDPCLientPort.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.textBoxUDPCLientPort.Name = "textBoxUDPCLientPort";
-            this.textBoxUDPCLientPort.Size = new System.Drawing.Size(202, 28);
-            this.textBoxUDPCLientPort.TabIndex = 7;
-            this.textBoxUDPCLientPort.Text = "6080";
-            this.textBoxUDPCLientPort.TextChanged += new System.EventHandler(this.TextBoxUDPCLientPort_TextChanged);
-            // 
             // sendBridge
             // 
-            this.sendBridge.Location = new System.Drawing.Point(585, 826);
-            this.sendBridge.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.sendBridge.Location = new System.Drawing.Point(378, 491);
             this.sendBridge.Name = "sendBridge";
-            this.sendBridge.Size = new System.Drawing.Size(71, 31);
+            this.sendBridge.Size = new System.Drawing.Size(47, 21);
             this.sendBridge.TabIndex = 17;
             this.sendBridge.Text = "Send";
             this.sendBridge.UseVisualStyleBackColor = true;
@@ -568,20 +460,11 @@ namespace Dgiot_dtu
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.labelTargetPort);
-            this.groupBox2.Controls.Add(this.textBoxTcpServerPort);
             this.groupBox2.Controls.Add(this.label16);
             this.groupBox2.Controls.Add(this.textBoxTcpClientLogin);
-            this.groupBox2.Controls.Add(this.textBoxTcpClientPort);
-            this.groupBox2.Controls.Add(this.label17);
-            this.groupBox2.Controls.Add(this.textBoxTcpClientServer);
-            this.groupBox2.Controls.Add(this.label18);
-            this.groupBox2.Controls.Add(this.checkBoxTcpBridge);
-            this.groupBox2.Location = new System.Drawing.Point(1529, 399);
-            this.groupBox2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.groupBox2.Location = new System.Drawing.Point(571, 206);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBox2.Size = new System.Drawing.Size(320, 191);
+            this.groupBox2.Size = new System.Drawing.Size(213, 53);
             this.groupBox2.TabIndex = 18;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "TCP Client Channel";
@@ -589,113 +472,50 @@ namespace Dgiot_dtu
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(32, 109);
-            this.label16.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label16.Location = new System.Drawing.Point(9, 21);
             this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(53, 18);
+            this.label16.Size = new System.Drawing.Size(35, 12);
             this.label16.TabIndex = 13;
             this.label16.Text = "login";
             // 
-            // label17
+            // checkBoxBridge
             // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(33, 71);
-            this.label17.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(44, 18);
-            this.label17.TabIndex = 8;
-            this.label17.Text = "Port";
-            // 
-            // textBoxTcpClientServer
-            // 
-            this.textBoxTcpClientServer.Location = new System.Drawing.Point(120, 30);
-            this.textBoxTcpClientServer.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.textBoxTcpClientServer.Name = "textBoxTcpClientServer";
-            this.textBoxTcpClientServer.Size = new System.Drawing.Size(202, 28);
-            this.textBoxTcpClientServer.TabIndex = 5;
-            this.textBoxTcpClientServer.Text = "prod.iotn2n.com";
-            this.textBoxTcpClientServer.TextChanged += new System.EventHandler(this.TextBoxTcpClientServer_TextChanged);
-            // 
-            // label18
-            // 
-            this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(32, 35);
-            this.label18.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(62, 18);
-            this.label18.TabIndex = 6;
-            this.label18.Text = "Server";
-            // 
-            // checkBoxTcpBridge
-            // 
-            this.checkBoxTcpBridge.AutoSize = true;
-            this.checkBoxTcpBridge.Location = new System.Drawing.Point(14, 149);
-            this.checkBoxTcpBridge.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.checkBoxTcpBridge.Name = "checkBoxTcpBridge";
-            this.checkBoxTcpBridge.Size = new System.Drawing.Size(22, 21);
-            this.checkBoxTcpBridge.TabIndex = 23;
-            this.checkBoxTcpBridge.UseVisualStyleBackColor = true;
-            this.checkBoxTcpBridge.CheckedChanged += new System.EventHandler(this.CheckBoxTcpBridge_CheckedChanged);
+            this.checkBoxBridge.AutoSize = true;
+            this.checkBoxBridge.Location = new System.Drawing.Point(10, 99);
+            this.checkBoxBridge.Name = "checkBoxBridge";
+            this.checkBoxBridge.Size = new System.Drawing.Size(90, 16);
+            this.checkBoxBridge.TabIndex = 23;
+            this.checkBoxBridge.Text = "Bridge Port";
+            this.checkBoxBridge.UseVisualStyleBackColor = true;
+            this.checkBoxBridge.CheckedChanged += new System.EventHandler(this.CheckBoxBridge_CheckedChanged);
             // 
             // groupBox3
             // 
-            this.groupBox3.Controls.Add(this.comboBoxDevAddr);
-            this.groupBox3.Controls.Add(this.label30);
             this.groupBox3.Controls.Add(this.label29);
             this.groupBox3.Controls.Add(this.comboBoxCmdProdxy);
-            this.groupBox3.Controls.Add(this.checkBoxMqttBridge);
-            this.groupBox3.Controls.Add(this.textBoxMqttServerPort);
-            this.groupBox3.Controls.Add(this.label27);
             this.groupBox3.Controls.Add(this.textBoxMqttPubTopic);
             this.groupBox3.Controls.Add(this.label12);
             this.groupBox3.Controls.Add(this.label20);
             this.groupBox3.Controls.Add(this.textBoxMqttClientId);
             this.groupBox3.Controls.Add(this.textBoxMqttSubTopic);
-            this.groupBox3.Controls.Add(this.textBoxMqttPort);
-            this.groupBox3.Controls.Add(this.label21);
-            this.groupBox3.Controls.Add(this.textBoxMqttSever);
             this.groupBox3.Controls.Add(this.label11);
-            this.groupBox3.Controls.Add(this.label22);
             this.groupBox3.Controls.Add(this.textBoxMqttUserName);
             this.groupBox3.Controls.Add(this.textBoxMqttPassword);
             this.groupBox3.Controls.Add(this.label9);
             this.groupBox3.Controls.Add(this.label10);
-            this.groupBox3.Location = new System.Drawing.Point(1523, 10);
-            this.groupBox3.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.groupBox3.Location = new System.Drawing.Point(571, 15);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBox3.Size = new System.Drawing.Size(325, 389);
+            this.groupBox3.Size = new System.Drawing.Size(217, 172);
             this.groupBox3.TabIndex = 19;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Mqtt Client Channel";
             // 
-            // comboBoxDevAddr
-            // 
-            this.comboBoxDevAddr.FormattingEnabled = true;
-            this.comboBoxDevAddr.Location = new System.Drawing.Point(121, 172);
-            this.comboBoxDevAddr.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.comboBoxDevAddr.Name = "comboBoxDevAddr";
-            this.comboBoxDevAddr.Size = new System.Drawing.Size(201, 26);
-            this.comboBoxDevAddr.TabIndex = 15;
-            this.comboBoxDevAddr.SelectedIndexChanged += new System.EventHandler(this.ComboBoxDevAddr_SelectedIndexChanged);
-            // 
-            // label30
-            // 
-            this.label30.AutoSize = true;
-            this.label30.Location = new System.Drawing.Point(10, 175);
-            this.label30.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label30.Name = "label30";
-            this.label30.Size = new System.Drawing.Size(71, 18);
-            this.label30.TabIndex = 39;
-            this.label30.Text = "DevAddr";
-            // 
             // label29
             // 
             this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(10, 314);
-            this.label29.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label29.Location = new System.Drawing.Point(8, 142);
             this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(89, 18);
+            this.label29.Size = new System.Drawing.Size(59, 12);
             this.label29.TabIndex = 37;
             this.label29.Text = "cmd proxy";
             // 
@@ -704,81 +524,63 @@ namespace Dgiot_dtu
             this.comboBoxCmdProdxy.FormattingEnabled = true;
             this.comboBoxCmdProdxy.Items.AddRange(new object[] {
             "ffmpeg"});
-            this.comboBoxCmdProdxy.Location = new System.Drawing.Point(120, 311);
-            this.comboBoxCmdProdxy.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.comboBoxCmdProdxy.Location = new System.Drawing.Point(81, 146);
             this.comboBoxCmdProdxy.Name = "comboBoxCmdProdxy";
-            this.comboBoxCmdProdxy.Size = new System.Drawing.Size(202, 26);
+            this.comboBoxCmdProdxy.Size = new System.Drawing.Size(131, 20);
             this.comboBoxCmdProdxy.TabIndex = 36;
             this.comboBoxCmdProdxy.SelectedIndexChanged += new System.EventHandler(this.ComboBoxCmdProdxy_SelectedIndexChanged);
-            // 
-            // checkBoxMqttBridge
-            // 
-            this.checkBoxMqttBridge.AutoSize = true;
-            this.checkBoxMqttBridge.Location = new System.Drawing.Point(14, 348);
-            this.checkBoxMqttBridge.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.checkBoxMqttBridge.Name = "checkBoxMqttBridge";
-            this.checkBoxMqttBridge.Size = new System.Drawing.Size(22, 21);
-            this.checkBoxMqttBridge.TabIndex = 36;
-            this.checkBoxMqttBridge.UseVisualStyleBackColor = true;
-            this.checkBoxMqttBridge.CheckedChanged += new System.EventHandler(this.CheckBoxMqttBridge_CheckedChanged);
-            // 
-            // textBoxMqttServerPort
-            // 
-            this.textBoxMqttServerPort.Location = new System.Drawing.Point(120, 343);
-            this.textBoxMqttServerPort.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.textBoxMqttServerPort.Name = "textBoxMqttServerPort";
-            this.textBoxMqttServerPort.Size = new System.Drawing.Size(202, 28);
-            this.textBoxMqttServerPort.TabIndex = 24;
-            this.textBoxMqttServerPort.Text = "1883";
-            this.textBoxMqttServerPort.TextChanged += new System.EventHandler(this.TextBoxMqttServerPort_TextChanged);
-            // 
-            // label27
-            // 
-            this.label27.AutoSize = true;
-            this.label27.Location = new System.Drawing.Point(42, 347);
-            this.label27.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label27.Name = "label27";
-            this.label27.Size = new System.Drawing.Size(62, 18);
-            this.label27.TabIndex = 23;
-            this.label27.Text = "bridge";
             // 
             // label20
             // 
             this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(9, 209);
-            this.label20.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label20.Location = new System.Drawing.Point(9, 72);
             this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(80, 18);
+            this.label20.Size = new System.Drawing.Size(53, 12);
             this.label20.TabIndex = 13;
             this.label20.Text = "Clientid";
+            // 
+            // comboBoxDtuAddr
+            // 
+            this.comboBoxDtuAddr.FormattingEnabled = true;
+            this.comboBoxDtuAddr.Location = new System.Drawing.Point(77, 71);
+            this.comboBoxDtuAddr.Name = "comboBoxDtuAddr";
+            this.comboBoxDtuAddr.Size = new System.Drawing.Size(132, 20);
+            this.comboBoxDtuAddr.TabIndex = 15;
+            this.comboBoxDtuAddr.SelectedIndexChanged += new System.EventHandler(this.ComboBoxDtuAddr_SelectedIndexChanged);
+            // 
+            // label30
+            // 
+            this.label30.AutoSize = true;
+            this.label30.Location = new System.Drawing.Point(9, 69);
+            this.label30.Name = "label30";
+            this.label30.Size = new System.Drawing.Size(47, 12);
+            this.label30.TabIndex = 39;
+            this.label30.Text = "DtuAddr";
             // 
             // label21
             // 
             this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(10, 67);
-            this.label21.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label21.Location = new System.Drawing.Point(9, 48);
             this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(44, 18);
+            this.label21.Size = new System.Drawing.Size(29, 12);
             this.label21.TabIndex = 8;
             this.label21.Text = "Port";
             // 
-            // textBoxMqttSever
+            // textBoxDgiotSever
             // 
-            this.textBoxMqttSever.Location = new System.Drawing.Point(121, 29);
-            this.textBoxMqttSever.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.textBoxMqttSever.Name = "textBoxMqttSever";
-            this.textBoxMqttSever.Size = new System.Drawing.Size(201, 28);
-            this.textBoxMqttSever.TabIndex = 5;
-            this.textBoxMqttSever.Text = "prod.iotn2n.com";
-            this.textBoxMqttSever.TextChanged += new System.EventHandler(this.TextBoxMqttSever_TextChanged);
+            this.textBoxDgiotSever.Location = new System.Drawing.Point(77, 19);
+            this.textBoxDgiotSever.Name = "textBoxDgiotSever";
+            this.textBoxDgiotSever.Size = new System.Drawing.Size(133, 21);
+            this.textBoxDgiotSever.TabIndex = 5;
+            this.textBoxDgiotSever.Text = "prod.iotn2n.com";
+            this.textBoxDgiotSever.TextChanged += new System.EventHandler(this.TextBoxDgiotSever_TextChanged);
             // 
             // label22
             // 
             this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(10, 34);
-            this.label22.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label22.Location = new System.Drawing.Point(9, 23);
             this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(62, 18);
+            this.label22.Size = new System.Drawing.Size(41, 12);
             this.label22.TabIndex = 6;
             this.label22.Text = "Server";
             // 
@@ -788,13 +590,11 @@ namespace Dgiot_dtu
             this.groupBox4.Controls.Add(this.labelOPCDAMonitor);
             this.groupBox4.Controls.Add(this.textBoxOPCDAInterval);
             this.groupBox4.Controls.Add(this.checkBoxOPCDA);
-            this.groupBox4.Controls.Add(this.textBoxOPCDATopic);
-            this.groupBox4.Controls.Add(this.labelopcda);
-            this.groupBox4.Location = new System.Drawing.Point(1077, 282);
-            this.groupBox4.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.groupBox4.Controls.Add(this.textBoxOPCDAHost);
+            this.groupBox4.Controls.Add(this.labelOPCDAHost);
+            this.groupBox4.Location = new System.Drawing.Point(294, 166);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBox4.Size = new System.Drawing.Size(317, 112);
+            this.groupBox4.Size = new System.Drawing.Size(211, 75);
             this.groupBox4.TabIndex = 18;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "OPC_DA Capture";
@@ -802,30 +602,27 @@ namespace Dgiot_dtu
             // labelSecond
             // 
             this.labelSecond.AutoSize = true;
-            this.labelSecond.Location = new System.Drawing.Point(140, 75);
-            this.labelSecond.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.labelSecond.Location = new System.Drawing.Point(93, 50);
             this.labelSecond.Name = "labelSecond";
-            this.labelSecond.Size = new System.Drawing.Size(62, 18);
+            this.labelSecond.Size = new System.Drawing.Size(41, 12);
             this.labelSecond.TabIndex = 50;
             this.labelSecond.Text = "Second";
             // 
             // labelOPCDAMonitor
             // 
             this.labelOPCDAMonitor.AutoSize = true;
-            this.labelOPCDAMonitor.Location = new System.Drawing.Point(8, 74);
-            this.labelOPCDAMonitor.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.labelOPCDAMonitor.Location = new System.Drawing.Point(5, 49);
             this.labelOPCDAMonitor.Name = "labelOPCDAMonitor";
-            this.labelOPCDAMonitor.Size = new System.Drawing.Size(80, 18);
+            this.labelOPCDAMonitor.Size = new System.Drawing.Size(53, 12);
             this.labelOPCDAMonitor.TabIndex = 49;
             this.labelOPCDAMonitor.Text = "Interval";
             // 
             // textBoxOPCDAInterval
             // 
-            this.textBoxOPCDAInterval.Location = new System.Drawing.Point(90, 69);
-            this.textBoxOPCDAInterval.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxOPCDAInterval.Location = new System.Drawing.Point(60, 46);
             this.textBoxOPCDAInterval.Name = "textBoxOPCDAInterval";
             this.textBoxOPCDAInterval.ReadOnly = true;
-            this.textBoxOPCDAInterval.Size = new System.Drawing.Size(48, 28);
+            this.textBoxOPCDAInterval.Size = new System.Drawing.Size(33, 21);
             this.textBoxOPCDAInterval.TabIndex = 48;
             this.textBoxOPCDAInterval.Text = "3";
             this.textBoxOPCDAInterval.TextChanged += new System.EventHandler(this.TextBoxOPCDAInterval_TextChanged);
@@ -833,62 +630,57 @@ namespace Dgiot_dtu
             // checkBoxOPCDA
             // 
             this.checkBoxOPCDA.AutoSize = true;
-            this.checkBoxOPCDA.Location = new System.Drawing.Point(206, 75);
+            this.checkBoxOPCDA.Location = new System.Drawing.Point(137, 50);
+            this.checkBoxOPCDA.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxOPCDA.Name = "checkBoxOPCDA";
-            this.checkBoxOPCDA.Size = new System.Drawing.Size(97, 22);
+            this.checkBoxOPCDA.Size = new System.Drawing.Size(66, 16);
             this.checkBoxOPCDA.TabIndex = 47;
             this.checkBoxOPCDA.Text = "Monitor";
             this.checkBoxOPCDA.UseVisualStyleBackColor = true;
             this.checkBoxOPCDA.CheckedChanged += new System.EventHandler(this.CheckBoxOPCDA_CheckedChanged);
             // 
-            // textBoxOPCDATopic
+            // textBoxOPCDAHost
             // 
-            this.textBoxOPCDATopic.Location = new System.Drawing.Point(54, 28);
-            this.textBoxOPCDATopic.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.textBoxOPCDATopic.Name = "textBoxOPCDATopic";
-            this.textBoxOPCDATopic.ReadOnly = true;
-            this.textBoxOPCDATopic.Size = new System.Drawing.Size(238, 28);
-            this.textBoxOPCDATopic.TabIndex = 46;
-            this.textBoxOPCDATopic.Text = "/{productid}/{devaddr}/scan/opcda";
-            this.textBoxOPCDATopic.TextChanged += new System.EventHandler(this.TextBoxOPCDATopic_TextChanged);
+            this.textBoxOPCDAHost.Location = new System.Drawing.Point(36, 19);
+            this.textBoxOPCDAHost.Name = "textBoxOPCDAHost";
+            this.textBoxOPCDAHost.Size = new System.Drawing.Size(160, 21);
+            this.textBoxOPCDAHost.TabIndex = 46;
+            this.textBoxOPCDAHost.Text = "127.0.0.1";
+            this.textBoxOPCDAHost.TextChanged += new System.EventHandler(this.TextBoxOPCDAHost_TextChanged);
             // 
-            // labelopcda
+            // labelOPCDAHost
             // 
-            this.labelopcda.AutoSize = true;
-            this.labelopcda.Location = new System.Drawing.Point(11, 28);
-            this.labelopcda.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.labelopcda.Name = "labelopcda";
-            this.labelopcda.Size = new System.Drawing.Size(26, 18);
-            this.labelopcda.TabIndex = 7;
-            this.labelopcda.Text = "To";
+            this.labelOPCDAHost.AutoSize = true;
+            this.labelOPCDAHost.Location = new System.Drawing.Point(6, 22);
+            this.labelOPCDAHost.Name = "labelOPCDAHost";
+            this.labelOPCDAHost.Size = new System.Drawing.Size(29, 12);
+            this.labelOPCDAHost.TabIndex = 7;
+            this.labelOPCDAHost.Text = "Host";
             // 
             // textBoxOpcIp
             // 
             this.textBoxOpcIp.Location = new System.Drawing.Point(6, 0);
             this.textBoxOpcIp.Name = "textBoxOpcIp";
-            this.textBoxOpcIp.Size = new System.Drawing.Size(100, 28);
+            this.textBoxOpcIp.Size = new System.Drawing.Size(100, 21);
             this.textBoxOpcIp.TabIndex = 0;
             // 
             // groupBox5
             // 
             this.groupBox5.Controls.Add(this.textBoxOPCUATopic);
             this.groupBox5.Controls.Add(this.labelopcua);
-            this.groupBox5.Location = new System.Drawing.Point(1077, 402);
-            this.groupBox5.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.groupBox5.Location = new System.Drawing.Point(293, 249);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBox5.Size = new System.Drawing.Size(317, 67);
+            this.groupBox5.Size = new System.Drawing.Size(211, 45);
             this.groupBox5.TabIndex = 19;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "OPC_UA Capture";
             // 
             // textBoxOPCUATopic
             // 
-            this.textBoxOPCUATopic.Location = new System.Drawing.Point(52, 26);
-            this.textBoxOPCUATopic.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxOPCUATopic.Location = new System.Drawing.Point(35, 17);
             this.textBoxOPCUATopic.Name = "textBoxOPCUATopic";
             this.textBoxOPCUATopic.ReadOnly = true;
-            this.textBoxOPCUATopic.Size = new System.Drawing.Size(250, 28);
+            this.textBoxOPCUATopic.Size = new System.Drawing.Size(168, 21);
             this.textBoxOPCUATopic.TabIndex = 5;
             this.textBoxOPCUATopic.Text = "/{productid}/{devaddr}/scan/opdua";
             this.textBoxOPCUATopic.TextChanged += new System.EventHandler(this.TextBoxOPCUATopic_TextChanged);
@@ -896,10 +688,9 @@ namespace Dgiot_dtu
             // labelopcua
             // 
             this.labelopcua.AutoSize = true;
-            this.labelopcua.Location = new System.Drawing.Point(9, 29);
-            this.labelopcua.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.labelopcua.Location = new System.Drawing.Point(6, 19);
             this.labelopcua.Name = "labelopcua";
-            this.labelopcua.Size = new System.Drawing.Size(26, 18);
+            this.labelopcua.Size = new System.Drawing.Size(17, 12);
             this.labelopcua.TabIndex = 6;
             this.labelopcua.Text = "To";
             // 
@@ -907,22 +698,19 @@ namespace Dgiot_dtu
             // 
             this.groupBox6.Controls.Add(this.textBoxBACnetTopic);
             this.groupBox6.Controls.Add(this.label23);
-            this.groupBox6.Location = new System.Drawing.Point(1077, 483);
-            this.groupBox6.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.groupBox6.Location = new System.Drawing.Point(293, 309);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBox6.Size = new System.Drawing.Size(317, 63);
+            this.groupBox6.Size = new System.Drawing.Size(211, 42);
             this.groupBox6.TabIndex = 20;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "BACnet Capture";
             // 
             // textBoxBACnetTopic
             // 
-            this.textBoxBACnetTopic.Location = new System.Drawing.Point(47, 26);
-            this.textBoxBACnetTopic.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxBACnetTopic.Location = new System.Drawing.Point(31, 17);
             this.textBoxBACnetTopic.Name = "textBoxBACnetTopic";
             this.textBoxBACnetTopic.ReadOnly = true;
-            this.textBoxBACnetTopic.Size = new System.Drawing.Size(252, 28);
+            this.textBoxBACnetTopic.Size = new System.Drawing.Size(169, 21);
             this.textBoxBACnetTopic.TabIndex = 5;
             this.textBoxBACnetTopic.Text = "/{productid}/{devaddr}/scan/bacnet";
             this.textBoxBACnetTopic.TextChanged += new System.EventHandler(this.TextBoxBACnetTopic_TextChanged);
@@ -930,10 +718,9 @@ namespace Dgiot_dtu
             // label23
             // 
             this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(9, 32);
-            this.label23.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label23.Location = new System.Drawing.Point(7, 21);
             this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(26, 18);
+            this.label23.Size = new System.Drawing.Size(17, 12);
             this.label23.TabIndex = 6;
             this.label23.Text = "To";
             // 
@@ -941,22 +728,19 @@ namespace Dgiot_dtu
             // 
             this.groupBox7.Controls.Add(this.textBoxControlTopic);
             this.groupBox7.Controls.Add(this.label8);
-            this.groupBox7.Location = new System.Drawing.Point(1077, 569);
-            this.groupBox7.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.groupBox7.Location = new System.Drawing.Point(293, 369);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBox7.Size = new System.Drawing.Size(317, 71);
+            this.groupBox7.Size = new System.Drawing.Size(211, 47);
             this.groupBox7.TabIndex = 21;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Control Capture";
             // 
             // textBoxControlTopic
             // 
-            this.textBoxControlTopic.Location = new System.Drawing.Point(49, 26);
-            this.textBoxControlTopic.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxControlTopic.Location = new System.Drawing.Point(33, 17);
             this.textBoxControlTopic.Name = "textBoxControlTopic";
             this.textBoxControlTopic.ReadOnly = true;
-            this.textBoxControlTopic.Size = new System.Drawing.Size(253, 28);
+            this.textBoxControlTopic.Size = new System.Drawing.Size(170, 21);
             this.textBoxControlTopic.TabIndex = 5;
             this.textBoxControlTopic.Text = "/{productid}/{devaddr}/scan/control";
             this.textBoxControlTopic.TextChanged += new System.EventHandler(this.TextBoxControlTopic_TextChanged);
@@ -964,10 +748,9 @@ namespace Dgiot_dtu
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(9, 31);
-            this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label8.Location = new System.Drawing.Point(6, 21);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(26, 18);
+            this.label8.Size = new System.Drawing.Size(17, 12);
             this.label8.TabIndex = 6;
             this.label8.Text = "To";
             // 
@@ -990,20 +773,18 @@ namespace Dgiot_dtu
             "Control,",
             "Access,",
             "SqlServer"});
-            this.comboBoxBridge.Location = new System.Drawing.Point(63, 826);
-            this.comboBoxBridge.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.comboBoxBridge.Location = new System.Drawing.Point(42, 491);
             this.comboBoxBridge.Name = "comboBoxBridge";
-            this.comboBoxBridge.Size = new System.Drawing.Size(140, 26);
+            this.comboBoxBridge.Size = new System.Drawing.Size(76, 20);
             this.comboBoxBridge.TabIndex = 13;
             this.comboBoxBridge.SelectedIndexChanged += new System.EventHandler(this.ComboBoxBridge_SelectedIndexChanged);
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(20, 829);
-            this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label7.Location = new System.Drawing.Point(9, 495);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(26, 18);
+            this.label7.Size = new System.Drawing.Size(17, 12);
             this.label7.TabIndex = 18;
             this.label7.Text = "To";
             // 
@@ -1011,22 +792,19 @@ namespace Dgiot_dtu
             // 
             this.groupBox8.Controls.Add(this.textBoxAccessTopic);
             this.groupBox8.Controls.Add(this.label6);
-            this.groupBox8.Location = new System.Drawing.Point(1077, 660);
-            this.groupBox8.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.groupBox8.Location = new System.Drawing.Point(293, 437);
             this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBox8.Size = new System.Drawing.Size(317, 64);
+            this.groupBox8.Size = new System.Drawing.Size(211, 43);
             this.groupBox8.TabIndex = 22;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Access Capture";
             // 
             // textBoxAccessTopic
             // 
-            this.textBoxAccessTopic.Location = new System.Drawing.Point(49, 26);
-            this.textBoxAccessTopic.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxAccessTopic.Location = new System.Drawing.Point(33, 17);
             this.textBoxAccessTopic.Name = "textBoxAccessTopic";
             this.textBoxAccessTopic.ReadOnly = true;
-            this.textBoxAccessTopic.Size = new System.Drawing.Size(253, 28);
+            this.textBoxAccessTopic.Size = new System.Drawing.Size(170, 21);
             this.textBoxAccessTopic.TabIndex = 5;
             this.textBoxAccessTopic.Text = "/{productid}/{devaddr}/scan/mdb";
             this.textBoxAccessTopic.TextChanged += new System.EventHandler(this.TextBoxAccessTopic_TextChanged);
@@ -1034,146 +812,40 @@ namespace Dgiot_dtu
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(9, 31);
-            this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label6.Location = new System.Drawing.Point(6, 21);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(26, 18);
+            this.label6.Size = new System.Drawing.Size(17, 12);
             this.label6.TabIndex = 6;
             this.label6.Text = "To";
             // 
-            // groupBox9
-            // 
-            this.groupBox9.Controls.Add(this.textBoxSqlServerTopic);
-            this.groupBox9.Controls.Add(this.label14);
-            this.groupBox9.Location = new System.Drawing.Point(1077, 740);
-            this.groupBox9.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBox9.Name = "groupBox9";
-            this.groupBox9.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBox9.Size = new System.Drawing.Size(317, 63);
-            this.groupBox9.TabIndex = 23;
-            this.groupBox9.TabStop = false;
-            this.groupBox9.Text = "Sql Server Capture";
-            // 
-            // textBoxSqlServerTopic
-            // 
-            this.textBoxSqlServerTopic.Location = new System.Drawing.Point(51, 25);
-            this.textBoxSqlServerTopic.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.textBoxSqlServerTopic.Name = "textBoxSqlServerTopic";
-            this.textBoxSqlServerTopic.ReadOnly = true;
-            this.textBoxSqlServerTopic.Size = new System.Drawing.Size(252, 28);
-            this.textBoxSqlServerTopic.TabIndex = 5;
-            this.textBoxSqlServerTopic.Text = "/{productid}/{devaddr}/scan/sqlserver";
-            this.textBoxSqlServerTopic.TextChanged += new System.EventHandler(this.TextBoxSqlServerTopic_TextChanged);
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(9, 29);
-            this.label14.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(26, 18);
-            this.label14.TabIndex = 6;
-            this.label14.Text = "To";
-            // 
             // groupBox10
             // 
-            this.groupBox10.Controls.Add(this.checkBoxUdpBridge);
-            this.groupBox10.Controls.Add(this.label28);
-            this.groupBox10.Controls.Add(this.textBoxUdpServerPort);
             this.groupBox10.Controls.Add(this.label15);
             this.groupBox10.Controls.Add(this.textBoxUDPClientLogin);
-            this.groupBox10.Controls.Add(this.textBoxUDPCLientPort);
-            this.groupBox10.Controls.Add(this.label24);
-            this.groupBox10.Controls.Add(this.textBoxUDPClientServer);
-            this.groupBox10.Controls.Add(this.label26);
-            this.groupBox10.Location = new System.Drawing.Point(1527, 603);
-            this.groupBox10.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.groupBox10.Location = new System.Drawing.Point(572, 274);
             this.groupBox10.Name = "groupBox10";
-            this.groupBox10.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBox10.Size = new System.Drawing.Size(325, 193);
+            this.groupBox10.Size = new System.Drawing.Size(215, 46);
             this.groupBox10.TabIndex = 19;
             this.groupBox10.TabStop = false;
             this.groupBox10.Text = "UDP Client Channel";
             // 
-            // checkBoxUdpBridge
-            // 
-            this.checkBoxUdpBridge.AutoSize = true;
-            this.checkBoxUdpBridge.Location = new System.Drawing.Point(14, 151);
-            this.checkBoxUdpBridge.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.checkBoxUdpBridge.Name = "checkBoxUdpBridge";
-            this.checkBoxUdpBridge.Size = new System.Drawing.Size(22, 21);
-            this.checkBoxUdpBridge.TabIndex = 24;
-            this.checkBoxUdpBridge.UseVisualStyleBackColor = true;
-            this.checkBoxUdpBridge.CheckedChanged += new System.EventHandler(this.CheckBoxUdpBridge_CheckedChanged);
-            // 
-            // label28
-            // 
-            this.label28.AutoSize = true;
-            this.label28.Location = new System.Drawing.Point(38, 151);
-            this.label28.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label28.Name = "label28";
-            this.label28.Size = new System.Drawing.Size(62, 18);
-            this.label28.TabIndex = 24;
-            this.label28.Text = "bridge";
-            // 
-            // textBoxUdpServerPort
-            // 
-            this.textBoxUdpServerPort.Location = new System.Drawing.Point(120, 149);
-            this.textBoxUdpServerPort.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.textBoxUdpServerPort.Name = "textBoxUdpServerPort";
-            this.textBoxUdpServerPort.Size = new System.Drawing.Size(202, 28);
-            this.textBoxUdpServerPort.TabIndex = 24;
-            this.textBoxUdpServerPort.Text = "6080";
-            this.textBoxUdpServerPort.TextChanged += new System.EventHandler(this.TextBoxUdpServerPort_TextChanged);
-            // 
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(33, 108);
-            this.label15.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label15.Location = new System.Drawing.Point(5, 25);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(53, 18);
+            this.label15.Size = new System.Drawing.Size(35, 12);
             this.label15.TabIndex = 13;
             this.label15.Text = "login";
-            // 
-            // label24
-            // 
-            this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(34, 68);
-            this.label24.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(44, 18);
-            this.label24.TabIndex = 8;
-            this.label24.Text = "Port";
-            // 
-            // textBoxUDPClientServer
-            // 
-            this.textBoxUDPClientServer.Location = new System.Drawing.Point(120, 23);
-            this.textBoxUDPClientServer.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.textBoxUDPClientServer.Name = "textBoxUDPClientServer";
-            this.textBoxUDPClientServer.Size = new System.Drawing.Size(202, 28);
-            this.textBoxUDPClientServer.TabIndex = 5;
-            this.textBoxUDPClientServer.Text = "prod.iotn2n.com";
-            this.textBoxUDPClientServer.TextChanged += new System.EventHandler(this.TextBoxUDPClientServer_TextChanged);
-            // 
-            // label26
-            // 
-            this.label26.AutoSize = true;
-            this.label26.Location = new System.Drawing.Point(32, 31);
-            this.label26.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label26.Name = "label26";
-            this.label26.Size = new System.Drawing.Size(62, 18);
-            this.label26.TabIndex = 6;
-            this.label26.Text = "Server";
             // 
             // radioButtonMqttClient
             // 
             this.radioButtonMqttClient.AutoSize = true;
             this.radioButtonMqttClient.Checked = true;
-            this.radioButtonMqttClient.Location = new System.Drawing.Point(1505, 110);
-            this.radioButtonMqttClient.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.radioButtonMqttClient.Location = new System.Drawing.Point(559, 78);
+            this.radioButtonMqttClient.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
             this.radioButtonMqttClient.Name = "radioButtonMqttClient";
-            this.radioButtonMqttClient.Size = new System.Drawing.Size(21, 20);
+            this.radioButtonMqttClient.Size = new System.Drawing.Size(14, 13);
             this.radioButtonMqttClient.TabIndex = 30;
             this.radioButtonMqttClient.TabStop = true;
             this.radioButtonMqttClient.UseVisualStyleBackColor = true;
@@ -1182,10 +854,10 @@ namespace Dgiot_dtu
             // radioButtonTcpClient
             // 
             this.radioButtonTcpClient.AutoSize = true;
-            this.radioButtonTcpClient.Location = new System.Drawing.Point(1501, 409);
-            this.radioButtonTcpClient.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.radioButtonTcpClient.Location = new System.Drawing.Point(552, 212);
+            this.radioButtonTcpClient.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
             this.radioButtonTcpClient.Name = "radioButtonTcpClient";
-            this.radioButtonTcpClient.Size = new System.Drawing.Size(21, 20);
+            this.radioButtonTcpClient.Size = new System.Drawing.Size(14, 13);
             this.radioButtonTcpClient.TabIndex = 31;
             this.radioButtonTcpClient.UseVisualStyleBackColor = true;
             this.radioButtonTcpClient.CheckedChanged += new System.EventHandler(this.RadioButtonTcpClient_CheckedChanged);
@@ -1193,33 +865,31 @@ namespace Dgiot_dtu
             // radioButtonUDPClient
             // 
             this.radioButtonUDPClient.AutoSize = true;
-            this.radioButtonUDPClient.Location = new System.Drawing.Point(1501, 597);
-            this.radioButtonUDPClient.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.radioButtonUDPClient.Location = new System.Drawing.Point(553, 291);
+            this.radioButtonUDPClient.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
             this.radioButtonUDPClient.Name = "radioButtonUDPClient";
-            this.radioButtonUDPClient.Size = new System.Drawing.Size(21, 20);
+            this.radioButtonUDPClient.Size = new System.Drawing.Size(14, 13);
             this.radioButtonUDPClient.TabIndex = 32;
             this.radioButtonUDPClient.UseVisualStyleBackColor = true;
+            this.radioButtonUDPClient.CheckedChanged += new System.EventHandler(this.RadioButtonUDPClient_CheckedChanged);
             // 
             // groupBox12
             // 
             this.groupBox12.Controls.Add(this.textBoxPLCTopic);
             this.groupBox12.Controls.Add(this.label2);
-            this.groupBox12.Location = new System.Drawing.Point(1077, 221);
-            this.groupBox12.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.groupBox12.Location = new System.Drawing.Point(295, 114);
             this.groupBox12.Name = "groupBox12";
-            this.groupBox12.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBox12.Size = new System.Drawing.Size(317, 66);
+            this.groupBox12.Size = new System.Drawing.Size(211, 44);
             this.groupBox12.TabIndex = 19;
             this.groupBox12.TabStop = false;
             this.groupBox12.Text = "PLC Capture";
             // 
             // textBoxPLCTopic
             // 
-            this.textBoxPLCTopic.Location = new System.Drawing.Point(59, 23);
-            this.textBoxPLCTopic.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxPLCTopic.Location = new System.Drawing.Point(39, 15);
             this.textBoxPLCTopic.Name = "textBoxPLCTopic";
             this.textBoxPLCTopic.ReadOnly = true;
-            this.textBoxPLCTopic.Size = new System.Drawing.Size(246, 28);
+            this.textBoxPLCTopic.Size = new System.Drawing.Size(165, 21);
             this.textBoxPLCTopic.TabIndex = 5;
             this.textBoxPLCTopic.Text = "/{productid}/{devaddr}/scan/plc";
             this.textBoxPLCTopic.TextChanged += new System.EventHandler(this.TextBoxPLCTopic_TextChanged);
@@ -1227,20 +897,19 @@ namespace Dgiot_dtu
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(9, 29);
-            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label2.Location = new System.Drawing.Point(4, 19);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(26, 18);
+            this.label2.Size = new System.Drawing.Size(17, 12);
             this.label2.TabIndex = 6;
             this.label2.Text = "To";
             // 
             // pictureBox1
             // 
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(1401, 30);
-            this.pictureBox1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.pictureBox1.Location = new System.Drawing.Point(511, -41);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(125, 762);
+            this.pictureBox1.Size = new System.Drawing.Size(53, 510);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 35;
             this.pictureBox1.TabStop = false;
@@ -1248,20 +917,18 @@ namespace Dgiot_dtu
             // comboBoxLogLevel
             // 
             this.comboBoxLogLevel.FormattingEnabled = true;
-            this.comboBoxLogLevel.Location = new System.Drawing.Point(876, 828);
-            this.comboBoxLogLevel.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.comboBoxLogLevel.Location = new System.Drawing.Point(559, 491);
             this.comboBoxLogLevel.Name = "comboBoxLogLevel";
-            this.comboBoxLogLevel.Size = new System.Drawing.Size(162, 26);
+            this.comboBoxLogLevel.Size = new System.Drawing.Size(56, 20);
             this.comboBoxLogLevel.TabIndex = 36;
             this.comboBoxLogLevel.SelectedIndexChanged += new System.EventHandler(this.ComboBoxLogLevel_SelectedIndexChanged);
             // 
             // label32
             // 
             this.label32.AutoSize = true;
-            this.label32.Location = new System.Drawing.Point(760, 832);
-            this.label32.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label32.Location = new System.Drawing.Point(492, 495);
             this.label32.Name = "label32";
-            this.label32.Size = new System.Drawing.Size(89, 18);
+            this.label32.Size = new System.Drawing.Size(59, 12);
             this.label32.TabIndex = 37;
             this.label32.Text = "Log Level";
             // 
@@ -1269,39 +936,30 @@ namespace Dgiot_dtu
             // 
             this.comboBoxLan.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxLan.FormattingEnabled = true;
-            this.comboBoxLan.Location = new System.Drawing.Point(1144, 826);
-            this.comboBoxLan.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.comboBoxLan.Location = new System.Drawing.Point(695, 492);
             this.comboBoxLan.Name = "comboBoxLan";
-            this.comboBoxLan.Size = new System.Drawing.Size(148, 26);
+            this.comboBoxLan.Size = new System.Drawing.Size(88, 20);
             this.comboBoxLan.TabIndex = 38;
             this.comboBoxLan.SelectedIndexChanged += new System.EventHandler(this.ComboBoxLan_SelectedIndexChanged);
             // 
             // label33
             // 
             this.label33.AutoSize = true;
-            this.label33.Location = new System.Drawing.Point(1056, 830);
-            this.label33.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label33.Location = new System.Drawing.Point(629, 495);
             this.label33.Name = "label33";
-            this.label33.Size = new System.Drawing.Size(80, 18);
+            this.label33.Size = new System.Drawing.Size(53, 12);
             this.label33.TabIndex = 39;
             this.label33.Text = "Language";
-            // 
-            // label_devicelog
-            // 
-            this.label_devicelog.Location = new System.Drawing.Point(20, 6);
-            this.label_devicelog.Name = "label_devicelog";
-            this.label_devicelog.Size = new System.Drawing.Size(100, 23);
-            this.label_devicelog.TabIndex = 0;
-            this.label_devicelog.Text = "DeviceLog";
             // 
             // treeView
             // 
             this.treeView.CheckBoxes = true;
             this.treeView.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.treeView.LabelEdit = true;
-            this.treeView.Location = new System.Drawing.Point(657, 34);
+            this.treeView.Location = new System.Drawing.Point(3, 20);
+            this.treeView.Margin = new System.Windows.Forms.Padding(2);
             this.treeView.Name = "treeView";
-            this.treeView.Size = new System.Drawing.Size(413, 780);
+            this.treeView.Size = new System.Drawing.Size(287, 214);
             this.treeView.TabIndex = 0;
             this.treeView.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.AfterLabelEdit);
             this.treeView.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.TreeView_AfterCheck);
@@ -1310,9 +968,10 @@ namespace Dgiot_dtu
             // 
             // label_devcietree
             // 
-            this.label_devcietree.Location = new System.Drawing.Point(661, 9);
+            this.label_devcietree.Location = new System.Drawing.Point(7, 3);
+            this.label_devcietree.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label_devcietree.Name = "label_devcietree";
-            this.label_devcietree.Size = new System.Drawing.Size(100, 23);
+            this.label_devcietree.Size = new System.Drawing.Size(67, 15);
             this.label_devcietree.TabIndex = 41;
             this.label_devcietree.Text = "DeviceTree";
             // 
@@ -1321,20 +980,42 @@ namespace Dgiot_dtu
             this.openFileDialog.FileName = "openFileDialog";
             this.openFileDialog.Filter = "(*.txt)|*.txt";
             // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.comboBoxDtuAddr);
+            this.groupBox1.Controls.Add(this.label22);
+            this.groupBox1.Controls.Add(this.label30);
+            this.groupBox1.Controls.Add(this.textBoxBridgePort);
+            this.groupBox1.Controls.Add(this.textBoxDgiotSever);
+            this.groupBox1.Controls.Add(this.label21);
+            this.groupBox1.Controls.Add(this.textBoxDgiotPort);
+            this.groupBox1.Controls.Add(this.checkBoxBridge);
+            this.groupBox1.Controls.Add(this.buttonStartStop);
+            this.groupBox1.Controls.Add(this.checkBoxReconnect);
+            this.groupBox1.Location = new System.Drawing.Point(569, 328);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(219, 157);
+            this.groupBox1.TabIndex = 19;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Common Config";
+            // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(143)))), ((int)(((byte)(178)))));
-            this.ClientSize = new System.Drawing.Size(1873, 879);
-            this.Controls.Add(this.groupBox9);
+            this.ClientSize = new System.Drawing.Size(803, 521);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.groupBox8);
+            this.Controls.Add(this.buttonClear);
             this.Controls.Add(this.groupBox7);
             this.Controls.Add(this.groupBox6);
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox12);
             this.Controls.Add(this.groupBoxSerialPort);
+            this.Controls.Add(this.comboBoxLan);
+            this.Controls.Add(this.label33);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox10);
@@ -1343,9 +1024,6 @@ namespace Dgiot_dtu
             this.Controls.Add(this.radioButtonMqttClient);
             this.Controls.Add(this.label_devcietree);
             this.Controls.Add(this.treeView);
-            this.Controls.Add(this.label_devicelog);
-            this.Controls.Add(this.label33);
-            this.Controls.Add(this.comboBoxLan);
             this.Controls.Add(this.label32);
             this.Controls.Add(this.comboBoxLogLevel);
             this.Controls.Add(this.label7);
@@ -1354,17 +1032,11 @@ namespace Dgiot_dtu
             this.Controls.Add(this.sendBridge);
             this.Controls.Add(this.textToPayload);
             this.Controls.Add(this.linkLabel2);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.buttonClear);
-            this.Controls.Add(this.checkBoxReconnect);
-            this.Controls.Add(this.linkLabel1);
             this.Controls.Add(this.textBoxLog);
-            this.Controls.Add(this.buttonStartStop);
             this.Controls.Add(this.pictureBox1);
             this.ForeColor = System.Drawing.SystemColors.ControlText;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.Text = "dgiot_dtu";
@@ -1384,13 +1056,13 @@ namespace Dgiot_dtu
             this.groupBox7.PerformLayout();
             this.groupBox8.ResumeLayout(false);
             this.groupBox8.PerformLayout();
-            this.groupBox9.ResumeLayout(false);
-            this.groupBox9.PerformLayout();
             this.groupBox10.ResumeLayout(false);
             this.groupBox10.PerformLayout();
             this.groupBox12.ResumeLayout(false);
             this.groupBox12.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1400,7 +1072,6 @@ namespace Dgiot_dtu
         private TreeView treeView;
         private System.Windows.Forms.Button buttonStartStop;
         private System.Windows.Forms.TextBox textBoxLog;
-        private System.Windows.Forms.LinkLabel linkLabel1;
         private System.Windows.Forms.CheckBox checkBoxReconnect;
         private System.Windows.Forms.CheckBox checkBoxDisplayHex;
         private System.Windows.Forms.Button buttonClear;
@@ -1409,9 +1080,7 @@ namespace Dgiot_dtu
         private System.Windows.Forms.ComboBox comboBoxBaudRate;
         private System.Windows.Forms.Label labelSerialPort;
         private System.Windows.Forms.ComboBox comboBoxSerialPort;
-        private System.Windows.Forms.TextBox textBoxTcpServerPort;
-        private System.Windows.Forms.Label labelTargetPort;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox textBoxBridgePort;
         private System.Windows.Forms.LinkLabel linkLabel2;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ComboBox comboBoxDataBits;
@@ -1430,17 +1099,13 @@ namespace Dgiot_dtu
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.TextBox textBoxTcpClientLogin;
-        private System.Windows.Forms.TextBox textBoxTcpClientPort;
-        private System.Windows.Forms.Label label17;
-        private System.Windows.Forms.TextBox textBoxTcpClientServer;
-        private System.Windows.Forms.Label label18;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.TextBox textBoxMqttClientId;
-        private System.Windows.Forms.TextBox textBoxMqttPort;
+        private System.Windows.Forms.TextBox textBoxDgiotPort;
         private System.Windows.Forms.Label label21;
         private System.Windows.Forms.Label label22;
-        private System.Windows.Forms.CheckBox checkBoxTcpBridge;
+        private System.Windows.Forms.CheckBox checkBoxBridge;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.TextBox textBoxOPCUATopic;
@@ -1456,16 +1121,9 @@ namespace Dgiot_dtu
         private System.Windows.Forms.GroupBox groupBox8;
         private System.Windows.Forms.TextBox textBoxAccessTopic;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.GroupBox groupBox9;
-        private System.Windows.Forms.TextBox textBoxSqlServerTopic;
-        private System.Windows.Forms.Label label14;
         private System.Windows.Forms.GroupBox groupBox10;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.TextBox textBoxUDPClientLogin;
-        private System.Windows.Forms.TextBox textBoxUDPCLientPort;
-        private System.Windows.Forms.Label label24;
-        private System.Windows.Forms.TextBox textBoxUDPClientServer;
-        private System.Windows.Forms.Label label26;
         private System.Windows.Forms.RadioButton radioButtonMqttClient;
         private System.Windows.Forms.RadioButton radioButtonTcpClient;
         private System.Windows.Forms.RadioButton radioButtonUDPClient;
@@ -1475,31 +1133,25 @@ namespace Dgiot_dtu
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.ComboBox comboBoxParity;
         private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.CheckBox checkBoxMqttBridge;
-        private System.Windows.Forms.TextBox textBoxMqttServerPort;
-        private System.Windows.Forms.Label label27;
-        private System.Windows.Forms.Label label28;
-        private System.Windows.Forms.TextBox textBoxUdpServerPort;
-        private System.Windows.Forms.CheckBox checkBoxUdpBridge;
         private System.Windows.Forms.Label label29;
         private System.Windows.Forms.ComboBox comboBoxCmdProdxy;
         private System.Windows.Forms.Label label30;
-        private System.Windows.Forms.ComboBox comboBoxDevAddr;
+        private System.Windows.Forms.ComboBox comboBoxDtuAddr;
         private System.Windows.Forms.TextBox textBoxOpcIp;
-        private System.Windows.Forms.TextBox textBoxMqttSever;
+        private System.Windows.Forms.TextBox textBoxDgiotSever;
         private System.Windows.Forms.ComboBox comboBoxLogLevel;
         private System.Windows.Forms.Label label32;
         private System.Windows.Forms.ComboBox comboBoxLan;
         private System.Windows.Forms.Label label33;
-        private System.Windows.Forms.Label label_devicelog;
         private System.Windows.Forms.Label label_devcietree;
-        private TextBox textBoxOPCDATopic;
-        private Label labelopcda;
+        private TextBox textBoxOPCDAHost;
+        private Label labelOPCDAHost;
         private OpenFileDialog openFileDialog;
         private CheckBox checkBoxOPCDA;
         private Label labelSecond;
         private Label labelOPCDAMonitor;
         private TextBox textBoxOPCDAInterval;
+        private GroupBox groupBox1;
     }
 }
 

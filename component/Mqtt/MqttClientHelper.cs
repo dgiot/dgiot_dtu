@@ -6,7 +6,6 @@ namespace Dgiot_dtu
 {
     using System;
     using System.Collections.Generic;
-    using System.Configuration;
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading;
@@ -54,11 +53,10 @@ namespace Dgiot_dtu
             return instance;
         }
 
-        public static void Start(KeyValueConfigurationCollection config, bool bAutoReconnect)
+        public static void Start()
         {
-            Config(config);
+            Config();
             bIsRunning = true;
-            MqttClientHelper.bAutoReconnect = bAutoReconnect;
             if (bIsCheck)
             {
                 Task.Run(async () => { await ConnectMqttServerAsync(); });
@@ -75,92 +73,18 @@ namespace Dgiot_dtu
             }
         }
 
-        public static void Config(KeyValueConfigurationCollection config)
+        public static void Config()
         {
-            if (config["mqttServer"] != null)
-            {
-                server = (string)config["mqttServer"].Value;
-            }
-
-            if (config["mqttPort"] != null)
-            {
-                port = int.Parse((string)config["mqttPort"].Value);
-            }
-
-            if (config["mqttClientId"] != null)
-            {
-                clientid = (string)config["mqttClientId"].Value;
-            }
-
-            if (config["mqttUserName"] != null)
-            {
-                username = (string)config["mqttUserName"].Value;
-            }
-
-            if (config["mqttPassword"] != null)
-            {
-                password = (string)config["mqttPassword"].Value;
-            }
-
-            if (config["mqttSubTopic"] != null)
-            {
-                subtopic = (string)config["mqttSubTopic"].Value;
-            }
-
-            if (config["mqttPubTopic"] != null)
-            {
-                pubtopic = (string)config["mqttPubTopic"].Value;
-            }
-
-            if (config["mqttPubTopic"] != null)
-            {
-                pubtopic = (string)config["mqttPubTopic"].Value;
-            }
-
-            if (config["mqttPubTopic"] != null)
-            {
-                pubtopic = (string)config["mqttPubTopic"].Value;
-            }
-
-            if (config["mqttIsCheck"] != null)
-            {
-                bIsCheck = DgiotHelper.StrTobool(config["mqttIsCheck"].Value);
-            }
-
-            if (config["PLCTopic"] != null)
-            {
-                plctopic = config["PLCTopic"].Value;
-            }
-
-            if (config["OPCDATopic"] != null)
-            {
-                opcdatopic = config["OPCDATopic"].Value;
-            }
-
-            if (config["OPCUATopic"] != null)
-            {
-                opcuatopic = config["OPCUATopic"].Value;
-            }
-
-            if (config["BACnetTopic"] != null)
-            {
-                bacnettopic = config["BACnetTopic"].Value;
-            }
-
-            if (config["ControlTopic"] != null)
-            {
-                controltopic = config["ControlTopic"].Value;
-            }
-
-            if (config["AccessTopic"] != null)
-            {
-                accesstopic = config["AccessTopic"].Value;
-            }
-
-            if (config["SqlServerTopic"] != null)
-            {
-                sqlservertopic = config["SqlServerTopic"].Value;
-            }
+            bAutoReconnect = DgiotHelper.StrTobool(ConfigHelper.GetConfig("ReconnectChecked"));
+            server = ConfigHelper.GetConfig("DgiotSever");
+            LogHelper.Log("DgiotPort " + ConfigHelper.GetConfig("DgiotPort"));
+            port = int.Parse(ConfigHelper.GetConfig("DgiotPort"));
+            clientid = ConfigHelper.GetConfig("MqttClientId");
+            username = ConfigHelper.GetConfig("MqttUserName");
+            password = ConfigHelper.GetConfig("MqttPassword");
+            pubtopic = ConfigHelper.GetConfig("MqttPubTopic");
+            subtopic = ConfigHelper.GetConfig("MqttSubTopic");
+            bIsCheck = DgiotHelper.StrTobool(ConfigHelper.GetConfig("MqttClient_Checked"));
         }
 
         public void Publish(byte[] payload)

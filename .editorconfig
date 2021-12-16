@@ -41,3 +41,6 @@ dotnet_diagnostic.SA1009.severity = silent
 
 # SA1214: Readonly fields must appear before non-readonly fields
 dotnet_diagnostic.SA1214.severity = none
+
+# SA1604: Element documentation must have summary
+dotnet_diagnostic.SA1604.severity = none

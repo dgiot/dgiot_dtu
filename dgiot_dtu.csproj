@@ -223,6 +223,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="utils\ConfigHelper.cs" />
     <Compile Include="utils\DgiotHelper.cs" />
     <Compile Include="utils\FileHelper.cs" />
     <Compile Include="utils\JsonArray.cs" />

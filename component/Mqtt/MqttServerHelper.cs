@@ -5,13 +5,11 @@
 namespace Dgiot_dtu
 {
     using System;
-    using System.Collections.Generic;
     using System.Configuration;
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading;
     using System.Threading.Tasks;
-    using System.Web.Script.Serialization;
     using MQTTnet;
     using MQTTnet.Core;
     using MQTTnet.Core.Protocol;
@@ -27,14 +25,6 @@ namespace Dgiot_dtu
         private static int port = 1883;
         private static string pubtopic = "thing/com/post/";
 
-        private static string plctopic = "thing/plc/clientid/";
-        private static string opcdatopic = "thing/opcda/clientid/";
-        private static string opcuatopic = "thing/opcua/clientid/";
-        private static string bacnettopic = "thing/bacnet/clientid/";
-        private static string controltopic = "thing/control/clientid/";
-        private static string accesstopic = "thing/access/clientid/";
-        private static string sqlservertopic = "thing/sqlserver/clientid/";
-
         private static string clientid = Guid.NewGuid().ToString().Substring(0, 5);
         private static MqttServerHelper instance;
         private static bool bIsCheck = false;
@@ -47,14 +37,14 @@ namespace Dgiot_dtu
                 instance = new MqttServerHelper();
             }
 
-            MqttServerHelper.bIsRuning = false;
+            bIsRuning = false;
             return instance;
         }
 
-        public static void Start(KeyValueConfigurationCollection config)
+        public static void Start()
         {
-            Config(config);
-            MqttServerHelper.bIsRuning = true;
+            Config();
+            bIsRuning = true;
             if (bIsCheck)
             {
                 Task.Run(async () => { await ConnectMqttServerAsync(); });
@@ -80,61 +70,18 @@ namespace Dgiot_dtu
             }
         }
 
-        public static void Config(KeyValueConfigurationCollection config)
+        public static void Config()
         {
-            if (config["mqttPubTopic"] != null)
+            clientid = ConfigHelper.GetConfig("MqttClientId");
+            pubtopic = ConfigHelper.GetConfig("MqttPubTopic");
+            port = int.Parse(ConfigHelper.GetConfig("DgiotPort"));
+            if (DgiotHelper.StrTobool(ConfigHelper.GetConfig("MqttClient_Checked")) && DgiotHelper.StrTobool(ConfigHelper.GetConfig("Bridge_Checked")))
             {
-               pubtopic = (string)config["mqttPubTopic"].Value;
+                bIsCheck = true;
             }
-
-            if (config["mqttClientId"] != null)
+            else
             {
-                clientid = (string)config["mqttClientId"].Value;
-            }
-
-            if (config["mqttServerPort"] != null)
-            {
-                port = int.Parse(config["mqttServerPort"].Value);
-            }
-
-            if (config["mqttbridgeIsCheck"] != null)
-            {
-                bIsCheck = DgiotHelper.StrTobool(config["mqttbridgeIsCheck"].Value);
-            }
-
-            if (config["PLCTopic"] != null)
-            {
-                plctopic = config["PLCTopic"].Value;
-            }
-
-            if (config["OPCDATopic"] != null)
-            {
-                opcdatopic = config["OPCDATopic"].Value;
-            }
-
-            if (config["OPCUATopic"] != null)
-            {
-                opcuatopic = config["OPCUATopic"].Value;
-            }
-
-            if (config["BACnetTopic"] != null)
-            {
-                bacnettopic = config["BACnetTopic"].Value;
-            }
-
-            if (config["ControlTopic"] != null)
-            {
-                controltopic = config["ControlTopic"].Value;
-            }
-
-            if (config["AccessTopic"] != null)
-            {
-                accesstopic = config["AccessTopic"].Value;
-            }
-
-            if (config["SqlServerTopic"] != null)
-            {
-                sqlservertopic = config["SqlServerTopic"].Value;
+                bIsCheck = false;
             }
         }
 

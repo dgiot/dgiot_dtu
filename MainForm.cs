@@ -20,7 +20,6 @@ namespace Dgiot_dtu
         private static string devaddr = Guid.NewGuid().ToString().Substring(0, 10);
         private static OPCDAHelper oPCDAHelper = OPCDAHelper.GetInstance();
         private static OPCDAViewHelper oPCDAViewHelper = OPCDAViewHelper.GetInstance();
-        private bool bAutoReconnect = false;
         private bool bIsRunning = false;
         private readonly string[] bridges = new string[]
         {
@@ -46,9 +45,9 @@ namespace Dgiot_dtu
         {
             InitializeComponent();
             config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-
-            LogHelper.Init(this);
+            ConfigHelper.Init(config);
             TreeViewHelper.Init(treeView);
+            LogHelper.Init(this);
             FileHelper.Init(openFileDialog);
             SetComboBox();
 
@@ -113,13 +112,13 @@ namespace Dgiot_dtu
                 bIsRunning = true;
                 try
                 {
-                    MqttServerHelper.Start(config.AppSettings.Settings);
-                    MqttClientHelper.Start(config.AppSettings.Settings, bAutoReconnect);
+                    MqttServerHelper.Start();
+                    MqttClientHelper.Start();
                     TcpServerHelper.Start(config.AppSettings.Settings);
-                    TcpClientHelper.Start(config.AppSettings.Settings, bAutoReconnect);
+                    TcpClientHelper.Start();
                     UDPServerHelper.Start(config.AppSettings.Settings);
-                    UDPClientHelper.Start(config.AppSettings.Settings, bAutoReconnect);
-                    OPCDAHelper.Start(config.AppSettings.Settings);
+                    UDPClientHelper.Start();
+                    OPCDAHelper.Start();
                     BACnetHelper.Start(config.AppSettings.Settings);
                 }
                 catch (Exception error)
@@ -171,17 +170,15 @@ namespace Dgiot_dtu
                 comboBoxBridge.SelectedIndex = 0;
             }
 
-            bAutoReconnect = checkBoxReconnect.Checked;
-
-            comboBoxDevAddr.Items.Clear();
+            comboBoxDtuAddr.Items.Clear();
             List<string> macAddrs = DgiotHelper.GetMacByWmi();
             foreach (var mac in macAddrs)
             {
                 devaddr = Regex.Replace(mac, @":", "");
-                comboBoxDevAddr.Items.Add(devaddr);
+                comboBoxDtuAddr.Items.Add(devaddr);
             }
 
-            comboBoxDevAddr.SelectedIndex = 0;
+            comboBoxDtuAddr.SelectedIndex = 0;
 
             List<string> loglevels = LogHelper.Levels();
             foreach (var level in loglevels)
@@ -201,164 +198,371 @@ namespace Dgiot_dtu
 
         private void RestoreConfigs(Configuration config)
         {
-            if (config.AppSettings.Settings["portName"] != null)
-            {
-                var tmp = config.AppSettings.Settings["portName"].Value;
-                comboBoxSerialPort.SelectedIndex = comboBoxSerialPort.Items.IndexOf(tmp);
-            }
-
-            if (config.AppSettings.Settings["BaudRate"] != null)
-            {
-                var tmp = config.AppSettings.Settings["BaudRate"].Value;
-                comboBoxBaudRate.SelectedIndex = comboBoxBaudRate.Items.IndexOf(tmp);
-            }
-
-            if (config.AppSettings.Settings["DataBits"] != null)
-            {
-                var tmp = config.AppSettings.Settings["DataBits"].Value;
-                comboBoxDataBits.SelectedIndex = comboBoxDataBits.Items.IndexOf(tmp);
-            }
-
-            if (config.AppSettings.Settings["Parity"] != null)
-            {
-                var tmp = config.AppSettings.Settings["Parity"].Value;
-                comboBoxParity.SelectedIndex = comboBoxParity.Items.IndexOf(tmp);
-            }
-
-            if (config.AppSettings.Settings["StopBits"] != null)
-            {
-                var tmp = config.AppSettings.Settings["StopBits"].Value;
-                comboBoxStopBits.SelectedIndex = comboBoxStopBits.Items.IndexOf(tmp);
-            }
-
-            if (config.AppSettings.Settings["serialPortIsCheck"] != null)
-            {
-                comboBoxSerialPort.Text = config.AppSettings.Settings["serialPortIsCheck"].Value;
-            }
-
-            if (config.AppSettings.Settings["cmdProdxy"] != null)
-            {
-                comboBoxCmdProdxy.Text = config.AppSettings.Settings["cmdProdxy"].Value;
-            }
-
-            if (config.AppSettings.Settings["toPayload"] != null)
-            {
-                this.textToPayload.Text = config.AppSettings.Settings["toPayload"].Value;
-            }
-
-            if (config.AppSettings.Settings["mqttServer"] != null)
-            {
-                textBoxMqttSever.Text = config.AppSettings.Settings["mqttServer"].Value;
-            }
-
-            if (config.AppSettings.Settings["mqttPort"] != null)
-            {
-                textBoxMqttPort.Text = config.AppSettings.Settings["mqttPort"].Value;
-            }
-
-            if (config.AppSettings.Settings["mqttUserName"] != null)
-            {
-                textBoxMqttUserName.Text = config.AppSettings.Settings["mqttUserName"].Value;
-            }
-
-            if (config.AppSettings.Settings["devAddr"] != null)
-            {
-                var tmp = config.AppSettings.Settings["devAddr"].Value;
-                comboBoxDevAddr.SelectedIndex = comboBoxDevAddr.Items.IndexOf(tmp);
-            }
-
-            if (config.AppSettings.Settings["mqttPassword"] != null)
-            {
-                textBoxMqttPassword.Text = config.AppSettings.Settings["mqttPassword"].Value;
-            }
-
-            if (config.AppSettings.Settings["mqttPubTopic"] != null)
-            {
-                textBoxMqttPubTopic.Text = config.AppSettings.Settings["mqttPubTopic"].Value;
-            }
-
-            if (config.AppSettings.Settings["tcpClientServer"] != null)
-            {
-                textBoxTcpClientServer.Text = config.AppSettings.Settings["tcpClientServer"].Value;
-            }
-
-            if (config.AppSettings.Settings["tcpClientPort"] != null)
-            {
-                textBoxTcpClientPort.Text = config.AppSettings.Settings["tcpClientPort"].Value;
-            }
-
-            if (config.AppSettings.Settings["tcpClientLogin"] != null)
-            {
-                textBoxTcpClientLogin.Text = config.AppSettings.Settings["tcpClientLogin"].Value;
-            }
-
-            if (config.AppSettings.Settings["UDPClientServer"] != null)
-            {
-                textBoxUDPClientServer.Text = config.AppSettings.Settings["UDPClientServer"].Value;
-            }
-
-            if (config.AppSettings.Settings["UDPClientPort"] != null)
-            {
-                textBoxUDPCLientPort.Text = config.AppSettings.Settings["UDPClientPort"].Value;
-            }
-
-            if (config.AppSettings.Settings["tcpServerPort"] != null)
-            {
-               textBoxTcpServerPort.Text = config.AppSettings.Settings["tcpServerPort"].Value;
-            }
-
-            if (config.AppSettings.Settings["tcpServerIsCheck"] != null)
-            {
-                checkBoxTcpBridge.Checked = DgiotHelper.StrTobool(config.AppSettings.Settings["tcpServerIsCheck"].Value);
-            }
-
-            if (config.AppSettings.Settings["LogLevel"] != null)
-            {
-                var tmp = config.AppSettings.Settings["LogLevel"].Value;
-                comboBoxLogLevel.SelectedIndex = comboBoxLogLevel.Items.IndexOf(tmp);
-            }
-
-            if (config.AppSettings.Settings["OPCDAInterval"] != null)
-            {
-                textBoxOPCDAInterval.Text = config.AppSettings.Settings["OPCDAInterval"].Value;
-            }
-
-            if (config.AppSettings.Settings["OPCDACheck"] != null)
-            {
-                checkBoxOPCDA.Text = config.AppSettings.Settings["OPCDACheck"].Value;
-            }
-
+            RestoreMqtt();
+            RestoreTcp();
+            RestoreUDP();
+            RestoreCommonConfig();
+            RestoreSerialPort();
+            RestorePLC();
+            RestoreOPCDA();
+            RestoreOPCUA();
+            RestoreBACnet();
+            RestoreControl();
+            RestoreAccess();
             Resh_Topic();
             Resh_Config();
         }
 
-        private void SetConfig(string key, string value)
+        private void RestoreCommonConfig()
         {
-            if (config.AppSettings.Settings[key] == null)
+            if (ConfigHelper.Check("DtuAddr"))
             {
-                config.AppSettings.Settings.Add(key, value);
+                var tmp = ConfigHelper.GetConfig("DtuAddr");
+                comboBoxDtuAddr.SelectedIndex = comboBoxDtuAddr.Items.IndexOf(tmp);
             }
             else
             {
-                config.AppSettings.Settings[key].Value = value;
+                ConfigHelper.SetConfig("DtuAddr", comboBoxDtuAddr.Text);
             }
 
-            Resh_Config();
-            Resh_Topic();
+            if (ConfigHelper.Check("DgiotSever"))
+            {
+                textBoxDgiotSever.Text = ConfigHelper.GetConfig("DgiotSever");
+            }
+            else
+            {
+                ConfigHelper.SetConfig("DgiotSever", textBoxDgiotSever.Text);
+            }
+
+            if (ConfigHelper.Check("DgiotPort"))
+            {
+                textBoxDgiotPort.Text = ConfigHelper.GetConfig("DgiotPort");
+            }
+            else
+            {
+                ConfigHelper.SetConfig("DgiotPort", textBoxDgiotPort.Text);
+            }
+
+            if (ConfigHelper.Check("BridgePort"))
+            {
+                textBoxBridgePort.Text = ConfigHelper.GetConfig("BridgePort");
+            }
+            else
+            {
+                ConfigHelper.SetConfig("BridgePort", textBoxBridgePort.Text);
+            }
+
+            if (ConfigHelper.Check("ReconnectChecked"))
+            {
+                checkBoxReconnect.Checked = DgiotHelper.StrTobool(ConfigHelper.GetConfig("ReconnectChecked"));
+            }
+            else
+            {
+                ConfigHelper.SetConfig("ReconnectChecked", DgiotHelper.BoolTostr(checkBoxReconnect.Checked));
+            }
+
+            if (ConfigHelper.Check("LogLevel"))
+            {
+                var tmp = ConfigHelper.GetConfig("LogLevel");
+                comboBoxLogLevel.SelectedIndex = comboBoxLogLevel.Items.IndexOf(tmp);
+            }
+            else
+            {
+                ConfigHelper.SetConfig("LogLevel", comboBoxLogLevel.Text);
+            }
+
+            if (ConfigHelper.Check("ToPayload"))
+            {
+                textToPayload.Text = ConfigHelper.GetConfig("ToPayload");
+            }
+            else
+            {
+                ConfigHelper.SetConfig("ToPayload", textToPayload.Text);
+            }
+
+            if (ConfigHelper.Check("DisplayHex"))
+            {
+                checkBoxDisplayHex.Checked = DgiotHelper.StrTobool(ConfigHelper.GetConfig("DisplayHex"));
+            }
+            else
+            {
+                ConfigHelper.SetConfig("DisplayHex", DgiotHelper.BoolTostr(checkBoxDisplayHex.Checked));
+            }
+
+            if (ConfigHelper.Check("Bridge_Checked"))
+            {
+                checkBoxBridge.Checked = DgiotHelper.StrTobool(ConfigHelper.GetConfig("Bridge_Checked"));
+            }
+            else
+            {
+                ConfigHelper.SetConfig("Bridge_Checked", DgiotHelper.BoolTostr(checkBoxBridge.Checked));
+            }
+        }
+
+        private void RestoreMqtt()
+        {
+            if (ConfigHelper.Check("MqttUserName"))
+            {
+                textBoxMqttUserName.Text = ConfigHelper.GetConfig("MqttUserName");
+            }
+            else
+            {
+                ConfigHelper.SetConfig("MqttUserName", textBoxMqttUserName.Text);
+            }
+
+            if (ConfigHelper.Check("MqttPassword"))
+            {
+                textBoxMqttPassword.Text = ConfigHelper.GetConfig("MqttPassword");
+            }
+            else
+            {
+                ConfigHelper.SetConfig("MqttPassword", textBoxMqttPassword.Text);
+            }
+
+            if (ConfigHelper.Check("MqttClientId"))
+            {
+                textBoxMqttClientId.Text = ConfigHelper.GetConfig("MqttClientId");
+            }
+            else
+            {
+                ConfigHelper.SetConfig("MqttClientId", textBoxMqttClientId.Text);
+            }
+
+            if (ConfigHelper.Check("MqttPubTopic"))
+            {
+                textBoxMqttPubTopic.Text = ConfigHelper.GetConfig("MqttPubTopic");
+            }
+            else
+            {
+                ConfigHelper.SetConfig("MqttPubTopic", textBoxMqttPubTopic.Text);
+            }
+
+            if (ConfigHelper.Check("MqttSubTopic"))
+            {
+                textBoxMqttSubTopic.Text = ConfigHelper.GetConfig("MqttSubTopic");
+            }
+            else
+            {
+                ConfigHelper.SetConfig("MqttSubTopic", textBoxMqttSubTopic.Text);
+            }
+
+            if (ConfigHelper.Check("CmdProdxy"))
+            {
+                var tmp = ConfigHelper.GetConfig("CmdProdxy");
+                comboBoxCmdProdxy.SelectedIndex = comboBoxCmdProdxy.Items.IndexOf(tmp);
+            }
+            else
+            {
+                ConfigHelper.SetConfig("CmdProdxy", comboBoxCmdProdxy.Text);
+            }
+
+            if (ConfigHelper.Check("MqttClient_Checked"))
+            {
+                radioButtonMqttClient.Checked = DgiotHelper.StrTobool(ConfigHelper.GetConfig("MqttClient_Checked"));
+            }
+            else
+            {
+                ConfigHelper.SetConfig("MqttClient_Checked", DgiotHelper.BoolTostr(radioButtonMqttClient.Checked));
+            }
+        }
+
+        private void RestoreTcp()
+        {
+            if (ConfigHelper.Check("TcpClientLogin"))
+            {
+                textBoxTcpClientLogin.Text = ConfigHelper.GetConfig("TcpClientLogin");
+            }
+            else
+            {
+                ConfigHelper.SetConfig("TcpClientLogin", textBoxTcpClientLogin.Text);
+            }
+
+            if (ConfigHelper.Check("TcpClient_Checked"))
+            {
+                radioButtonTcpClient.Checked = DgiotHelper.StrTobool(ConfigHelper.GetConfig("TcpClient_Checked"));
+            }
+            else
+            {
+                ConfigHelper.SetConfig("TcpClient_Checked", DgiotHelper.BoolTostr(radioButtonTcpClient.Checked));
+            }
+        }
+
+        private void RestoreUDP()
+        {
+            if (ConfigHelper.Check("UDPClientLogin"))
+            {
+                textBoxUDPClientLogin.Text = ConfigHelper.GetConfig("UDPClientLogin");
+            }
+            else
+            {
+                ConfigHelper.SetConfig("UDPClientLogin", textBoxUDPClientLogin.Text);
+            }
+
+            if (ConfigHelper.Check("UDPClient_Checked"))
+            {
+                radioButtonUDPClient.Checked = DgiotHelper.StrTobool(ConfigHelper.GetConfig("UDPClient_Checked"));
+            }
+            else
+            {
+                ConfigHelper.SetConfig("UDPClient_Checked", DgiotHelper.BoolTostr(radioButtonUDPClient.Checked));
+            }
+        }
+
+        private void RestoreSerialPort()
+        {
+            if (ConfigHelper.Check("SerialPort"))
+            {
+                var tmp = ConfigHelper.GetConfig("SerialPort");
+                comboBoxSerialPort.SelectedIndex = comboBoxSerialPort.Items.IndexOf(tmp);
+            }
+            else
+            {
+                ConfigHelper.SetConfig("SerialPort", comboBoxSerialPort.Text);
+            }
+
+            if (ConfigHelper.Check("BaudRate"))
+            {
+                var tmp = ConfigHelper.GetConfig("BaudRate");
+                comboBoxBaudRate.SelectedIndex = comboBoxBaudRate.Items.IndexOf(tmp);
+            }
+            else
+            {
+                ConfigHelper.SetConfig("SerialPort", comboBoxBaudRate.Text);
+            }
+
+            if (ConfigHelper.Check("DataBits"))
+            {
+                var tmp = ConfigHelper.GetConfig("DataBits");
+                comboBoxDataBits.SelectedIndex = comboBoxDataBits.Items.IndexOf(tmp);
+            }
+            else
+            {
+                ConfigHelper.SetConfig("DataBits", comboBoxDataBits.Text);
+            }
+
+            if (ConfigHelper.Check("Parity"))
+            {
+                var tmp = ConfigHelper.GetConfig("Parity");
+                comboBoxParity.SelectedIndex = comboBoxParity.Items.IndexOf(tmp);
+            }
+            else
+            {
+                ConfigHelper.SetConfig("Parity", comboBoxParity.Text);
+            }
+
+            if (ConfigHelper.Check("StopBits"))
+            {
+                var tmp = ConfigHelper.GetConfig("StopBits");
+                comboBoxStopBits.SelectedIndex = comboBoxStopBits.Items.IndexOf(tmp);
+            }
+            else
+            {
+                ConfigHelper.SetConfig("StopBits", comboBoxStopBits.Text);
+            }
+        }
+
+        private void RestorePLC()
+        {
+            if (ConfigHelper.Check("PLCTopic"))
+            {
+                textBoxPLCTopic.Text = ConfigHelper.GetConfig("PLCTopic");
+            }
+            else
+            {
+                ConfigHelper.SetConfig("PLCTopic", textBoxPLCTopic.Text);
+            }
+        }
+
+        private void RestoreOPCDA()
+        {
+            if (ConfigHelper.Check("OPCDAHost"))
+            {
+                textBoxOPCDAHost.Text = ConfigHelper.GetConfig("OPCDAHost");
+            }
+            else
+            {
+                ConfigHelper.SetConfig("OPCDAHost", textBoxOPCDAHost.Text);
+            }
+
+            if (ConfigHelper.Check("OPCDAInterval"))
+            {
+                textBoxOPCDAInterval.Text = ConfigHelper.GetConfig("OPCDAInterval");
+            }
+            else
+            {
+                ConfigHelper.SetConfig("OPCDAInterval", textBoxOPCDAInterval.Text);
+            }
+
+            if (ConfigHelper.Check("OPCDACheck"))
+            {
+                checkBoxOPCDA.Text = ConfigHelper.GetConfig("OPCDACheck");
+            }
+            else
+            {
+                ConfigHelper.SetConfig("OPCDACheck", checkBoxOPCDA.Text);
+            }
+        }
+
+        private void RestoreOPCUA()
+        {
+            if (ConfigHelper.Check("OPCUATopic"))
+            {
+                textBoxOPCUATopic.Text = ConfigHelper.GetConfig("OPCUATopic");
+            }
+            else
+            {
+                ConfigHelper.SetConfig("OPCUATopic", textBoxOPCUATopic.Text);
+            }
+        }
+
+        private void RestoreBACnet()
+        {
+            if (ConfigHelper.Check("BACnetTopic"))
+            {
+                textBoxBACnetTopic.Text = ConfigHelper.GetConfig("BACnetTopic");
+            }
+            else
+            {
+                ConfigHelper.SetConfig("BACnetTopic", textBoxBACnetTopic.Text);
+            }
+        }
+
+        private void RestoreControl()
+        {
+            if (ConfigHelper.Check("ControlTopic"))
+            {
+                textBoxControlTopic.Text = ConfigHelper.GetConfig("ControlTopic");
+            }
+            else
+            {
+                ConfigHelper.SetConfig("ControlTopic", textBoxControlTopic.Text);
+            }
+        }
+
+        private void RestoreAccess()
+        {
+            if (ConfigHelper.Check("AccessTopic"))
+            {
+                textBoxAccessTopic.Text = ConfigHelper.GetConfig("AccessTopic");
+            }
+            else
+            {
+                ConfigHelper.SetConfig("AccessTopic", textBoxAccessTopic.Text);
+            }
         }
 
         private void Resh_Config()
         {
-            MqttClientHelper.Config(config.AppSettings.Settings);
-            MqttServerHelper.Config(config.AppSettings.Settings);
-            TcpClientHelper.Config(config.AppSettings.Settings);
+            MqttClientHelper.Config();
+            MqttServerHelper.Config();
+            TcpClientHelper.Config();
             TcpServerHelper.Config(config.AppSettings.Settings);
-            UDPClientHelper.Config(config.AppSettings.Settings);
+            UDPClientHelper.Config();
             UDPServerHelper.Config(config.AppSettings.Settings);
 
             SerialPortHelper.Config(config.AppSettings.Settings);
             PLCHelper.Config(config.AppSettings.Settings);
-            OPCDAHelper.Config(config.AppSettings.Settings);
+            OPCDAHelper.Config();
             OPCUAHelper.Config(config.AppSettings.Settings);
             AccessHelper.Config(config.AppSettings.Settings);
             SqlServerHelper.Config(config.AppSettings.Settings);
@@ -366,7 +570,7 @@ namespace Dgiot_dtu
 
         private void Resh_Topic()
         {
-            devaddr = comboBoxDevAddr.Text;
+            devaddr = comboBoxDtuAddr.Text;
             productid = textBoxMqttUserName.Text;
             clientid = DgiotHelper.Md5("Device" + this.textBoxMqttUserName.Text + devaddr).Substring(0, 10);
             textBoxMqttClientId.Text = clientid;
@@ -374,12 +578,10 @@ namespace Dgiot_dtu
             textBoxMqttPubTopic.Text = "/" + productid + "/" + devaddr + "/properties/read/reply";
             textBoxAccessTopic.Text = "/" + productid + "/" + devaddr + "/scan/mdb";
 
-            textBoxOPCDATopic.Text = "/" + productid + "/" + devaddr + "/scan/opcda/reply";
             textBoxOPCUATopic.Text = "/" + productid + "/" + devaddr + "/scan/opcua/reply";
             textBoxPLCTopic.Text = "/" + productid + "/" + devaddr + "/scan/plc/reply";
             textBoxBACnetTopic.Text = "/" + productid + "/" + devaddr + "/scan/bacnet/reply";
             textBoxControlTopic.Text = "/" + productid + "/" + devaddr + "/scan/control/reply";
-            textBoxSqlServerTopic.Text = "/" + productid + "/" + devaddr + "/scan/sqlserver/reply";
         }
 
         private void LinkLabel1LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -399,231 +601,175 @@ namespace Dgiot_dtu
 
         private void SaveAppConfig()
         {
-            SetConfig("tcpServerIsCheck", DgiotHelper.BoolTostr(checkBoxTcpBridge.Checked));
-            SetConfig("PLCTopic", textBoxPLCTopic.Text);
-            SetConfig("OPCDATopic", textBoxOPCDATopic.Text);
-            SetConfig("OPCUATopic", textBoxOPCUATopic.Text);
-            SetConfig("BACnetTopic", textBoxBACnetTopic.Text);
-            SetConfig("ControlTopic", textBoxControlTopic.Text);
-            SetConfig("AccessTopic", textBoxAccessTopic.Text);
-            SetConfig("SqlServerTopic", textBoxSqlServerTopic.Text);
-            SetConfig("mqttIsCheck", DgiotHelper.BoolTostr(radioButtonMqttClient.Checked));
-            SetConfig("tcpClientIsCheck", DgiotHelper.BoolTostr(radioButtonTcpClient.Checked));
-            SetConfig("UDPClientIsCheck", DgiotHelper.BoolTostr(radioButtonTcpClient.Checked));
-            SetConfig("toPayload", textToPayload.Text);
-            SetConfig("mqttServer", textBoxMqttSever.Text);
-            SetConfig("mqttPort", textBoxMqttPort.Text);
-            SetConfig("mqttClientId", textBoxMqttClientId.Text);
-            SetConfig("devAddr", comboBoxDevAddr.Text);
-            SetConfig("mqttUserName", textBoxMqttUserName.Text);
-            SetConfig("mqttPassword", textBoxMqttPassword.Text);
-            SetConfig("mqttSubTopic", textBoxMqttSubTopic.Text);
-            SetConfig("mqttPubTopic", textBoxMqttPubTopic.Text);
-            SetConfig("tcpClientServer", textBoxTcpClientServer.Text);
-            SetConfig("tcpClientPort", textBoxTcpClientPort.Text);
-            SetConfig("tcpClientLogin", textBoxTcpClientLogin.Text);
-            SetConfig("UDPClientServer", textBoxUDPClientServer.Text);
-            SetConfig("UDPClientPort", textBoxUDPCLientPort.Text);
-            SetConfig("UDPClientLogin", textBoxUDPClientLogin.Text);
-            SetConfig("tcpServerPort", textBoxTcpServerPort.Text);
-            SetConfig("LogLevel", comboBoxLogLevel.Text);
-            SetConfig("OPCDAInterval", textBoxOPCDAInterval.Text);
-            SetConfig("OPCDACheck", checkBoxOPCDA.Text);
-
             config.Save(ConfigurationSaveMode.Full);
             ConfigurationManager.RefreshSection("appSettings");
         }
 
         private void CheckBoxReconnectCheckedChanged(object sender, EventArgs e)
         {
-            bAutoReconnect = checkBoxReconnect.Checked;
+            ConfigHelper.SetConfig("ReconnectChecked", DgiotHelper.BoolTostr(checkBoxReconnect.Checked));
         }
 
         private void CheckBoxDisplayHexCheckedChanged(object sender, EventArgs e)
         {
-            SetConfig("DisplayHex", DgiotHelper.BoolTostr(checkBoxDisplayHex.Checked));
-        }
-
-        private void CheckBoxMqttBridge_CheckedChanged(object sender, EventArgs e)
-        {
-            SetConfig("mqttbridgeIsCheck", DgiotHelper.BoolTostr(checkBoxMqttBridge.Checked));
-        }
-
-        private void CheckBoxTcpBridge_CheckedChanged(object sender, EventArgs e)
-        {
-            SetConfig("tcpBridgeIsCheck", DgiotHelper.BoolTostr(checkBoxTcpBridge.Checked));
-        }
-
-        private void CheckBoxUdpBridge_CheckedChanged(object sender, EventArgs e)
-        {
-            SetConfig("udpBridgeIsCheck", DgiotHelper.BoolTostr(checkBoxUdpBridge.Checked));
+            ConfigHelper.SetConfig("DisplayHex", DgiotHelper.BoolTostr(checkBoxDisplayHex.Checked));
         }
 
         private void RadioButtonMqttClient_CheckedChanged(object sender, EventArgs e)
         {
-            SetConfig("mqttIsCheck", DgiotHelper.BoolTostr(radioButtonMqttClient.Checked));
+            ConfigHelper.SetConfig("MqttClient_Checked", DgiotHelper.BoolTostr(radioButtonMqttClient.Checked));
         }
 
         private void RadioButtonTcpClient_CheckedChanged(object sender, EventArgs e)
         {
-           SetConfig("tcpClientIsCheck", DgiotHelper.BoolTostr(radioButtonTcpClient.Checked));
+            ConfigHelper.SetConfig("TcpClient_Checked", DgiotHelper.BoolTostr(radioButtonTcpClient.Checked));
+        }
+
+        private void RadioButtonUDPClient_CheckedChanged(object sender, EventArgs e)
+        {
+            ConfigHelper.SetConfig("UDPClient_Checked", DgiotHelper.BoolTostr(radioButtonTcpClient.Checked));
         }
 
         private void TextToPayload_TextChanged(object sender, EventArgs e)
         {
-            SetConfig("toPayload", textToPayload.Text);
-        }
-
-        private void TextBoxMqttSever_TextChanged(object sender, EventArgs e)
-        {
-            SetConfig("mqttServer", textBoxMqttSever.Text);
-        }
-
-        private void TextBoxMqttPort_TextChanged(object sender, EventArgs e)
-        {
-            SetConfig("mqttPort", textBoxMqttPort.Text);
+            ConfigHelper.SetConfig("ToPayload", textToPayload.Text);
         }
 
         private void TextBoxMqttClientId_TextChanged(object sender, EventArgs e)
         {
-            SetConfig("mqttClientId", textBoxMqttClientId.Text);
+            ConfigHelper.SetConfig("MqttClientId", textBoxMqttClientId.Text);
         }
 
         private void TextBoxMqttUserName_TextChanged(object sender, EventArgs e)
         {
-            SetConfig("mqttUserName", textBoxMqttUserName.Text);
+            ConfigHelper.SetConfig("MqttUserName", textBoxMqttUserName.Text);
         }
 
         private void TextBoxMqttPassword_TextChanged(object sender, EventArgs e)
         {
-            SetConfig("mqttPassword", textBoxMqttPassword.Text);
+            ConfigHelper.SetConfig("MqttPassword", textBoxMqttPassword.Text);
         }
 
         private void TextBoxMqttSubTopic_TextChanged(object sender, EventArgs e)
         {
-            SetConfig("mqttSubTopic", textBoxMqttSubTopic.Text);
+            ConfigHelper.SetConfig("MqttSubTopic", textBoxMqttSubTopic.Text);
         }
 
         private void TextBoxMqttPubTopic_TextChanged(object sender, EventArgs e)
         {
-            SetConfig("mqttPubTopic", textBoxMqttPubTopic.Text);
+            ConfigHelper.SetConfig("MqttPubTopic", textBoxMqttPubTopic.Text);
         }
 
         private void TextBoxMqttServerPort_TextChanged(object sender, EventArgs e)
         {
-            SetConfig("mqttServerPort", textBoxTcpClientLogin.Text);
-        }
-
-        private void TextBoxTcpClientServer_TextChanged(object sender, EventArgs e)
-        {
-            SetConfig("tcpClientServer", textBoxTcpClientServer.Text);
-        }
-
-        private void TextBoxTcpClientPort_TextChanged(object sender, EventArgs e)
-        {
-            SetConfig("tcpClientPort", textBoxTcpClientPort.Text);
+            ConfigHelper.SetConfig("MqttServerPort", textBoxTcpClientLogin.Text);
         }
 
         private void TextBoxTcpClientLogin_TextChanged(object sender, EventArgs e)
         {
-            SetConfig("tcpClientLogin", textBoxTcpClientLogin.Text);
-        }
-
-        private void TextBoxTcpServerPort_TextChanged(object sender, EventArgs e)
-        {
-            SetConfig("tcpServerPort", textBoxTcpServerPort.Text);
-        }
-
-        private void TextBoxUDPClientServer_TextChanged(object sender, EventArgs e)
-        {
-            SetConfig("UDPClientServer", textBoxUDPClientServer.Text);
-        }
-
-        private void TextBoxUDPCLientPort_TextChanged(object sender, EventArgs e)
-        {
-            SetConfig("UDPClientPort", textBoxUDPCLientPort.Text);
+            ConfigHelper.SetConfig("TcpClientLogin", textBoxTcpClientLogin.Text);
         }
 
         private void TextBoxUDPClientLogin_TextChanged(object sender, EventArgs e)
         {
-            SetConfig("UDPClientLogin", textBoxUDPClientLogin.Text);
-        }
-
-        private void TextBoxUdpServerPort_TextChanged(object sender, EventArgs e)
-        {
-            SetConfig("udpServerPort", textBoxUdpServerPort.Text);
+            ConfigHelper.SetConfig("UDPClientLogin", textBoxUDPClientLogin.Text);
         }
 
         private void ComboBoxCmdProdxy_SelectedIndexChanged(object sender, EventArgs e)
         {
+            ConfigHelper.SetConfig("CmdProdxy", comboBoxCmdProdxy.Text);
         }
 
         private void ComboBoxStopBits_SelectedIndexChanged(object sender, EventArgs e)
         {
+            ConfigHelper.SetConfig("StopBits", comboBoxStopBits.Text);
         }
 
         private void ComboBoxParity_SelectedIndexChanged(object sender, EventArgs e)
         {
+            ConfigHelper.SetConfig("Parity", comboBoxParity.Text);
         }
 
         private void ComboBoxDataBits_SelectedIndexChanged(object sender, EventArgs e)
         {
-        }
-
-        private void ComboBoxDevAddr_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            SetConfig("devAddr", comboBoxDevAddr.Text);
+            ConfigHelper.SetConfig("DataBits", comboBoxDataBits.Text);
         }
 
         private void TextBoxPLCTopic_TextChanged(object sender, EventArgs e)
         {
-            SetConfig("PLCTopic", textBoxPLCTopic.Text);
+            ConfigHelper.SetConfig("PLCTopic", textBoxPLCTopic.Text);
         }
 
-        private void TextBoxOPCDATopic_TextChanged(object sender, EventArgs e)
+        private void CheckBoxOPCDA_CheckedChanged(object sender, EventArgs e)
         {
-            SetConfig("OPCDATopic", textBoxOPCDATopic.Text);
+            ConfigHelper.SetConfig("OPCDACheck", DgiotHelper.BoolTostr(checkBoxOPCDA.Checked));
+            OPCDAHelper.StartMonitor();
+        }
+
+        private void TextBoxOPCDAInterval_TextChanged(object sender, EventArgs e)
+        {
+            ConfigHelper.SetConfig("OPCDAInterval", textBoxOPCDAInterval.Text);
+        }
+
+        private void TextBoxOPCDAHost_TextChanged(object sender, EventArgs e)
+        {
+            ConfigHelper.SetConfig("OPCDAHost", textBoxOPCDAHost.Text);
         }
 
         private void TextBoxOPCUATopic_TextChanged(object sender, EventArgs e)
         {
-            SetConfig("OPCUATopic", textBoxOPCUATopic.Text);
+            ConfigHelper.SetConfig("OPCUATopic", textBoxOPCUATopic.Text);
         }
 
         private void TextBoxBACnetTopic_TextChanged(object sender, EventArgs e)
         {
-            SetConfig("BACnetTopic", textBoxBACnetTopic.Text);
+            ConfigHelper.SetConfig("BACnetTopic", textBoxBACnetTopic.Text);
         }
 
         private void TextBoxControlTopic_TextChanged(object sender, EventArgs e)
         {
-            SetConfig("ControlTopic", textBoxControlTopic.Text);
+            ConfigHelper.SetConfig("ControlTopic", textBoxControlTopic.Text);
         }
 
         private void TextBoxAccessTopic_TextChanged(object sender, EventArgs e)
         {
-            SetConfig("AccessTopic", textBoxAccessTopic.Text);
-        }
-
-        private void TextBoxSqlServerTopic_TextChanged(object sender, EventArgs e)
-        {
-            SetConfig("SqlServerTopic", textBoxSqlServerTopic.Text);
+            ConfigHelper.SetConfig("AccessTopic", textBoxAccessTopic.Text);
         }
 
         private void ComboBoxLogLevel_SelectedIndexChanged(object sender, EventArgs e)
         {
-            SetConfig("LogLevel", comboBoxLogLevel.Text);
+            ConfigHelper.SetConfig("LogLevel", comboBoxLogLevel.Text);
             LogHelper.SetLevel(comboBoxLogLevel.SelectedIndex);
         }
 
         private void ComboBoxBridge_SelectedIndexChanged(object sender, EventArgs e)
         {
-            SetConfig("Bridge", comboBoxBridge.Text);
+            ConfigHelper.SetConfig("Bridge", comboBoxBridge.Text);
+        }
+
+        private void TextBoxDgiotSever_TextChanged(object sender, EventArgs e)
+        {
+            ConfigHelper.SetConfig("DgiotSever", textBoxDgiotSever.Text);
+        }
+
+        private void TextBoxDgiotPort_TextChanged(object sender, EventArgs e)
+        {
+            ConfigHelper.SetConfig("DgiotPort", textBoxDgiotPort.Text);
+        }
+
+        private void ComboBoxDtuAddr_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ConfigHelper.SetConfig("DtuAddr", comboBoxDtuAddr.Text);
+        }
+
+        private void CheckBoxBridge_CheckedChanged(object sender, EventArgs e)
+        {
+            ConfigHelper.SetConfig("Bridge_Checked", DgiotHelper.BoolTostr(checkBoxBridge.Checked));
         }
 
         private void SendBridge_Click(object sender, EventArgs e)
         {
-            byte[] payload = LogHelper.Payload(config.AppSettings.Settings["toPayload"].Value.ToCharArray());
+            byte[] payload = LogHelper.Payload(textToPayload.Text.ToCharArray());
             LogHelper.Log(bridges[comboBoxBridge.SelectedIndex] + " send  [" + LogHelper.Logdata(payload, 0, payload.Length) + "]");
 
             if (bridges[comboBoxBridge.SelectedIndex] == "SerialPort")
@@ -677,152 +823,6 @@ namespace Dgiot_dtu
             Language(comboBoxLan.SelectedItem.ToString());
         }
 
-        private void Language(String lan)
-        {
-            if (lan == "English")
-            {
-                En();
-            }
-            else
-            {
-                Zh();
-            }
-        }
-
-        private void Zh()
-        {
-            sendBridge.Text = "发送";
-            buttonClear.Text = "清除";
-            buttonStartStop.Text = "开始";
-
-            checkBoxReconnect.Text = "自动重连";
-            label3.Text = "作者：";
-            label33.Text = "语言";
-            label32.Text = "日志级别";
-
-            label7.Text = "发至";
-            label2.Text = "发至";
-            labelopcua.Text = "发至";
-            label23.Text = "发至";
-            label8.Text = "发至";
-            label6.Text = "发至";
-            label14.Text = "发至";
-            labelopcda.Text = "发至";
-
-            groupBoxSerialPort.Text = "串口捕获";
-            groupBox12.Text = "PLC 捕获";
-            groupBox4.Text = "OPC_DA 捕获";
-            groupBox5.Text = "OPC_UA 捕获";
-            groupBox6.Text = "BACnet 捕获";
-            groupBox7.Text = "控制捕获";
-            groupBox8.Text = "访问捕获";
-            groupBox9.Text = "Sql Server 捕获";
-
-            labelSerialPort.Text = "端口";
-            label1.Text = "波特率";
-            label4.Text = "数据位";
-            label13.Text = "校验位";
-            label5.Text = "停止位";
-
-            groupBox3.Text = "Mqtt 客户端通道";
-            label22.Text = "服务";
-            label21.Text = "端口";
-            label9.Text = "用户名";
-            label10.Text = "密码";
-            label30.Text = "开发地址";
-            label20.Text = "客户编号";
-            label11.Text = "订阅主题";
-            label12.Text = "发布主题";
-            label29.Text = "命令行代理";
-            label27.Text = "桥接";
-
-            groupBox2.Text = "TCP 客户端通道";
-            label18.Text = "服务";
-            label17.Text = "端口";
-            label16.Text = "登录";
-            labelTargetPort.Text = "桥接";
-
-            groupBox10.Text = "UDP 客户端通道";
-            label26.Text = "服务";
-            label24.Text = "端口";
-            label15.Text = "登录";
-            label28.Text = "桥接";
-
-            label_devicelog.Text = "设备日志";
-            label_devcietree.Text = "设备树";
-            checkBoxOPCDA.Text = "主动上报";
-            labelOPCDAMonitor.Text = "采集间隔";
-            labelSecond.Text = "秒";
-        }
-
-        private void En()
-        {
-            sendBridge.Text = "Send";
-            buttonClear.Text = "Clear";
-            buttonStartStop.Text = "Start";
-            label32.Text = "Level";
-
-            checkBoxReconnect.Text = "Auto Reconnect";
-            label3.Text = "Author:";
-            label33.Text = "Language";
-
-            label7.Text = "To";
-            label2.Text = "To";
-            labelopcua.Text = "To";
-            label23.Text = "To";
-            label8.Text = "To";
-            label6.Text = "To";
-            label14.Text = "To";
-            labelopcda.Text = "To";
-
-            groupBoxSerialPort.Text = "Serial Port Capture";
-            groupBox12.Text = "PLC Capture";
-            groupBox4.Text = "OPC_DA Capture";
-            groupBox5.Text = "OPC_UA Capture";
-            groupBox6.Text = "BACnet Capture";
-            groupBox7.Text = "Control Capture";
-            groupBox8.Text = "Access Capture";
-            groupBox9.Text = "Sql Server Capture";
-
-            labelSerialPort.Text = "Port";
-            label1.Text = "Baud Rate";
-            label4.Text = "dataBits";
-            label13.Text = "Parity";
-            label5.Text = "stopBits";
-            labelopcda.Text = "Server";
-
-            groupBox3.Text = "Mqtt Client Channel";
-            label22.Text = "Server";
-            label21.Text = "Port";
-            label9.Text = "UserName";
-            label10.Text = "PassWord";
-            label30.Text = "DevAddr";
-            label20.Text = "Clientid";
-            label11.Text = "SubTopic";
-            label12.Text = "PubTopic";
-            label29.Text = "cmd proxy";
-            label27.Text = "bridge";
-
-            groupBox2.Text = "TCP Client Channel";
-            label18.Text = "Server";
-            label17.Text = "Port";
-            label16.Text = "login";
-            labelTargetPort.Text = "bridge";
-
-            groupBox10.Text = "UDP Client Channel";
-            label26.Text = "Server";
-            label24.Text = "Port";
-            label15.Text = "login";
-            label28.Text = "bridge";
-
-            label_devicelog.Text = "DeviceLog";
-            label_devcietree.Text = "DeviceTree";
-
-            checkBoxOPCDA.Text = "Monitor";
-            labelOPCDAMonitor.Text = "Interval";
-            labelSecond.Text = "Second";
-        }
-
         private void TreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
             TreeViewHelper.TreeView_AfterSelect(e.Action, e.Node);
@@ -867,16 +867,130 @@ namespace Dgiot_dtu
             }
         }
 
-        private void CheckBoxOPCDA_CheckedChanged(object sender, EventArgs e)
+        private void Language(string lan)
         {
-            LogHelper.Log("checkBoxOPCDA " + DgiotHelper.BoolTostr(checkBoxOPCDA.Checked));
-            SetConfig("OPCDACheck", DgiotHelper.BoolTostr(checkBoxOPCDA.Checked));
-            OPCDAHelper.StartMonitor();
+            if (lan == "English")
+            {
+                En();
+            }
+            else
+            {
+                Zh();
+            }
         }
 
-        private void TextBoxOPCDAInterval_TextChanged(object sender, EventArgs e)
+        private void Zh()
         {
-            SetConfig("OPCDAInterval", textBoxOPCDAInterval.Text);
+            sendBridge.Text = "发送";
+            buttonClear.Text = "清除";
+            buttonStartStop.Text = "开始";
+
+            checkBoxReconnect.Text = "自动重连";
+            label33.Text = "语言";
+            label32.Text = "日志级别";
+
+            label7.Text = "发至";
+            label2.Text = "发至";
+            labelopcua.Text = "发至";
+            label23.Text = "发至";
+            label8.Text = "发至";
+            label6.Text = "发至";
+            labelOPCDAHost.Text = "主机";
+
+            groupBoxSerialPort.Text = "串口扫描";
+            groupBox12.Text = "PLC扫描";
+            groupBox4.Text = "OPC_DA扫描";
+            groupBox5.Text = "OPC_UA扫描";
+            groupBox6.Text = "BACnet扫描";
+            groupBox7.Text = "窗体扫描";
+            groupBox8.Text = "Access扫描";
+
+            labelSerialPort.Text = "端口";
+            label1.Text = "波特率";
+            label4.Text = "数据位";
+            label13.Text = "校验位";
+            label5.Text = "停止位";
+
+            groupBox3.Text = "Mqtt 客户端通道";
+            label22.Text = "服务器地址";
+            label21.Text = "服务器端口";
+            label9.Text = "登录用户";
+            label10.Text = "登录密码";
+            label30.Text = "网关地址";
+            label20.Text = "客户编号";
+            label11.Text = "订阅主题";
+            label12.Text = "发布主题";
+            label29.Text = "命令代理";
+
+            groupBox2.Text = "TCP 客户端通道";
+            label16.Text = "登录报文";
+
+            groupBox10.Text = "UDP 客户端通道";
+            label15.Text = "登录报文";
+
+            label_devcietree.Text = "设备树";
+            checkBoxOPCDA.Text = "主动上报";
+            labelOPCDAMonitor.Text = "采集间隔";
+            labelSecond.Text = "秒";
+            checkBoxBridge.Text = "桥接端口";
+        }
+
+        private void En()
+        {
+            sendBridge.Text = "Send";
+            buttonClear.Text = "Clear";
+            buttonStartStop.Text = "Start";
+            label32.Text = "Level";
+
+            checkBoxReconnect.Text = "Auto Reconnect";
+            label33.Text = "Language";
+
+            label7.Text = "To";
+            label2.Text = "To";
+            labelopcua.Text = "To";
+            label23.Text = "To";
+            label8.Text = "To";
+            label6.Text = "To";
+            labelOPCDAHost.Text = "Host";
+
+            groupBoxSerialPort.Text = "Serial Port Capture";
+            groupBox12.Text = "PLC Capture";
+            groupBox4.Text = "OPC_DA Capture";
+            groupBox5.Text = "OPC_UA Capture";
+            groupBox6.Text = "BACnet Capture";
+            groupBox7.Text = "Control Capture";
+            groupBox8.Text = "Access Capture";
+
+            labelSerialPort.Text = "Port";
+            label1.Text = "Baud Rate";
+            label4.Text = "dataBits";
+            label13.Text = "Parity";
+            label5.Text = "stopBits";
+            labelOPCDAHost.Text = "Host";
+
+            groupBox3.Text = "Mqtt Client Channel";
+            label22.Text = "Server";
+            label21.Text = "Port";
+            label9.Text = "UserName";
+            label10.Text = "PassWord";
+            label30.Text = "DtuAddr";
+            label20.Text = "Clientid";
+            label11.Text = "SubTopic";
+            label12.Text = "PubTopic";
+            label29.Text = "cmd proxy";
+
+            groupBox2.Text = "TCP Client Channel";
+            label16.Text = "login";
+
+            groupBox10.Text = "UDP Client Channel";
+            label15.Text = "login";
+
+            label_devcietree.Text = "DeviceTree";
+
+            checkBoxOPCDA.Text = "Monitor";
+            labelOPCDAMonitor.Text = "Interval";
+            labelSecond.Text = "Second";
+            checkBoxBridge.Text = "Bridge Port";
         }
     }
 }

@@ -20,7 +20,7 @@ namespace Dgiot_dtu
         private static OPCDAHelper instance = null;
         private static string productId = string.Empty;
         private static string devAddr = string.Empty;
-        private static bool bChecked = false;
+        private static string host = "127.0.0.1";
         private static int interval = 1000;
 
         public OPCDAHelper()
@@ -38,41 +38,28 @@ namespace Dgiot_dtu
             return instance;
         }
 
-        public static void Start(KeyValueConfigurationCollection config)
+        public static void Start()
         {
-            Config(config);
+            Config();
+            OPCDAViewHelper.View();
+            View();
         }
 
         public static void Stop()
         {
         }
 
-        public static void Config(KeyValueConfigurationCollection config)
+        public static void Config()
         {
-            if (config["OPCDACheck"] != null)
-            {
-                bChecked = DgiotHelper.StrTobool(config["OPCDACheck"].Value);
-            }
-
-            if (config["OPCDAInterval"] != null)
-            {
-                interval = int.Parse(config["OPCDAInterval"].Value) * 1000;
-            }
-
-            if (config["mqttUserName"] != null)
-            {
-                productId = config["mqttUserName"].Value;
-            }
-
-            if (config["devAddr"] != null)
-            {
-                devAddr = config["devAddr"].Value;
-            }
+            host = ConfigHelper.GetConfig("OPCDAHost");
+            interval = int.Parse(ConfigHelper.GetConfig("OPCDAInterval")) * 1000;
+            productId = ConfigHelper.GetConfig("MqttUserName");
+            devAddr = ConfigHelper.GetConfig("DtuAddr");
         }
 
         public static void StartMonitor()
         {
-            if (bChecked)
+            if (DgiotHelper.StrTobool(ConfigHelper.GetConfig("OPCDACheck")))
             {
                 OpcDa.StartGroup(OPCDAViewHelper.GetRootNode(), interval);
             }
@@ -84,13 +71,10 @@ namespace Dgiot_dtu
 
         public static void View()
         {
-            DgiotHelper.GetIps().ForEach(host =>
+            OpcDa.ScanOPCDa(host, true).ForEach(service =>
             {
-                OpcDa.ScanOPCDa(host, true).ForEach(service =>
-                {
-                    OpcDaService server = OpcDa.GetOpcDaService(host, service);
-                    OPCDAViewHelper.GetTreeNodes(server);
-                });
+                OpcDaService server = OpcDa.GetOpcDaService(host, service);
+                OPCDAViewHelper.GetTreeNodes(server);
             });
         }
 

@@ -410,6 +410,7 @@ namespace Da
             {
                 var opcGroup = sender as OpcDaGroup;
 
+                LogHelper.Log("opcGroup " );
                 callBack.ValueChangedCallBack(opcGroup, e.Values);
             }
         }
