@@ -102,10 +102,27 @@ namespace Dgiot_dtu
             {
                 if (!(element.ItemId.IndexOf('$') == 0))
                 {
-                    TreeNode curNode = AddNode(node, element.Name, element.ItemId);
-                    if (element.HasChildren && curNode != null)
+                    if (indent > 14)
                     {
-                        BrowseChildren(browser, curNode, element.ItemId, indent + 2);
+                        continue;
+                    }
+
+                    if (IsItemsfilter(element.Name) || IsItemsfilter(element.ItemId))
+                    {
+                        continue;
+                    }
+
+                    if (element.HasChildren )
+                    {
+                        TreeNode curNode = AddNode(node, element.Name, element.ItemId);
+                        if (curNode != null)
+                        {
+                            BrowseChildren(browser, curNode, element.ItemId, indent + 2);
+                        }
+                    }
+                    else
+                    {
+                        AddLeafNode(node, element.Name, element.ItemId);
                     }
                 }
             }
@@ -113,15 +130,12 @@ namespace Dgiot_dtu
 
         public static void AddItems(TreeNode parentNode)
         {
-            if (parentNode.ForeColor == System.Drawing.Color.Blue || parentNode.ForeColor == System.Drawing.Color.Gold)
+            List<string> items = FileHelper.OpenFile();
+            items.ForEach(item =>
             {
-                List<string> items = FileHelper.OpenFile();
-                items.ForEach(item =>
-                {
-                    AddNode(parentNode, item, item);
-                    LogHelper.Log("item " + item);
-                });
-            }
+                AddLeafNode(parentNode, item, item);
+                LogHelper.Log("item " + item);
+            });
         }
 
         public static string GetItemId(string name, string itemid)
@@ -143,9 +157,51 @@ namespace Dgiot_dtu
             }
         }
 
+        public static TreeNode AddLeafNode(TreeNode parentNode, string name, string itemid)
+        {
+            if (null == parentNode || parentNode.Level == 7 || null == GetItemId(name, itemid))
+            {
+                return null;
+            }
+
+            parentNode.ForeColor = System.Drawing.Color.Blue;
+            if (parentNode.Parent != null)
+            {
+                parentNode.Parent.ForeColor = System.Drawing.Color.Black;
+                if (parentNode.Parent.Parent != null)
+                {
+                    parentNode.Parent.Parent.ForeColor = System.Drawing.Color.Black;
+                    if (parentNode.Parent.Parent.Parent != null)
+                    {
+                        parentNode.Parent.Parent.Parent.ForeColor = System.Drawing.Color.Black;
+                        if (parentNode.Parent.Parent.Parent.Parent != null)
+                        {
+                            parentNode.Parent.Parent.Parent.Parent.ForeColor = System.Drawing.Color.Black;
+                            if (parentNode.Parent.Parent.Parent.Parent.Parent != null)
+                            {
+                                parentNode.Parent.Parent.Parent.Parent.Parent.ForeColor = System.Drawing.Color.Black;
+                            }
+                        }
+                    }
+                }
+            }
+
+            string newItemId = GetItemId(name, itemid);
+
+            if (!parentNode.Nodes.ContainsKey(Key(parentNode, newItemId)))
+            {
+                parentNode.Nodes.Add(Key(parentNode, newItemId), newItemId);
+            }
+
+            parentNode.Nodes[Key(parentNode, newItemId)].ForeColor = System.Drawing.Color.Green;
+            parentNode.Nodes[Key(parentNode, newItemId)].Tag = Type();
+            parentNode.Nodes[Key(parentNode, newItemId)].ToolTipText = name;
+            return parentNode.Nodes[Key(parentNode, newItemId)];
+        }
+
         public static TreeNode AddNode(TreeNode parentNode, string name, string itemid)
         {
-            if (parentNode == null || parentNode.Level == 6 || null == GetItemId(name, itemid))
+            if (null == parentNode || parentNode.Level == 7 || null == GetItemId(name, itemid))
             {
                 return null;
             }
@@ -153,55 +209,7 @@ namespace Dgiot_dtu
             string newItemId = GetItemId(name, itemid);
             if (!parentNode.Nodes.ContainsKey(Key(parentNode, newItemId)))
             {
-               parentNode.Nodes.Add(Key(parentNode, newItemId), newItemId);
-            }
-
-            switch (parentNode.Level + 1)
-            {
-                case (int)NodeType.OPCDA: // OPCDA
-                    parentNode.Nodes[Key(parentNode, newItemId)].ForeColor = System.Drawing.Color.Black;
-                    break;
-                case (int)NodeType.Host: // host
-                    parentNode.Nodes[Key(parentNode, newItemId)].ForeColor = System.Drawing.Color.Black;
-                    break;
-                case (int)NodeType.Service: // service
-                    parentNode.Nodes[Key(parentNode, newItemId)].ForeColor = System.Drawing.Color.Black;
-                    break;
-                case (int)NodeType.Device: // device
-                    if (IsDevicefilter(name) || IsDevicefilter(newItemId))
-                    {
-                        parentNode.Nodes.RemoveByKey(Key(parentNode, newItemId));
-                        return null;
-                    }
-
-                    parentNode.Nodes[Key(parentNode, newItemId)].ForeColor = System.Drawing.Color.Gold;
-                    break;
-                case (int)NodeType.Group: // group
-                    if (IsGroupfilter(name) || IsGroupfilter(newItemId))
-                    {
-                        parentNode.Nodes.RemoveByKey(Key(parentNode, newItemId));
-                        return null;
-                    }
-
-                    parentNode.Nodes[Key(parentNode, itemid)].ForeColor = System.Drawing.Color.Blue;
-                    break;
-                case (int)NodeType.Item: // item
-                    if (IsItemsfilter(name) || IsItemsfilter(newItemId))
-                    {
-                        parentNode.Nodes.RemoveByKey(Key(parentNode, newItemId));
-                        return null;
-                    }
-
-                    parentNode.Nodes[Key(parentNode, newItemId)].ForeColor = System.Drawing.Color.Green;
-                    break;
-                case (int)NodeType.Property: // property
-                    parentNode.Nodes[Key(parentNode, newItemId)].ForeColor = System.Drawing.Color.Green;
-                    parentNode.Nodes[Key(parentNode, newItemId)].Parent.ForeColor = System.Drawing.Color.Blue;
-                    parentNode.Nodes[Key(parentNode, newItemId)].Parent.Parent.ForeColor = System.Drawing.Color.Gold;
-                    parentNode.Nodes[Key(parentNode, newItemId)].Parent.Parent.Parent.ForeColor = System.Drawing.Color.Black;
-                    break;
-                default:
-                    break;
+                parentNode.Nodes.Add(Key(parentNode, newItemId), newItemId);
             }
 
             parentNode.Nodes[Key(parentNode, newItemId)].Tag = Type();
@@ -209,7 +217,7 @@ namespace Dgiot_dtu
             return parentNode.Nodes[Key(parentNode, newItemId)];
         }
 
-        private static readonly List<string> DeviceFilter = new List<string>
+        private static readonly List<string> Itemsfilter = new List<string>
         {
             "_AdvancedTags",
             "_ConnectionSharing",
@@ -230,68 +238,12 @@ namespace Dgiot_dtu
             ".SystemVariable"
         };
 
-        private static bool IsDevicefilter(string device)
+        private static bool IsItemsfilter(string group)
         {
             bool result = false;
-            foreach (string filter in DeviceFilter)
-            {
-                if (-1 != device.LastIndexOf(filter))
-                {
-                    return true;
-                }
-            }
-
-            return result;
-        }
-
-        private static readonly List<string> Groupfilter = new List<string>
-        {
-            "_AdvancedTags",
-            "_ConnectionSharing",
-            "_CustomAlarms",
-            "_DataLogger",
-            "_EFMExporter",
-            "_IDF_for_Splunk",
-            "_IoT_Gateway",
-            "_LocalHistorian",
-            "_Redundancy",
-            "_Scheduler",
-            "_SecurityPolicies",
-            "_SNMP Agent",
-            "_System",
-            "_ThingWorx",
-            "._Statistics",
-            "._System",
-            ".SystemVariable"
-        };
-
-        private static bool IsGroupfilter(string group)
-        {
-            bool result = false;
-            foreach (string filter in Groupfilter)
+            foreach (string filter in Itemsfilter)
             {
                 if (-1 != group.LastIndexOf(filter))
-                {
-                    return true;
-                }
-            }
-
-            return result;
-        }
-
-        private static readonly List<string> Itemfilter = new List<string>
-        {
-            "._Statistics",
-            "._System",
-            ".SystemVariable"
-        };
-
-        private static bool IsItemsfilter(string item)
-        {
-            bool result = false;
-            foreach (string filter in Itemfilter)
-            {
-                if (-1 != item.LastIndexOf(filter))
                 {
                     return true;
                 }

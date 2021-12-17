@@ -138,39 +138,73 @@ namespace Da
 
         public void StartGroup(TreeNode currNode, int interval)
         {
-            if (currNode.Nodes == null && currNode.Checked)
+            if (currNode.Nodes == null || !currNode.Checked)
             {
-                return; // 没有子节点返回
+                return; // 没有子节点或者没被选中
             }
 
             if (currNode.ForeColor == System.Drawing.Color.Blue)
             {
-                List<string> items = new List<string>();
-                if (currNode.Checked && currNode.Nodes != null)
+                TreeNode serviceNode = GetServerNode(currNode);
+                if (null != serviceNode)
                 {
-                    foreach (TreeNode tmpNode in currNode.Nodes)
-                    {
-                        items.Add(tmpNode.Text);
-                    }
-
-                    TreeNode deviceNode = currNode.Parent;
-                    if (currNode.Level == 5)
-                    {
-                        deviceNode = deviceNode.Parent;
-                    }
-
-                    TreeNode serviceNode = deviceNode.Parent;
+                    LogHelper.Log("Level " + serviceNode.Level.ToString());
                     TreeNode hostNode = serviceNode.Parent;
                     StartMonitoringItems(hostNode.Text, serviceNode.Text, currNode, interval);
                 }
             }
-            else
+
+            foreach (TreeNode tmpNode in currNode.Nodes)
             {
-                foreach (TreeNode tmpNode in currNode.Nodes)
+                StartGroup(tmpNode, interval);
+            }
+        }
+
+        public TreeNode GetServerNode(TreeNode node)
+        {
+            if (node == null)
+            {
+                return null;
+            }
+
+            if (node.Level == 2)
+            {
+                return node;
+            }
+
+            if (node.Parent != null)
+            {
+                if (node.Parent.Level == 2)
                 {
-                    StartGroup(tmpNode, interval);
+                    return node.Parent;
+                }
+
+                if (node.Parent.Parent != null)
+                {
+                    if (node.Parent.Parent.Level == 2)
+                    {
+                        return node.Parent.Parent;
+                    }
+
+                    if (node.Parent.Parent.Parent != null)
+                    {
+                        if (node.Parent.Parent.Parent.Level == 2)
+                        {
+                            return node.Parent.Parent.Parent;
+                        }
+
+                        if (node.Parent.Parent.Parent.Parent != null)
+                        {
+                            if (node.Parent.Parent.Parent.Parent.Level == 2)
+                            {
+                                return node.Parent.Parent.Parent.Parent;
+                            }
+                        }
+                    }
                 }
             }
+
+            return null;
         }
 
         public void StopGroup()
@@ -246,6 +280,7 @@ namespace Da
             daGroupKeyPairs.Add(groupKey, group);
             groupKeys.Add(groupKey);
             LogHelper.Log("StartMonitoring  is groupId " + groupKey + " interval " + interval.ToString() + " ms", (int)LogHelper.Level.INFO);
+
             group.UpdateRate = TimeSpan.FromMilliseconds(interval); // 1000毫秒触发一次
             group.ValuesChanged += MonitorValuesChanged;
             GroupEntity groupEntity = new GroupEntity()
