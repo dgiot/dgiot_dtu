@@ -86,7 +86,7 @@ namespace Dgiot_dtu
             if (group.UserData != null)
             {
                 TreeNode node = group.UserData as TreeNode;
-                result.Add("deviceAddr", DgiotHelper.Now());
+                result.Add("deviceId", DgiotHelper.Now());
             }
 
             JsonObject properties = new JsonObject();
@@ -94,13 +94,13 @@ namespace Dgiot_dtu
             values.ToList().ForEach(v =>
             {
                 Item i = new Item();
-                if (v.Item != null)
+                if (v.Item != null && v.Value != null)
                 {
                     properties.Add(v.Item.ItemId, v.Value);
                 }
             });
             result.Add("properties", properties);
-            string topic = "/" + productId + "/" + devAddr + "/topo/" + group.Name + "/post";
+            string topic = "/" + productId + "/" + devAddr + "/report/opc/properties";
             LogHelper.Log("topic " + topic + " payload: " + result);
             MqttClientHelper.Publish(topic, Encoding.UTF8.GetBytes(result.ToString()));
         }
