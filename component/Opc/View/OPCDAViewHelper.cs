@@ -74,6 +74,32 @@ namespace Dgiot_dtu
             {
                 return nodes[0];
             }
+            return null;
+        }
+
+        // 查询子节点
+        public static TreeNode FindNode(TreeNode currNode, string key)
+        {
+            if (currNode.Nodes == null)
+            {
+                return null; // 没有子节点返回
+            }
+            else
+            {
+                if (key == Key(currNode.FullPath))
+                {
+                    return currNode;
+                }
+
+                foreach (TreeNode tmpNode in currNode.Nodes)
+                {
+                    TreeNode childNode = FindNode(tmpNode, key);
+                    if (childNode != null)
+                    {
+                        return childNode;
+                    }
+                }
+            }
 
             return null;
         }

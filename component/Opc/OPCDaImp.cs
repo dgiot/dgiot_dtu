@@ -418,6 +418,49 @@ namespace Da
             return null;
         }
 
+        public void StartMonitor(string groupKey, List<string> items, string serverID, string host = "127.0.0.1")
+        {
+            JsonArray properties = new JsonArray();
+
+            OpcDaService server = GetOpcDaService(host, serverID);
+            if (server == null)
+            {
+                return;
+            }
+
+            if (server.OpcDaGroupS.ContainsKey(groupKey) == false)
+            {
+                OpcDaGroup group = server.Service.AddGroup(groupKey);  // maybe cost lot of time
+                Thread.Sleep(100);
+                group.IsActive = true;
+                server.OpcDaGroupS.Add(groupKey, group);
+                List<OpcDaItemDefinition> itemDefList = new List<OpcDaItemDefinition>();
+                foreach (string item in items)
+                {
+                    var def = new OpcDaItemDefinition
+                    {
+                        ItemId = item,
+                        IsActive = true
+                    };
+                    itemDefList.Add(def);
+                }
+
+                group.AddItems(itemDefList);
+                daGroupKeyPairs.Add(groupKey, group);
+                groupKeys.Add(groupKey);
+                LogHelper.Log("StartMonitoring  is groupId " + groupKey + " interval " + "1000  ms", (int)LogHelper.Level.INFO);
+
+                group.UpdateRate = TimeSpan.FromMilliseconds(1000); // 1000毫秒触发一次
+                group.ValuesChanged += MonitorValuesChanged;
+                GroupEntity groupEntity = new GroupEntity()
+                {
+                    Host = server.Host,
+                    ProgId = server.ServiceId
+                };
+                groupCollection.Add(groupKey, groupEntity);
+            }
+        }
+
         public void WriteValues(string host, string serviceProgId, string groupKey, Dictionary<string, object> itemValuePairs)
         {
             OpcDaService server = GetOpcDaService(host, serviceProgId);
@@ -451,8 +494,6 @@ namespace Da
             if (callBack != null)
             {
                 var opcGroup = sender as OpcDaGroup;
-
-                LogHelper.Log("opcGroup " );
                 callBack.ValueChangedCallBack(opcGroup, e.Values);
             }
         }

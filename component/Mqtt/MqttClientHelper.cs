@@ -42,6 +42,7 @@ namespace Dgiot_dtu
         private static bool bIsRunning = false;
         private static bool bIsCheck = false;
         private static bool bAutoReconnect = false;
+        private static string dtuAddr = "";
 
         public static MqttClientHelper GetInstance()
         {
@@ -84,6 +85,7 @@ namespace Dgiot_dtu
             password = ConfigHelper.GetConfig("MqttPassword");
             pubtopic = ConfigHelper.GetConfig("MqttPubTopic");
             subtopic = ConfigHelper.GetConfig("MqttSubTopic");
+            dtuAddr = ConfigHelper.GetConfig("DtuAddr");
             bIsCheck = DgiotHelper.StrTobool(ConfigHelper.GetConfig("MqttClient_Checked"));
         }
 
@@ -171,21 +173,10 @@ namespace Dgiot_dtu
         private static void MqttClient_Connected(object sender, EventArgs e)
         {
             LogHelper.Log("mqtt client:" + clientid + " connected");
-            mqttClient.SubscribeAsync(new TopicFilter(plctopic + "/#",  MqttQualityOfServiceLevel.AtLeastOnce));
-            mqttClient.SubscribeAsync(new TopicFilter(opcdatopic + "/#",   MqttQualityOfServiceLevel.AtLeastOnce));
-            mqttClient.SubscribeAsync(new TopicFilter(opcuatopic + "/#", MqttQualityOfServiceLevel.AtLeastOnce));
-            mqttClient.SubscribeAsync(new TopicFilter(bacnettopic + "/#", MqttQualityOfServiceLevel.AtLeastOnce));
-            mqttClient.SubscribeAsync(new TopicFilter(controltopic + "/#", MqttQualityOfServiceLevel.AtLeastOnce));
-            mqttClient.SubscribeAsync(new TopicFilter(accesstopic + "/#", MqttQualityOfServiceLevel.AtLeastOnce));
-            mqttClient.SubscribeAsync(new TopicFilter(sqlservertopic + "/#", MqttQualityOfServiceLevel.AtLeastOnce));
-            LogHelper.Log("mqtt client subscribe topic: " + plctopic + "/#");
-            LogHelper.Log("mqtt client subscribe topic: " + opcdatopic + "/#" );
-            LogHelper.Log("mqtt client subscribe topic: " + opcuatopic + "/#");
-            LogHelper.Log("mqtt client subscribe topic: " + bacnettopic + "/#");
-            LogHelper.Log("mqtt client subscribe topic: " + controltopic + "/#" );
-            LogHelper.Log("mqtt client subscribe topic: " + accesstopic + "/#" );
-            LogHelper.Log("mqtt client subscribe topic: " + sqlservertopic + "/#" );
-            LogHelper.Log("mqtt client subscribe topic: " + subtopic + "/#" );
+
+            mqttClient.SubscribeAsync(new TopicFilter("/" + username + "/" + dtuAddr + "/#", MqttQualityOfServiceLevel.AtLeastOnce));
+
+            LogHelper.Log("mqtt client subscribe topic: " + "/" + username + "/" + dtuAddr + "/#");
         }
 
         /// <summary>
@@ -222,6 +213,19 @@ namespace Dgiot_dtu
             if (m_subtopic.Success)
             {
                 SerialPortHelper.Write(e.ApplicationMessage.Payload, 0, e.ApplicationMessage.Payload.Length);
+            }
+            if (topic.IndexOf("/" + username + "/" + dtuAddr + "/device/event") == 0) {
+                if (json.ContainsKey("cmd"))
+                {
+                    if (json["cmd"].ToString() == "opc_items")
+                    {
+                        OPCDAHelper.Additems(json);
+                    }
+                    else if (json["cmd"].ToString() == "opc_report")
+                    {
+                        OPCDAHelper.Publishvalues(json);
+                    }
+                }
             }
 
             AccessHelper.Do_mdb(topic,  json, clientid);

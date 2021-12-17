@@ -123,7 +123,7 @@ namespace Dgiot_dtu
             // 通过鼠标或者键盘触发事件，防止修改节点的Checked状态时候再次进入
             if ((action == TreeViewAction.ByMouse || action == TreeViewAction.ByKeyboard ) && node.Checked)
             {
-                LogHelper.Log("select node " + node.Text + " tag " + node.Tag + " path " + node.FullPath.ToString());
+                LogHelper.Log("select node " + node.Text + " tag " + node.Tag + " key " + OPCDAViewHelper.Key(node.FullPath.ToString()));
             }
         }
 

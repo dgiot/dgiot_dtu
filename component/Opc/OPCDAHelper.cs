@@ -22,6 +22,7 @@ namespace Dgiot_dtu
         private static string devAddr = string.Empty;
         private static string host = "127.0.0.1";
         private static int interval = 1000;
+        private static Dictionary<string, int> groupFlagCollection = new Dictionary<string, int>();
 
         public OPCDAHelper()
         {
@@ -64,9 +65,9 @@ namespace Dgiot_dtu
                 OpcDa.StartGroup(OPCDAViewHelper.GetRootNode(), interval);
             }
             else
-           {
+            {
                 OpcDa.StopGroup();
-           }
+            }
         }
 
         public static void View()
@@ -101,8 +102,37 @@ namespace Dgiot_dtu
             });
             result.Add("properties", properties);
             string topic = "/" + productId + "/" + devAddr + "/report/opc/properties";
-            LogHelper.Log("topic " + topic + " payload: " + result);
-            MqttClientHelper.Publish(topic, Encoding.UTF8.GetBytes(result.ToString()));
+            if (groupFlagCollection.ContainsKey(group.Name) && groupFlagCollection[group.Name] > 0) {
+                LogHelper.Log("topic " + topic + " payload: " + result);
+                MqttClientHelper.Publish(topic, Encoding.UTF8.GetBytes(result.ToString()));
+                groupFlagCollection[group.Name]--;
+            }
+        }
+
+        public static void Additems(Dictionary<string, object> json)
+        {
+            string groupid = json["groupid"].ToString();
+            string opcserver = json["opcserver"].ToString();
+            object[] items = (object[])json["items"];
+            List<string> itemlist = new List<string> { };
+            for (int i = 0; i < items.Length; i++)
+            {
+                itemlist.Add((string)items[i]);
+            }
+            OpcDa.StartMonitor(groupid, itemlist, opcserver);
+        }
+
+        public static void Publishvalues(Dictionary<string, object> json)
+        {
+            string groupid = json["groupid"].ToString();
+            int duration = (int)json["duration"];
+            if (groupFlagCollection.ContainsKey(groupid)) {
+                groupFlagCollection[groupid] = duration;
+            }
+            else
+            {
+                groupFlagCollection.Add(groupid, duration);
+            }
         }
     }
  }

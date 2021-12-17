@@ -572,7 +572,7 @@ namespace Dgiot_dtu
             this.textBoxDgiotSever.Name = "textBoxDgiotSever";
             this.textBoxDgiotSever.Size = new System.Drawing.Size(133, 21);
             this.textBoxDgiotSever.TabIndex = 5;
-            this.textBoxDgiotSever.Text = "prod.iotn2n.com";
+            this.textBoxDgiotSever.Text = "pump.dgiotcloud.com";
             this.textBoxDgiotSever.TextChanged += new System.EventHandler(this.TextBoxDgiotSever_TextChanged);
             // 
             // label22

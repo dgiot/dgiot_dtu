@@ -44,3 +44,6 @@ dotnet_diagnostic.SA1214.severity = none
 
 # SA1604: Element documentation must have summary
 dotnet_diagnostic.SA1604.severity = none
+
+# CS0252: 可能非有意的引用比较；左侧需要强制转换
+dotnet_diagnostic.CS0252.severity = none
