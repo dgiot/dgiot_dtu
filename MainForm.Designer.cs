@@ -1036,9 +1036,10 @@ namespace Dgiot_dtu
             this.ForeColor = System.Drawing.SystemColors.ControlText;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MaximizeBox = false;
             this.Name = "MainForm";
             this.Text = "dgiot_dtu";
+            this.Load += new System.EventHandler(this.MainForm_Load);
+            this.Resize += new System.EventHandler(this.MainForm_Resize);
             this.groupBoxSerialPort.ResumeLayout(false);
             this.groupBoxSerialPort.PerformLayout();
             this.groupBox2.ResumeLayout(false);

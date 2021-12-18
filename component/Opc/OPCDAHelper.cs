@@ -115,10 +115,11 @@ namespace Dgiot_dtu
             string opcserver = json["opcserver"].ToString();
             object[] items = (object[])json["items"];
             List<string> itemlist = new List<string> { };
-            for (int i = 0; i < items.Length; i++)
+            foreach (object v in items)
             {
-                itemlist.Add((string)items[i]);
+                itemlist.Add((string)v);
             }
+
             OpcDa.StartMonitor(groupid, itemlist, opcserver);
         }
 
@@ -126,7 +127,8 @@ namespace Dgiot_dtu
         {
             string groupid = json["groupid"].ToString();
             int duration = (int)json["duration"];
-            if (groupFlagCollection.ContainsKey(groupid)) {
+            if (groupFlagCollection.ContainsKey(groupid))
+            {
                 groupFlagCollection[groupid] = duration;
             }
             else

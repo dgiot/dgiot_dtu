@@ -26,13 +26,6 @@ namespace Dgiot_dtu
         private static MqttClient mqttClient = null;
         private static string server = "prod.iotn2n.com";
         private static int port = 1883;
-        private static string plctopic = "thing/plc/clientid/";
-        private static string opcdatopic = "thing/opcda/clientid/";
-        private static string opcuatopic = "thing/opcua/clientid/";
-        private static string bacnettopic = "thing/bacnet/clientid/";
-        private static string controltopic = "thing/control/clientid/";
-        private static string accesstopic = "thing/access/clientid/";
-        private static string sqlservertopic = "thing/sqlserver/clientid/";
         private static string subtopic = "thing/com/";
         private static string pubtopic = "thing/com/post/";
         private static string clientid = Guid.NewGuid().ToString().Substring(0, 5);
@@ -214,7 +207,9 @@ namespace Dgiot_dtu
             {
                 SerialPortHelper.Write(e.ApplicationMessage.Payload, 0, e.ApplicationMessage.Payload.Length);
             }
-            if (topic.IndexOf("/" + username + "/" + dtuAddr + "/device/event") == 0) {
+
+            if (topic.IndexOf("/" + username + "/" + dtuAddr + "/device/event") == 0)
+            {
                 if (json.ContainsKey("cmd"))
                 {
                     if (json["cmd"].ToString() == "opc_items")

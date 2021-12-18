@@ -8,6 +8,7 @@ namespace Dgiot_dtu
     using System.Collections.Generic;
     using System.Configuration;
     using System.Diagnostics;
+    using System.Drawing;
     using System.Text.RegularExpressions;
     using System.Windows.Forms;
 
@@ -21,6 +22,8 @@ namespace Dgiot_dtu
         private static OPCDAHelper oPCDAHelper = OPCDAHelper.GetInstance();
         private static OPCDAViewHelper oPCDAViewHelper = OPCDAViewHelper.GetInstance();
         private bool bIsRunning = false;
+        private float x; // 当前窗体的宽度
+        private float y; // 当前窗体的高度
         private readonly string[] bridges = new string[]
         {
             "SerialPort",
@@ -991,6 +994,60 @@ namespace Dgiot_dtu
             labelOPCDAMonitor.Text = "Interval";
             labelSecond.Text = "Second";
             checkBoxBridge.Text = "Bridge Port";
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            x = this.Width; // 获取窗体的宽度
+            y = this.Height; // 获取窗体的高度
+            SetTag(this); // 调用方法
+        }
+
+        private void MainForm_Resize(object sender, EventArgs e)
+        {
+            float newx = this.Width / x; // 窗体宽度缩放比例
+            float newy = this.Height / y; // 窗体高度缩放比例
+            SetControls(newx, newy, this); // 随窗体改变控件大小
+        }
+
+        /// <summary>
+        /// 将控件的宽，高，左边距，顶边距和字体大小暂存到tag属性中
+        /// </summary>
+        /// <param name="cons">递归控件中的控件</param>
+        private void SetTag(Control cons)
+        {
+            foreach (Control con in cons.Controls)
+            {
+                con.Tag = con.Width + ":" + con.Height + ":" + con.Left + ":" + con.Top + ":" + con.Font.Size;
+                if (con.Controls.Count > 0)
+                {
+                    SetTag(con);
+                }
+            }
+        }
+
+        // 根据窗体大小调整控件大小
+        private void SetControls(float newx, float newy, Control cons)
+        {
+            // 遍历窗体中的控件，重新设置控件的值
+            foreach (Control con in cons.Controls)
+            {
+                string[] mytag = con.Tag.ToString().Split(new char[] { ':' }); // 获取控件的Tag属性值，并分割后存储字符串数组
+                float a = Convert.ToSingle(mytag[0]) * newx; // 根据窗体缩放比例确定控件的值，宽度
+                con.Width = (int)a; // 宽度
+                a = Convert.ToSingle(mytag[1]) * newy; // 高度
+                con.Height = (int)a;
+                a = Convert.ToSingle(mytag[2]) * newx; // 左边距离
+                con.Left = (int)a;
+                a = Convert.ToSingle(mytag[3]) * newy; // 上边缘距离
+                con.Top = (int)a;
+                float currentSize = Convert.ToSingle(mytag[4]) * newy; // 字体大小
+                con.Font = new Font(con.Font.Name, currentSize, con.Font.Style, con.Font.Unit);
+                if (con.Controls.Count > 0)
+                {
+                    SetControls(newx, newy, con);
+                }
+            }
         }
     }
 }

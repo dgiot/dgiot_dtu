@@ -74,6 +74,7 @@ namespace Dgiot_dtu
             {
                 return nodes[0];
             }
+
             return null;
         }
 
