@@ -62,7 +62,7 @@ namespace Dgiot_dtu
             if (DgiotHelper.StrTobool(ConfigHelper.GetConfig("OPCDACheck")))
             {
                 interval = int.Parse(ConfigHelper.GetConfig("OPCDAInterval")) * 1000;
-                int count = int.Parse(ConfigHelper.GetConfig("OPCDAInterval"));
+                int count = int.Parse(ConfigHelper.GetConfig("OPCDACount"));
                 OpcDa.StartGroup(OPCDAViewHelper.GetRootNode(), interval, count);
             }
             else
@@ -102,9 +102,11 @@ namespace Dgiot_dtu
             });
             result.Add("properties", properties);
             string topic = "/" + productId + "/" + devAddr + "/report/opc/properties";
-            if (OpcDa.GetGroupFlag(group.Name) > 0)
+            int flag = OpcDa.GetGroupFlag(group.Name);
+            LogHelper.Log("Count " + flag.ToString(), (int)LogHelper.Level.INFO);
+            if (flag > 0)
             {
-                LogHelper.Log("topic " + topic + " payload: " + result);
+                LogHelper.Log("Flag " + flag.ToString() + " topic " + topic + " payload: " + result);
                 MqttClientHelper.Publish(topic, Encoding.UTF8.GetBytes(result.ToString()));
             }
         }

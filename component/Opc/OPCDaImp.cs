@@ -249,6 +249,7 @@ namespace Da
             };
             groupCollection.Add(groupKey, groupEntity);
             SetGroupFlag(groupKey, count);
+            LogHelper.Log("GroupFlag " + GetGroupFlag(groupKey).ToString(), (int)LogHelper.Level.INFO);
 
             // GetUnits(group);
             // LogHelper.Log("" + GetUnits(group), (int)LogHelper.Level.INFO);
