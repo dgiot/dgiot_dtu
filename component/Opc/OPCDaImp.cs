@@ -137,7 +137,7 @@ namespace Da
           return opcDaServices.Any(item => { return item.Host == service.Host && item.ServiceId == serviceProgId; });
         }
 
-        public void StartGroup(TreeNode currNode, int interval)
+        public void StartGroup(TreeNode currNode, int interval, int count)
         {
             if (currNode.Nodes == null || !currNode.Checked)
             {
@@ -151,13 +151,13 @@ namespace Da
                 {
                     LogHelper.Log("Level " + serviceNode.Level.ToString());
                     TreeNode hostNode = serviceNode.Parent;
-                    StartMonitoringItems(hostNode.Text, serviceNode.Text, currNode, interval);
+                    StartMonitoringItems(hostNode.Text, serviceNode.Text, currNode, interval, count);
                 }
             }
 
             foreach (TreeNode tmpNode in currNode.Nodes)
             {
-                StartGroup(tmpNode, interval);
+                StartGroup(tmpNode, interval, count);
             }
         }
 
@@ -190,7 +190,7 @@ namespace Da
             groupKeys.Clear();
         }
 
-        public string StartMonitoringItems(string host, string serviceProgId, TreeNode groupNode, int interval)
+        public string StartMonitoringItems(string host, string serviceProgId, TreeNode groupNode, int interval, int count)
         {
             OpcDaService server = GetOpcDaService(host, serviceProgId);
             string groupKey = OPCDAViewHelper.Key(groupNode.Text);
@@ -203,13 +203,13 @@ namespace Da
             if (server.OpcDaGroupS.Count == 0 || !server.OpcDaGroupS.ContainsKey(groupKey))
             {
                 LogHelper.Log("StartMonitoringItems  is host opcda://" + host + "/" + serviceProgId);
-                AddGroup(server, groupKey, groupNode, interval);
+                AddGroup(server, groupKey, groupNode, interval, count);
             }
 
             return groupKey;
         }
 
-        public void AddGroup(OpcDaService server, string groupKey, TreeNode groupNode, int interval)
+        public void AddGroup(OpcDaService server, string groupKey, TreeNode groupNode, int interval, int count)
         {
             if (server.Service == null)
             {
@@ -248,7 +248,7 @@ namespace Da
                 ProgId = server.ServiceId
             };
             groupCollection.Add(groupKey, groupEntity);
-            SetGroupFlag(groupKey, 1000000000);
+            SetGroupFlag(groupKey, count);
 
             // GetUnits(group);
             // LogHelper.Log("" + GetUnits(group), (int)LogHelper.Level.INFO);
@@ -272,6 +272,7 @@ namespace Da
             server.Service.RemoveGroup(group);
             daGroupKeyPairs.Remove(groupKey);
             groupCollection.Remove(groupKey);
+            groupFlagCollection.Remove(groupKey);
         }
 
         public void SetItemsValueChangedCallBack(IItemsValueChangedCallBack callBack)

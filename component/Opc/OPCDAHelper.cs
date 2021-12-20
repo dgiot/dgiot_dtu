@@ -61,7 +61,9 @@ namespace Dgiot_dtu
         {
             if (DgiotHelper.StrTobool(ConfigHelper.GetConfig("OPCDACheck")))
             {
-                OpcDa.StartGroup(OPCDAViewHelper.GetRootNode(), interval);
+                interval = int.Parse(ConfigHelper.GetConfig("OPCDAInterval")) * 1000;
+                int count = int.Parse(ConfigHelper.GetConfig("OPCDAInterval"));
+                OpcDa.StartGroup(OPCDAViewHelper.GetRootNode(), interval, count);
             }
             else
             {

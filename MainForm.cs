@@ -22,8 +22,8 @@ namespace Dgiot_dtu
         private static OPCDAHelper oPCDAHelper = OPCDAHelper.GetInstance();
         private static OPCDAViewHelper oPCDAViewHelper = OPCDAViewHelper.GetInstance();
         private bool bIsRunning = false;
-        private float x; // 当前窗体的宽度
-        private float y; // 当前窗体的高度
+        private float x = 0; // 当前窗体的宽度
+        private float y = 0; // 当前窗体的高度
         private readonly string[] bridges = new string[]
         {
             "SerialPort",
@@ -496,6 +496,15 @@ namespace Dgiot_dtu
                 ConfigHelper.SetConfig("OPCDAInterval", textBoxOPCDAInterval.Text);
             }
 
+            if (ConfigHelper.Check("OPCDACount"))
+            {
+                textBoxOPCDACount.Text = ConfigHelper.GetConfig("OPCDACount");
+            }
+            else
+            {
+                ConfigHelper.SetConfig("OPCDACount", textBoxOPCDACount.Text);
+            }
+
             if (ConfigHelper.Check("OPCDACheck"))
             {
                 checkBoxOPCDA.Text = ConfigHelper.GetConfig("OPCDACheck");
@@ -719,6 +728,11 @@ namespace Dgiot_dtu
             ConfigHelper.SetConfig("OPCDAHost", textBoxOPCDAHost.Text);
         }
 
+        private void TextBoxOPCDACount_TextChanged(object sender, EventArgs e)
+        {
+            ConfigHelper.SetConfig("OPCDACount", textBoxOPCDACount.Text);
+        }
+
         private void TextBoxOPCUATopic_TextChanged(object sender, EventArgs e)
         {
             ConfigHelper.SetConfig("OPCUATopic", textBoxOPCUATopic.Text);
@@ -898,11 +912,15 @@ namespace Dgiot_dtu
             label23.Text = "发至";
             label8.Text = "发至";
             label6.Text = "发至";
-            labelOPCDAHost.Text = "主机";
 
             groupBoxSerialPort.Text = "串口扫描";
             groupBox12.Text = "PLC扫描";
             groupBox4.Text = "OPC_DA扫描";
+            labelOPCDAHost.Text = "主机";
+            checkBoxOPCDA.Text = "主动上报";
+            labelOPCDAMonitor.Text = "采集间隔";
+            labelSecond.Text = "秒";
+            labelOPCDACount.Text = "采集次数";
             groupBox5.Text = "OPC_UA扫描";
             groupBox6.Text = "BACnet扫描";
             groupBox7.Text = "窗体扫描";
@@ -932,9 +950,6 @@ namespace Dgiot_dtu
             label15.Text = "登录报文";
 
             label_devcietree.Text = "设备树";
-            checkBoxOPCDA.Text = "主动上报";
-            labelOPCDAMonitor.Text = "采集间隔";
-            labelSecond.Text = "秒";
             checkBoxBridge.Text = "桥接端口";
         }
 
@@ -954,11 +969,15 @@ namespace Dgiot_dtu
             label23.Text = "To";
             label8.Text = "To";
             label6.Text = "To";
-            labelOPCDAHost.Text = "Host";
-
             groupBoxSerialPort.Text = "Serial Port Capture";
             groupBox12.Text = "PLC Capture";
             groupBox4.Text = "OPC_DA Capture";
+            labelOPCDAHost.Text = "Host";
+            checkBoxOPCDA.Text = "Monitor";
+            labelOPCDAMonitor.Text = "Interval";
+            labelSecond.Text = "Second";
+            labelOPCDACount.Text = "Count";
+
             groupBox5.Text = "OPC_UA Capture";
             groupBox6.Text = "BACnet Capture";
             groupBox7.Text = "Control Capture";
@@ -989,22 +1008,28 @@ namespace Dgiot_dtu
             label15.Text = "login";
 
             label_devcietree.Text = "DeviceTree";
-
-            checkBoxOPCDA.Text = "Monitor";
-            labelOPCDAMonitor.Text = "Interval";
-            labelSecond.Text = "Second";
             checkBoxBridge.Text = "Bridge Port";
         }
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            x = this.Width; // 获取窗体的宽度
-            y = this.Height; // 获取窗体的高度
+            x = Width; // 获取窗体的宽度
+            y = Height; // 获取窗体的高度
             SetTag(this); // 调用方法
         }
 
         private void MainForm_Resize(object sender, EventArgs e)
         {
+            if (x == 0)
+            {
+                x = Width;
+            }
+
+            if (y == 0)
+            {
+                y = Height;
+            }
+
             float newx = this.Width / x; // 窗体宽度缩放比例
             float newy = this.Height / y; // 窗体高度缩放比例
             SetControls(newx, newy, this); // 随窗体改变控件大小
@@ -1018,6 +1043,11 @@ namespace Dgiot_dtu
         {
             foreach (Control con in cons.Controls)
             {
+                if (con == null)
+                {
+                    continue;
+                }
+
                 con.Tag = con.Width + ":" + con.Height + ":" + con.Left + ":" + con.Top + ":" + con.Font.Size;
                 if (con.Controls.Count > 0)
                 {
@@ -1032,17 +1062,21 @@ namespace Dgiot_dtu
             // 遍历窗体中的控件，重新设置控件的值
             foreach (Control con in cons.Controls)
             {
-                string[] mytag = con.Tag.ToString().Split(new char[] { ':' }); // 获取控件的Tag属性值，并分割后存储字符串数组
-                float a = Convert.ToSingle(mytag[0]) * newx; // 根据窗体缩放比例确定控件的值，宽度
-                con.Width = (int)a; // 宽度
-                a = Convert.ToSingle(mytag[1]) * newy; // 高度
-                con.Height = (int)a;
-                a = Convert.ToSingle(mytag[2]) * newx; // 左边距离
-                con.Left = (int)a;
-                a = Convert.ToSingle(mytag[3]) * newy; // 上边缘距离
-                con.Top = (int)a;
-                float currentSize = Convert.ToSingle(mytag[4]) * newy; // 字体大小
-                con.Font = new Font(con.Font.Name, currentSize, con.Font.Style, con.Font.Unit);
+                if (con.Tag != null && con.Tag != "")
+                {
+                    string[] mytag = con.Tag.ToString().Split(new char[] { ':' }); // 获取控件的Tag属性值，并分割后存储字符串数组
+                    float a = Convert.ToSingle(mytag[0]) * newx; // 根据窗体缩放比例确定控件的值，宽度
+                    con.Width = (int)a; // 宽度
+                    a = Convert.ToSingle(mytag[1]) * newy; // 高度
+                    con.Height = (int)a;
+                    a = Convert.ToSingle(mytag[2]) * newx; // 左边距离
+                    con.Left = (int)a;
+                    a = Convert.ToSingle(mytag[3]) * newy; // 上边缘距离
+                    con.Top = (int)a;
+                    float currentSize = Convert.ToSingle(mytag[4]) * newy; // 字体大小
+                    con.Font = new Font(con.Font.Name, currentSize, con.Font.Style, con.Font.Unit);
+                }
+
                 if (con.Controls.Count > 0)
                 {
                     SetControls(newx, newy, con);
