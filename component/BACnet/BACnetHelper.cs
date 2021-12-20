@@ -17,7 +17,7 @@ namespace Dgiot_dtu
         {
         }
 
-        private static BACnetHelper instance;
+        private static BACnetHelper instance = null;
         private static BacnetClient bacnetClient = null;
 
         // All the present Bacnet Device List

@@ -4,7 +4,7 @@
 dotnet_diagnostic.SA1204.severity = silent
 
 # SA1201: Elements must appear in the correct order
-dotnet_diagnostic.SA1201.severity = none
+dotnet_diagnostic.SA1201.severity = silent
 
 # SA1101: Prefix local calls with this
 dotnet_diagnostic.SA1101.severity = silent

@@ -2,10 +2,13 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-using System.Configuration;
-
+// https://www.cnblogs.com/dathlin/p/8685855.html
+// https://github.com/dathlin/HslCommunication
 namespace Dgiot_dtu
 {
+    using System.Configuration;
+    using HslCommunication.Profinet.Siemens;
+
     public class PLCHelper
     {
         private PLCHelper()
@@ -15,6 +18,7 @@ namespace Dgiot_dtu
         private static PLCHelper instance;
         private static bool bIsRunning = false;
         private static bool bIsCheck = false;
+        private static SiemensS7Net siemensTcpNet = null;
 
         public static PLCHelper GetInstance()
         {
@@ -29,6 +33,10 @@ namespace Dgiot_dtu
         public static void Start(bool bIsRunning)
         {
             PLCHelper.bIsRunning = bIsRunning;
+            siemensTcpNet = new SiemensS7Net(SiemensPLCS.S1200, "127.0.0.1")
+            {
+                ConnectTimeOut = 5000
+            };
         }
 
         public static void Stop()

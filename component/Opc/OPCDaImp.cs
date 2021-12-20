@@ -20,6 +20,7 @@ namespace Da
         private Dictionary<string, OpcDaGroup> daGroupKeyPairs = new Dictionary<string, OpcDaGroup>();
         private List<HostCollection> hostCollection = new List<HostCollection>();
         private Dictionary<string, GroupEntity> groupCollection = new Dictionary<string, GroupEntity>();
+        private static Dictionary<string, int> groupFlagCollection = new Dictionary<string, int>();
         private IItemsValueChangedCallBack callBack;
         private List<OpcDaService> opcDaServices = new List<OpcDaService>();
         private List<string> groupKeys = new List<string>();
@@ -174,34 +175,7 @@ namespace Da
 
             if (node.Parent != null)
             {
-                if (node.Parent.Level == 2)
-                {
-                    return node.Parent;
-                }
-
-                if (node.Parent.Parent != null)
-                {
-                    if (node.Parent.Parent.Level == 2)
-                    {
-                        return node.Parent.Parent;
-                    }
-
-                    if (node.Parent.Parent.Parent != null)
-                    {
-                        if (node.Parent.Parent.Parent.Level == 2)
-                        {
-                            return node.Parent.Parent.Parent;
-                        }
-
-                        if (node.Parent.Parent.Parent.Parent != null)
-                        {
-                            if (node.Parent.Parent.Parent.Parent.Level == 2)
-                            {
-                                return node.Parent.Parent.Parent.Parent;
-                            }
-                        }
-                    }
-                }
+               return GetServerNode(node.Parent);
             }
 
             return null;
@@ -226,21 +200,10 @@ namespace Da
                 return null;
             }
 
-            if (server.OpcDaGroupS.Count == 0)
+            if (server.OpcDaGroupS.Count == 0 || !server.OpcDaGroupS.ContainsKey(groupKey))
             {
                 LogHelper.Log("StartMonitoringItems  is host opcda://" + host + "/" + serviceProgId);
                 AddGroup(server, groupKey, groupNode, interval);
-            }
-            else
-            {
-                if (server.OpcDaGroupS.ContainsKey(groupKey))
-                {
-                    OpcDaGroup group = server.OpcDaGroupS[groupKey];
-                }
-                else
-                {
-                    AddGroup(server, groupKey, groupNode, interval);
-                }
             }
 
             return groupKey;
@@ -254,7 +217,6 @@ namespace Da
             }
 
             OpcDaGroup group = server.Service.AddGroup(groupKey);  // maybe cost lot of time
-            Thread.Sleep(100);
             group.IsActive = true;
             group.UserData = groupNode;
             server.OpcDaGroupS.Add(groupKey, group);
@@ -271,15 +233,12 @@ namespace Da
                         IsActive = true
                     };
                     itemDefList.Add(def);
-
-                    // LogHelper.Log("StartMonitor ItemId " + tmpNode.Text);
                 }
             }
 
-            OpcDaItemResult[] opcDaItemResults = group.AddItems(itemDefList);
+            group.AddItems(itemDefList);
             daGroupKeyPairs.Add(groupKey, group);
             groupKeys.Add(groupKey);
-            LogHelper.Log("StartMonitoring  is groupId " + groupKey + " interval " + interval.ToString() + " ms", (int)LogHelper.Level.INFO);
 
             group.UpdateRate = TimeSpan.FromMilliseconds(interval); // 1000毫秒触发一次
             group.ValuesChanged += MonitorValuesChanged;
@@ -289,13 +248,10 @@ namespace Da
                 ProgId = server.ServiceId
             };
             groupCollection.Add(groupKey, groupEntity);
-            JsonObject result = new JsonObject();
-            result.Add("timestamp", DgiotHelper.Now());
-            result.Add("deviceName", groupNode.Parent.Text);
-            result.Add("deviceAddr", OPCDAViewHelper.Key(groupNode.Parent.FullPath));
-            JsonArray properties = ScanItemsValues(server.Host, server.ServiceId, groupKey, groupNode);
-            result.Add("properties", properties);
-            LogHelper.Log("StartMonitoring  result " + result, (int)LogHelper.Level.INFO);
+            SetGroupFlag(groupKey, 1000000000);
+
+            // GetUnits(group);
+            // LogHelper.Log("" + GetUnits(group), (int)LogHelper.Level.INFO);
         }
 
         public void StopMonitoringItems(string groupKey)
@@ -323,60 +279,48 @@ namespace Da
             this.callBack = callBack;
         }
 
-        public JsonArray ScanItemsValues(string host, string serverID, string groupKey, TreeNode groupNode)
+        public int GetGroupFlag(string groupKey)
         {
-            JsonArray properties = new JsonArray();
-
-            OpcDaService server = GetOpcDaService(host, serverID);
-            if (server == null)
+            if (groupFlagCollection.ContainsKey(groupKey))
             {
-                return properties;
+                return groupFlagCollection[groupKey]--;
             }
 
-            if (server.OpcDaGroupS.ContainsKey(groupKey) == true)
+            return 0;
+        }
+
+        public void SetGroupFlag(string groupKey, int duration)
+        {
+            if (groupFlagCollection.ContainsKey(groupKey))
             {
-                OpcDaGroup group = server.OpcDaGroupS[groupKey];
-                try
+                groupFlagCollection[groupKey] = duration;
+            }
+
+            groupFlagCollection.Add(groupKey, duration);
+        }
+
+        public JsonObject GetUnits(OpcDaGroup group)
+        {
+            JsonObject units = new JsonObject();
+            try
+            {
+                OpcDaItemValue[] values = group.Read(group.Items, OpcDaDataSource.Device);
+                if (values.Length == group.Items.Count)
                 {
-                    OpcDaItemValue[] values = group.Read(group.Items, OpcDaDataSource.Device);
-
-                    if (values.Length != group.Items.Count)
-                    {
-                        LogHelper.Log($"values.Length(${values.Length}) != group.Items.Count(${group.Items.Count}) ");
-                        return properties;
-                    }
-
                     for (int i = 0; i < values.Length; ++i)
                     {
                         if (values[i].Value != null)
                         {
-                            JsonObject json = new JsonObject();
-                            TreeNode node = values[i].Item.UserData as TreeNode;
-                            json.Add("name", node.Text);
-                            json.Add("devicetype", groupNode.ToolTipText);
-                            json.Add("identifier", node.ToolTipText);
-                            JsonObject dataForm = new JsonObject();
-                            dataForm.Add("slaveid", groupKey);
-                            dataForm.Add("protocol", node.Tag);
-                            dataForm.Add("address", values[i].Item.ItemId);
-                            dataForm.Add("data", values[i].Value);
-                            json.Add("dataForm", dataForm);
-                            JsonObject dataType = new JsonObject();
-                            dataType.Add("type", values[i].Value.GetType().ToString());
-                            json.Add("dataType", dataType);
-                            properties.Add(json);
+                            units.Add(values[i].Item.ItemId, values[i].Value.GetType().ToString());
                         }
                     }
                 }
-                 catch (Exception)
-                {
-                    return properties;
-                }
-
-                return properties;
+            }
+            catch (Exception)
+            {
             }
 
-            return properties;
+            return units;
         }
 
         public List<Item> ReadItemsValues(string host, string serverID, string groupKey)
@@ -493,8 +437,11 @@ namespace Da
         {
             if (callBack != null)
             {
-                var opcGroup = sender as OpcDaGroup;
-                callBack.ValueChangedCallBack(opcGroup, e.Values);
+                if (e.Values.Length > 0)
+                {
+                    var opcGroup = sender as OpcDaGroup;
+                    callBack.ValueChangedCallBack(opcGroup, e.Values);
+                }
             }
         }
     }

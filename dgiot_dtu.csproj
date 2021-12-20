@@ -58,6 +58,9 @@
       <HintPath>packages\Costura.Fody.3.3.3\lib\net40\Costura.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="HslCommunication, Version=10.4.1.0, Culture=neutral, PublicKeyToken=3d72ad3b6b5ec0e3, processorArchitecture=MSIL">
+      <HintPath>packages\HslCommunication.10.4.1\lib\net35\HslCommunication.dll</HintPath>
+    </Reference>
     <Reference Include="INIFileParser, Version=2.5.2.0, Culture=neutral, PublicKeyToken=79af7b307b65cf3c, processorArchitecture=MSIL">
       <HintPath>packages\ini-parser.2.5.2\lib\net20\INIFileParser.dll</HintPath>
     </Reference>
@@ -232,6 +235,7 @@
     <Compile Include="utils\PocoJsonSerializerStrategy.cs" />
     <Compile Include="utils\ReflectionUtils.cs" />
     <Compile Include="utils\SimpleJson.cs" />
+    <Compile Include="utils\TimerHelper.cs" />
     <Compile Include="utils\TreeViewHelper.cs" />
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>

@@ -22,7 +22,6 @@ namespace Dgiot_dtu
         private static string devAddr = string.Empty;
         private static string host = "127.0.0.1";
         private static int interval = 1000;
-        private static Dictionary<string, int> groupFlagCollection = new Dictionary<string, int>();
 
         public OPCDAHelper()
         {
@@ -83,7 +82,6 @@ namespace Dgiot_dtu
         {
             JsonObject result = new JsonObject();
             result.Add("timestamp", DgiotHelper.Now());
-
             if (group.UserData != null)
             {
                 TreeNode node = group.UserData as TreeNode;
@@ -102,10 +100,10 @@ namespace Dgiot_dtu
             });
             result.Add("properties", properties);
             string topic = "/" + productId + "/" + devAddr + "/report/opc/properties";
-            if (groupFlagCollection.ContainsKey(group.Name) && groupFlagCollection[group.Name] > 0) {
+            if (OpcDa.GetGroupFlag(group.Name) > 0)
+            {
                 LogHelper.Log("topic " + topic + " payload: " + result);
                 MqttClientHelper.Publish(topic, Encoding.UTF8.GetBytes(result.ToString()));
-                groupFlagCollection[group.Name]--;
             }
         }
 
@@ -127,14 +125,7 @@ namespace Dgiot_dtu
         {
             string groupid = json["groupid"].ToString();
             int duration = (int)json["duration"];
-            if (groupFlagCollection.ContainsKey(groupid))
-            {
-                groupFlagCollection[groupid] = duration;
-            }
-            else
-            {
-                groupFlagCollection.Add(groupid, duration);
-            }
+            OpcDa.SetGroupFlag(groupid, duration);
         }
     }
  }
