@@ -121,8 +121,7 @@ namespace Dgiot_dtu
             {
                 itemlist.Add((string)v);
             }
-
-            OpcDa.StartMonitor(groupid, itemlist, opcserver);
+            OpcDa.StartMonitor(groupid, itemlist.Distinct().ToList(), opcserver);
         }
 
         public static void Publishvalues(Dictionary<string, object> json)

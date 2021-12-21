@@ -297,8 +297,9 @@ namespace Da
             {
                 groupFlagCollection[groupKey] = duration;
             }
-
-            groupFlagCollection.Add(groupKey, duration);
+            else {
+                groupFlagCollection.Add(groupKey, duration);
+            }
         }
 
         public JsonObject GetUnits(OpcDaGroup group)
