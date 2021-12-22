@@ -19,8 +19,11 @@ namespace Dgiot_dtu
         private static string clientid = Guid.NewGuid().ToString().Substring(0, 10);
         private static string productid = Guid.NewGuid().ToString().Substring(0, 10);
         private static string devaddr = Guid.NewGuid().ToString().Substring(0, 10);
+        private static LogHelper logHelper = LogHelper.GetInstance();
         private static OPCDAHelper oPCDAHelper = OPCDAHelper.GetInstance();
         private static OPCDAViewHelper oPCDAViewHelper = OPCDAViewHelper.GetInstance();
+        private static TcpClientHelper tcpClientHelper = TcpClientHelper.GetInstance();
+        private static TcpServerHelper tcpServerHelper = TcpServerHelper.GetInstance();
         private bool bIsRunning = false;
         private float x = 0; // 当前窗体的宽度
         private float y = 0; // 当前窗体的高度
@@ -83,7 +86,7 @@ namespace Dgiot_dtu
 
             textBoxLog.Text += text + "\r\n";
             textBoxLog.SelectionStart = textBoxLog.Text.Length - 1;
-            textBoxLog.ScrollToCaret();
+            textBoxLog.ScrollToCaret(); 
         }
 
         private void ToStop()
@@ -118,13 +121,10 @@ namespace Dgiot_dtu
                 {
                     MqttServerHelper.Start();
                     MqttClientHelper.Start();
-                    TcpServerHelper.Start();
                     TcpClientHelper.Start();
+                    TcpServerHelper.Start();
                     UDPServerHelper.Start();
                     UDPClientHelper.Start();
-                    OPCDAHelper.Start();
-                    BACnetHelper.Start();
-                    SerialPortHelper.Start();
                 }
                 catch (Exception error)
                 {
@@ -141,6 +141,13 @@ namespace Dgiot_dtu
             {
                 ToStop();
             }
+        }
+
+        private void ButtonScan_Click(object sender, EventArgs e)
+        {
+            OPCDAHelper.Start();
+            BACnetHelper.Start();
+            SerialPortHelper.Start();
         }
 
         private void SetComboBox()
@@ -181,6 +188,8 @@ namespace Dgiot_dtu
             {
                 devaddr = Regex.Replace(mac, @":", "");
                 comboBoxDtuAddr.Items.Add(devaddr);
+                textBoxTcpClientLogin.Text = devaddr;
+                textBoxUDPClientLogin.Text = devaddr;
             }
 
             comboBoxDtuAddr.SelectedIndex = 0;
@@ -919,7 +928,8 @@ namespace Dgiot_dtu
         {
             sendBridge.Text = "发送";
             buttonClear.Text = "清除";
-            buttonStartStop.Text = "开始";
+            buttonStartStop.Text = "连接";
+            buttonScan.Text = "扫描";
 
             checkBoxReconnect.Text = "自动重连";
             label33.Text = "语言";
@@ -978,6 +988,7 @@ namespace Dgiot_dtu
             sendBridge.Text = "Send";
             buttonClear.Text = "Clear";
             buttonStartStop.Text = "Start";
+            buttonScan.Text = "Scan";
             label32.Text = "Level";
 
             checkBoxReconnect.Text = "Auto Reconnect";

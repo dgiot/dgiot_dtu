@@ -116,6 +116,7 @@ namespace Dgiot_dtu
             this.label_devcietree = new System.Windows.Forms.Label();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.groupBoxCommonConfig = new System.Windows.Forms.GroupBox();
+            this.buttonScan = new System.Windows.Forms.Button();
             this.groupBoxSerialPort.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -167,7 +168,7 @@ namespace Dgiot_dtu
             // checkBoxDisplayHex
             // 
             this.checkBoxDisplayHex.AutoSize = true;
-            this.checkBoxDisplayHex.Location = new System.Drawing.Point(495, 740);
+            this.checkBoxDisplayHex.Location = new System.Drawing.Point(459, 740);
             this.checkBoxDisplayHex.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxDisplayHex.Name = "checkBoxDisplayHex";
             this.checkBoxDisplayHex.Size = new System.Drawing.Size(61, 22);
@@ -178,7 +179,7 @@ namespace Dgiot_dtu
             // 
             // buttonClear
             // 
-            this.buttonClear.Location = new System.Drawing.Point(654, 735);
+            this.buttonClear.Location = new System.Drawing.Point(606, 735);
             this.buttonClear.Margin = new System.Windows.Forms.Padding(4);
             this.buttonClear.Name = "buttonClear";
             this.buttonClear.Size = new System.Drawing.Size(72, 32);
@@ -439,7 +440,7 @@ namespace Dgiot_dtu
             this.textToPayload.Location = new System.Drawing.Point(190, 736);
             this.textToPayload.Margin = new System.Windows.Forms.Padding(4);
             this.textToPayload.Name = "textToPayload";
-            this.textToPayload.Size = new System.Drawing.Size(283, 28);
+            this.textToPayload.Size = new System.Drawing.Size(252, 28);
             this.textToPayload.TabIndex = 14;
             this.textToPayload.Text = "12345678";
             this.textToPayload.TextChanged += new System.EventHandler(this.TextToPayload_TextChanged);
@@ -486,7 +487,7 @@ namespace Dgiot_dtu
             // 
             // sendBridge
             // 
-            this.sendBridge.Location = new System.Drawing.Point(567, 736);
+            this.sendBridge.Location = new System.Drawing.Point(525, 736);
             this.sendBridge.Margin = new System.Windows.Forms.Padding(4);
             this.sendBridge.Name = "sendBridge";
             this.sendBridge.Size = new System.Drawing.Size(70, 32);
@@ -1020,7 +1021,7 @@ namespace Dgiot_dtu
             // comboBoxLogLevel
             // 
             this.comboBoxLogLevel.FormattingEnabled = true;
-            this.comboBoxLogLevel.Location = new System.Drawing.Point(838, 736);
+            this.comboBoxLogLevel.Location = new System.Drawing.Point(878, 736);
             this.comboBoxLogLevel.Margin = new System.Windows.Forms.Padding(4);
             this.comboBoxLogLevel.Name = "comboBoxLogLevel";
             this.comboBoxLogLevel.Size = new System.Drawing.Size(82, 26);
@@ -1030,7 +1031,7 @@ namespace Dgiot_dtu
             // label32
             // 
             this.label32.AutoSize = true;
-            this.label32.Location = new System.Drawing.Point(738, 742);
+            this.label32.Location = new System.Drawing.Point(773, 742);
             this.label32.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label32.Name = "label32";
             this.label32.Size = new System.Drawing.Size(89, 18);
@@ -1041,17 +1042,17 @@ namespace Dgiot_dtu
             // 
             this.comboBoxLan.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxLan.FormattingEnabled = true;
-            this.comboBoxLan.Location = new System.Drawing.Point(1042, 738);
+            this.comboBoxLan.Location = new System.Drawing.Point(1068, 738);
             this.comboBoxLan.Margin = new System.Windows.Forms.Padding(4);
             this.comboBoxLan.Name = "comboBoxLan";
-            this.comboBoxLan.Size = new System.Drawing.Size(130, 26);
+            this.comboBoxLan.Size = new System.Drawing.Size(104, 26);
             this.comboBoxLan.TabIndex = 38;
             this.comboBoxLan.SelectedIndexChanged += new System.EventHandler(this.ComboBoxLan_SelectedIndexChanged);
             // 
             // label33
             // 
             this.label33.AutoSize = true;
-            this.label33.Location = new System.Drawing.Point(944, 742);
+            this.label33.Location = new System.Drawing.Point(973, 742);
             this.label33.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label33.Name = "label33";
             this.label33.Size = new System.Drawing.Size(80, 18);
@@ -1063,9 +1064,9 @@ namespace Dgiot_dtu
             this.treeView.CheckBoxes = true;
             this.treeView.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.treeView.LabelEdit = true;
-            this.treeView.Location = new System.Drawing.Point(4, 30);
+            this.treeView.Location = new System.Drawing.Point(4, 36);
             this.treeView.Name = "treeView";
-            this.treeView.Size = new System.Drawing.Size(428, 319);
+            this.treeView.Size = new System.Drawing.Size(428, 313);
             this.treeView.TabIndex = 0;
             this.treeView.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.AfterLabelEdit);
             this.treeView.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.TreeView_AfterCheck);
@@ -1106,12 +1107,24 @@ namespace Dgiot_dtu
             this.groupBoxCommonConfig.TabStop = false;
             this.groupBoxCommonConfig.Text = "Common Config";
             // 
+            // buttonScan
+            // 
+            this.buttonScan.Location = new System.Drawing.Point(685, 735);
+            this.buttonScan.Margin = new System.Windows.Forms.Padding(4);
+            this.buttonScan.Name = "buttonScan";
+            this.buttonScan.Size = new System.Drawing.Size(80, 32);
+            this.buttonScan.TabIndex = 40;
+            this.buttonScan.Text = "Scan";
+            this.buttonScan.UseVisualStyleBackColor = true;
+            this.buttonScan.Click += new System.EventHandler(this.ButtonScan_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(143)))), ((int)(((byte)(178)))));
             this.ClientSize = new System.Drawing.Size(1204, 782);
+            this.Controls.Add(this.buttonScan);
             this.Controls.Add(this.groupBoxCommonConfig);
             this.Controls.Add(this.groupBox8);
             this.Controls.Add(this.buttonClear);
@@ -1263,6 +1276,7 @@ namespace Dgiot_dtu
         private GroupBox groupBoxCommonConfig;
         private Label labelOPCDACount;
         private TextBox textBoxOPCDACount;
+        private Button buttonScan;
     }
 }
 

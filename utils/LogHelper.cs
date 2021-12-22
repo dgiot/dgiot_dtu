@@ -104,18 +104,5 @@ namespace Dgiot_dtu
                 return payload;
             }
         }
-
-        public static byte[] Payload(byte[] payload)
-        {
-            if (bDisplayHex)
-            {
-                byte[] hexPayload = DgiotHelper.ToHexBinary(payload);
-                return hexPayload;
-            }
-            else
-            {
-                return payload;
-            }
-        }
     }
 }

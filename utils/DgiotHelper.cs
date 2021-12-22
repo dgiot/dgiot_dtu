@@ -88,8 +88,8 @@ namespace Dgiot_dtu
             for (int i = 0; i < length; i++)
             {
                 int pos = i * 2; // 两个字符对应一个byte
-                int h = hexDigits.IndexOf((char)hexString[pos]) << 4; // 注1
-                int l = hexDigits.IndexOf((char)hexString[pos + 1]); // 注2
+                int h = hexDigits.IndexOf(GetLow((char)hexString[pos])) << 4; // 注1
+                int l = hexDigits.IndexOf(GetLow((char)hexString[pos + 1])); // 注2
                 if (h == -1 || l == -1)
                 { // 非16进制字符
                     return null;
@@ -99,6 +99,21 @@ namespace Dgiot_dtu
             }
 
             return bytes;
+        }
+
+        public static char GetLow(char var_ch)
+        {
+            char result = var_ch;
+            if (var_ch >= 'a' && var_ch <= 'z')
+            {
+                result = (char)(var_ch - 32);
+            }
+            else if (var_ch >= 'A' && var_ch <= 'Z')
+            {
+                result = (char)(var_ch + 32);
+            }
+
+            return result;
         }
 
         public static bool StrTobool(string s)

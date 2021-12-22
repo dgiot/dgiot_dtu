@@ -5,7 +5,6 @@
 namespace Dgiot_dtu
 {
     using System;
-    using System.Configuration;
     using System.IO;
     using System.Net.Sockets;
     using System.Threading;
@@ -40,6 +39,7 @@ namespace Dgiot_dtu
         public static void Start()
         {
             Config();
+            LogHelper.Log("TcpClient_Checked " + ConfigHelper.GetConfig("TcpClient_Checked"));
             if (DgiotHelper.StrTobool(ConfigHelper.GetConfig("TcpClient_Checked")))
             {
                 CreateConnect();
@@ -88,7 +88,7 @@ namespace Dgiot_dtu
 
                     byte[] data = new byte[1024];
 
-                    data = LogHelper.Payload(TcpClientHelper.login.ToCharArray());
+                    data = LogHelper.Payload(login.ToCharArray());
 
                     LogHelper.Log("TcpClient: login [" + LogHelper.Logdata(data, 0, data.Length) + "]");
 
