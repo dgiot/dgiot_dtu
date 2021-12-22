@@ -102,13 +102,8 @@ namespace Dgiot_dtu
             });
             result.Add("properties", properties);
             string topic = "/" + productId + "/" + devAddr + "/report/opc/properties";
-            int flag = OpcDa.GetGroupFlag(group.Name);
-            LogHelper.Log("Count " + flag.ToString(), (int)LogHelper.Level.INFO);
-            if (flag > 0)
-            {
-                LogHelper.Log("Flag " + flag.ToString() + " topic " + topic + " payload: " + result);
-                MqttClientHelper.Publish(topic, Encoding.UTF8.GetBytes(result.ToString()));
-            }
+            LogHelper.Log(" topic " + topic + " payload: " + result);
+            MqttClientHelper.Publish(topic, Encoding.UTF8.GetBytes(result.ToString()));
         }
 
         public static void Additems(Dictionary<string, object> json)

@@ -235,7 +235,6 @@ namespace Da
                     itemDefList.Add(def);
                 }
             }
-
             group.AddItems(itemDefList);
             daGroupKeyPairs.Add(groupKey, group);
             groupKeys.Add(groupKey);
@@ -252,7 +251,7 @@ namespace Da
             LogHelper.Log("GroupFlag " + GetGroupFlag(groupKey).ToString(), (int)LogHelper.Level.INFO);
 
             // GetUnits(group);
-            // LogHelper.Log("" + GetUnits(group), (int)LogHelper.Level.INFO);
+            // LogHelper.Log("aaa: " + GetUnits(group), (int)LogHelper.Level.INFO);
         }
 
         public void StopMonitoringItems(string groupKey)
@@ -374,11 +373,10 @@ namespace Da
             {
                 return;
             }
-
             if (server.OpcDaGroupS.ContainsKey(groupKey) == false)
             {
                 OpcDaGroup group = server.Service.AddGroup(groupKey);  // maybe cost lot of time
-                Thread.Sleep(100);
+               // Thread.Sleep(100);
                 group.IsActive = true;
                 server.OpcDaGroupS.Add(groupKey, group);
                 List<OpcDaItemDefinition> itemDefList = new List<OpcDaItemDefinition>();
@@ -391,10 +389,10 @@ namespace Da
                     };
                     itemDefList.Add(def);
                 }
-
                 group.AddItems(itemDefList);
                 daGroupKeyPairs.Add(groupKey, group);
                 groupKeys.Add(groupKey);
+                SetGroupFlag(groupKey, 0);
                 LogHelper.Log("StartMonitoring  is groupId " + groupKey + " interval " + "1000  ms", (int)LogHelper.Level.INFO);
 
                 group.UpdateRate = TimeSpan.FromMilliseconds(1000); // 1000毫秒触发一次
@@ -405,6 +403,8 @@ namespace Da
                     ProgId = server.ServiceId
                 };
                 groupCollection.Add(groupKey, groupEntity);
+                // GetUnits(group);
+                // LogHelper.Log("aaaa: " + GetUnits(group), (int)LogHelper.Level.INFO);
             }
         }
 
@@ -443,7 +443,11 @@ namespace Da
                 if (e.Values.Length > 0)
                 {
                     var opcGroup = sender as OpcDaGroup;
-                    callBack.ValueChangedCallBack(opcGroup, e.Values);
+                    int flag = GetGroupFlag(opcGroup.Name);
+                    if (flag > 0)
+                    {
+                        callBack.ValueChangedCallBack(opcGroup, e.Values);
+                    }
                 }
             }
         }
