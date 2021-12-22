@@ -75,12 +75,9 @@ namespace Dgiot_dtu
             }
         }
 
-        public static void Config(KeyValueConfigurationCollection config)
+        public static void Config()
         {
-            if (config["DisplayHex"] != null)
-            {
-                bDisplayHex = DgiotHelper.StrTobool(config["DisplayHex"].Value);
-            }
+             bDisplayHex = DgiotHelper.StrTobool(ConfigHelper.GetConfig("DisplayHex"));
         }
 
         public static string Logdata(byte[] data, int offset, int len)

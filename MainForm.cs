@@ -100,6 +100,7 @@ namespace Dgiot_dtu
                 UDPClientHelper.Stop();
                 UDPServerHelper.Stop();
                 BACnetHelper.Stop();
+                SerialPortHelper.Stop();
             }
             catch (Exception e)
             {
@@ -117,12 +118,13 @@ namespace Dgiot_dtu
                 {
                     MqttServerHelper.Start();
                     MqttClientHelper.Start();
-                    TcpServerHelper.Start(config.AppSettings.Settings);
+                    TcpServerHelper.Start();
                     TcpClientHelper.Start();
-                    UDPServerHelper.Start(config.AppSettings.Settings);
+                    UDPServerHelper.Start();
                     UDPClientHelper.Start();
                     OPCDAHelper.Start();
-                    BACnetHelper.Start(config.AppSettings.Settings);
+                    BACnetHelper.Start();
+                    SerialPortHelper.Start();
                 }
                 catch (Exception error)
                 {
@@ -430,7 +432,7 @@ namespace Dgiot_dtu
             }
             else
             {
-                ConfigHelper.SetConfig("SerialPort", comboBoxBaudRate.Text);
+                ConfigHelper.SetConfig("BaudRate", comboBoxBaudRate.Text);
             }
 
             if (ConfigHelper.Check("DataBits"))
@@ -568,11 +570,11 @@ namespace Dgiot_dtu
             MqttClientHelper.Config();
             MqttServerHelper.Config();
             TcpClientHelper.Config();
-            TcpServerHelper.Config(config.AppSettings.Settings);
+            TcpServerHelper.Config();
             UDPClientHelper.Config();
-            UDPServerHelper.Config(config.AppSettings.Settings);
+            UDPServerHelper.Config();
 
-            SerialPortHelper.Config(config.AppSettings.Settings);
+            SerialPortHelper.Config();
             PLCHelper.Config(config.AppSettings.Settings);
             OPCDAHelper.Config();
             OPCUAHelper.Config(config.AppSettings.Settings);
@@ -625,21 +627,28 @@ namespace Dgiot_dtu
         private void CheckBoxDisplayHexCheckedChanged(object sender, EventArgs e)
         {
             ConfigHelper.SetConfig("DisplayHex", DgiotHelper.BoolTostr(checkBoxDisplayHex.Checked));
+            LogHelper.Config();
         }
 
         private void RadioButtonMqttClient_CheckedChanged(object sender, EventArgs e)
         {
             ConfigHelper.SetConfig("MqttClient_Checked", DgiotHelper.BoolTostr(radioButtonMqttClient.Checked));
+            ConfigHelper.SetConfig("TcpClient_Checked", DgiotHelper.BoolTostr(false));
+            ConfigHelper.SetConfig("UDPClient_Checked", DgiotHelper.BoolTostr(false));
         }
 
         private void RadioButtonTcpClient_CheckedChanged(object sender, EventArgs e)
         {
             ConfigHelper.SetConfig("TcpClient_Checked", DgiotHelper.BoolTostr(radioButtonTcpClient.Checked));
+            ConfigHelper.SetConfig("MqttClient_Checked", DgiotHelper.BoolTostr(false));
+            ConfigHelper.SetConfig("UDPClient_Checked", DgiotHelper.BoolTostr(false));
         }
 
         private void RadioButtonUDPClient_CheckedChanged(object sender, EventArgs e)
         {
             ConfigHelper.SetConfig("UDPClient_Checked", DgiotHelper.BoolTostr(radioButtonTcpClient.Checked));
+            ConfigHelper.SetConfig("TcpClient_Checked", DgiotHelper.BoolTostr(false));
+            ConfigHelper.SetConfig("MqttClient_Checked", DgiotHelper.BoolTostr(false));
         }
 
         private void TextToPayload_TextChanged(object sender, EventArgs e)
@@ -690,6 +699,11 @@ namespace Dgiot_dtu
         private void ComboBoxCmdProdxy_SelectedIndexChanged(object sender, EventArgs e)
         {
             ConfigHelper.SetConfig("CmdProdxy", comboBoxCmdProdxy.Text);
+        }
+
+        private void ComboBoxSerialPort_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ConfigHelper.SetConfig("SerialPort", comboBoxSerialPort.Text);
         }
 
         private void ComboBoxStopBits_SelectedIndexChanged(object sender, EventArgs e)
@@ -772,6 +786,11 @@ namespace Dgiot_dtu
         private void TextBoxDgiotPort_TextChanged(object sender, EventArgs e)
         {
             ConfigHelper.SetConfig("DgiotPort", textBoxDgiotPort.Text);
+        }
+
+        private void TextBoxBridgePort_TextChanged(object sender, EventArgs e)
+        {
+            ConfigHelper.SetConfig("BridgePort", textBoxBridgePort.Text);
         }
 
         private void ComboBoxDtuAddr_SelectedIndexChanged(object sender, EventArgs e)
@@ -951,6 +970,7 @@ namespace Dgiot_dtu
 
             label_devcietree.Text = "设备树";
             checkBoxBridge.Text = "桥接端口";
+            groupBoxCommonConfig.Text = "公共配置";
         }
 
         private void En()
@@ -1009,6 +1029,7 @@ namespace Dgiot_dtu
 
             label_devcietree.Text = "DeviceTree";
             checkBoxBridge.Text = "Bridge Port";
+            groupBoxCommonConfig.Text = "Common Config";
         }
 
         private void MainForm_Load(object sender, EventArgs e)

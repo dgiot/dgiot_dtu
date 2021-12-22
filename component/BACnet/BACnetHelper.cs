@@ -36,9 +36,9 @@ namespace Dgiot_dtu
             return instance;
         }
 
-        public static void Start(KeyValueConfigurationCollection config)
+        public static void Start()
         {
-            Config(config);
+            Config();
             if (bacnetClient == null)
             {
                 // Bacnet on UDP/IP/Ethernet
@@ -66,12 +66,8 @@ namespace Dgiot_dtu
             }
         }
 
-        public static void Config(KeyValueConfigurationCollection config)
+        public static void Config()
         {
-            if (config["BACnetIsCheck"] != null)
-            {
-                bIsCheck = DgiotHelper.StrTobool(config["BACnetIsCheck"].Value);
-            }
         }
 
         public static void Write(byte[] data, int offset, int len)

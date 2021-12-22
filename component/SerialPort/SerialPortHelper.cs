@@ -5,7 +5,6 @@
 namespace Dgiot_dtu
 {
     using System;
-    using System.Configuration;
     using System.IO.Ports;
 
     public class SerialPortHelper
@@ -33,10 +32,9 @@ namespace Dgiot_dtu
             return instance;
         }
 
-        public static void Start(KeyValueConfigurationCollection config)
+        public static void Start()
         {
-            Config(config);
-            bIsRunning = true;
+            Config();
             if (!bIsRunning)
             {
                 try
@@ -45,6 +43,7 @@ namespace Dgiot_dtu
                     port.DataReceived += Received;
                     port.ReceivedBytesThreshold = 1;
                     port.Open();
+                    LogHelper.Log(@"Open open port " + portName);
                 }
                 catch (Exception)
                 {
@@ -62,44 +61,26 @@ namespace Dgiot_dtu
             {
                 if (port.IsOpen)
                 {
+                    bIsRunning = false;
                     port.Close();
                 }
             }
         }
 
-        public static void Config(KeyValueConfigurationCollection config)
+        public static void Config()
         {
-            if (config["portName"] != null)
-            {
-                portName = config["portName"].Value;
-            }
-
-            if (config["BaudRate"] != null)
-            {
-                baudRate = int.Parse(config["BaudRate"].Value);
-            }
-
-            if (config["DataBits"] != null)
-            {
-                dataBits = int.Parse(config["DataBits"].Value);
-            }
-
-            if (config["Parity"] != null)
-            {
-                parity = StrToParity(config["Parity"].Value);
-            }
-
-            if (config["StopBits"] != null)
-            {
-                stopBits = StrToStopBits(config["StopBits"].Value);
-            }
+            portName = ConfigHelper.GetConfig("SerialPort");
+            baudRate = int.Parse(ConfigHelper.GetConfig("BaudRate"));
+            dataBits = int.Parse(ConfigHelper.GetConfig("DataBits"));
+            parity = StrToParity(ConfigHelper.GetConfig("Parity"));
+            stopBits = StrToStopBits(ConfigHelper.GetConfig("StopBits"));
         }
 
         public static void Write(byte[] payload, int offset, int len)
         {
             if (port != null && port.IsOpen)
             {
-                LogHelper.Log("S->N: " + LogHelper.Logdata(payload, 0, payload.Length));
+                LogHelper.Log("SerialPort Send: [" + LogHelper.Logdata(payload, 0, len) + "]");
                 port.Write(payload, offset, len);
             }
         }
@@ -109,7 +90,8 @@ namespace Dgiot_dtu
             var rxlen = port.BytesToRead;
             var data = new byte[rxlen];
             port.Read(data, 0, rxlen);
-            LogHelper.Log("S->N: " + LogHelper.Logdata(data, 0, rxlen));
+            LogHelper.Log("SerialPort Recv: [" + LogHelper.Logdata(data, 0, rxlen) + "]");
+            TcpClientHelper.Write(data, 0, rxlen);
         }
 
         private static StopBits StrToStopBits(string s)

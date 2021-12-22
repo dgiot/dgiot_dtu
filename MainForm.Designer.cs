@@ -115,7 +115,7 @@ namespace Dgiot_dtu
             this.treeView = new System.Windows.Forms.TreeView();
             this.label_devcietree = new System.Windows.Forms.Label();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.groupBoxCommonConfig = new System.Windows.Forms.GroupBox();
             this.groupBoxSerialPort.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -127,7 +127,7 @@ namespace Dgiot_dtu
             this.groupBox10.SuspendLayout();
             this.groupBox12.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            this.groupBox1.SuspendLayout();
+            this.groupBoxCommonConfig.SuspendLayout();
             this.SuspendLayout();
             // 
             // buttonStartStop
@@ -203,7 +203,7 @@ namespace Dgiot_dtu
             this.groupBoxSerialPort.Margin = new System.Windows.Forms.Padding(4);
             this.groupBoxSerialPort.Name = "groupBoxSerialPort";
             this.groupBoxSerialPort.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBoxSerialPort.Size = new System.Drawing.Size(320, 132);
+            this.groupBoxSerialPort.Size = new System.Drawing.Size(320, 166);
             this.groupBoxSerialPort.TabIndex = 13;
             this.groupBoxSerialPort.TabStop = false;
             this.groupBoxSerialPort.Text = "Serial Port Capture";
@@ -217,17 +217,17 @@ namespace Dgiot_dtu
             "Even",
             "Mark",
             "Space"});
-            this.comboBoxParity.Location = new System.Drawing.Point(96, 88);
+            this.comboBoxParity.Location = new System.Drawing.Point(94, 88);
             this.comboBoxParity.Margin = new System.Windows.Forms.Padding(4);
             this.comboBoxParity.Name = "comboBoxParity";
-            this.comboBoxParity.Size = new System.Drawing.Size(60, 26);
+            this.comboBoxParity.Size = new System.Drawing.Size(208, 26);
             this.comboBoxParity.TabIndex = 14;
             this.comboBoxParity.SelectedIndexChanged += new System.EventHandler(this.ComboBoxParity_SelectedIndexChanged);
             // 
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(6, 92);
+            this.label13.Location = new System.Drawing.Point(8, 89);
             this.label13.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(62, 18);
@@ -237,7 +237,7 @@ namespace Dgiot_dtu
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(164, 96);
+            this.label5.Location = new System.Drawing.Point(7, 129);
             this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(80, 18);
@@ -247,7 +247,7 @@ namespace Dgiot_dtu
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(164, 58);
+            this.label4.Location = new System.Drawing.Point(162, 129);
             this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(80, 18);
@@ -271,10 +271,10 @@ namespace Dgiot_dtu
             "1",
             "2",
             "1.5"});
-            this.comboBoxStopBits.Location = new System.Drawing.Point(248, 96);
+            this.comboBoxStopBits.Location = new System.Drawing.Point(96, 125);
             this.comboBoxStopBits.Margin = new System.Windows.Forms.Padding(4);
             this.comboBoxStopBits.Name = "comboBoxStopBits";
-            this.comboBoxStopBits.Size = new System.Drawing.Size(56, 26);
+            this.comboBoxStopBits.Size = new System.Drawing.Size(60, 26);
             this.comboBoxStopBits.TabIndex = 11;
             this.comboBoxStopBits.SelectedIndexChanged += new System.EventHandler(this.ComboBoxStopBits_SelectedIndexChanged);
             // 
@@ -286,7 +286,7 @@ namespace Dgiot_dtu
             "7",
             "6",
             "5"});
-            this.comboBoxDataBits.Location = new System.Drawing.Point(248, 58);
+            this.comboBoxDataBits.Location = new System.Drawing.Point(246, 125);
             this.comboBoxDataBits.Margin = new System.Windows.Forms.Padding(4);
             this.comboBoxDataBits.Name = "comboBoxDataBits";
             this.comboBoxDataBits.Size = new System.Drawing.Size(56, 26);
@@ -305,10 +305,10 @@ namespace Dgiot_dtu
             "38400",
             "57600",
             "115200"});
-            this.comboBoxBaudRate.Location = new System.Drawing.Point(94, 56);
+            this.comboBoxBaudRate.Location = new System.Drawing.Point(93, 56);
             this.comboBoxBaudRate.Margin = new System.Windows.Forms.Padding(4);
             this.comboBoxBaudRate.Name = "comboBoxBaudRate";
-            this.comboBoxBaudRate.Size = new System.Drawing.Size(62, 26);
+            this.comboBoxBaudRate.Size = new System.Drawing.Size(209, 26);
             this.comboBoxBaudRate.TabIndex = 11;
             // 
             // labelSerialPort
@@ -324,11 +324,12 @@ namespace Dgiot_dtu
             // comboBoxSerialPort
             // 
             this.comboBoxSerialPort.FormattingEnabled = true;
-            this.comboBoxSerialPort.Location = new System.Drawing.Point(92, 22);
+            this.comboBoxSerialPort.Location = new System.Drawing.Point(93, 22);
             this.comboBoxSerialPort.Margin = new System.Windows.Forms.Padding(4);
             this.comboBoxSerialPort.Name = "comboBoxSerialPort";
-            this.comboBoxSerialPort.Size = new System.Drawing.Size(212, 26);
+            this.comboBoxSerialPort.Size = new System.Drawing.Size(209, 26);
             this.comboBoxSerialPort.TabIndex = 9;
+            this.comboBoxSerialPort.SelectedIndexChanged += new System.EventHandler(this.ComboBoxSerialPort_SelectedIndexChanged);
             // 
             // textBoxBridgePort
             // 
@@ -338,6 +339,7 @@ namespace Dgiot_dtu
             this.textBoxBridgePort.Size = new System.Drawing.Size(110, 28);
             this.textBoxBridgePort.TabIndex = 7;
             this.textBoxBridgePort.Text = "5080";
+            this.textBoxBridgePort.TextChanged += new System.EventHandler(this.TextBoxBridgePort_TextChanged);
             // 
             // textBoxMqttPubTopic
             // 
@@ -643,7 +645,7 @@ namespace Dgiot_dtu
             this.groupBox4.Controls.Add(this.checkBoxOPCDA);
             this.groupBox4.Controls.Add(this.textBoxOPCDAHost);
             this.groupBox4.Controls.Add(this.labelOPCDAHost);
-            this.groupBox4.Location = new System.Drawing.Point(441, 249);
+            this.groupBox4.Location = new System.Drawing.Point(441, 274);
             this.groupBox4.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Padding = new System.Windows.Forms.Padding(4);
@@ -744,7 +746,7 @@ namespace Dgiot_dtu
             // 
             this.groupBox5.Controls.Add(this.textBoxOPCUATopic);
             this.groupBox5.Controls.Add(this.labelopcua);
-            this.groupBox5.Location = new System.Drawing.Point(440, 374);
+            this.groupBox5.Location = new System.Drawing.Point(440, 399);
             this.groupBox5.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Padding = new System.Windows.Forms.Padding(4);
@@ -778,7 +780,7 @@ namespace Dgiot_dtu
             // 
             this.groupBox6.Controls.Add(this.textBoxBACnetTopic);
             this.groupBox6.Controls.Add(this.label23);
-            this.groupBox6.Location = new System.Drawing.Point(440, 464);
+            this.groupBox6.Location = new System.Drawing.Point(440, 489);
             this.groupBox6.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Padding = new System.Windows.Forms.Padding(4);
@@ -812,7 +814,7 @@ namespace Dgiot_dtu
             // 
             this.groupBox7.Controls.Add(this.textBoxControlTopic);
             this.groupBox7.Controls.Add(this.label8);
-            this.groupBox7.Location = new System.Drawing.Point(440, 554);
+            this.groupBox7.Location = new System.Drawing.Point(440, 574);
             this.groupBox7.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Padding = new System.Windows.Forms.Padding(4);
@@ -951,7 +953,7 @@ namespace Dgiot_dtu
             // radioButtonTcpClient
             // 
             this.radioButtonTcpClient.AutoSize = true;
-            this.radioButtonTcpClient.Location = new System.Drawing.Point(828, 318);
+            this.radioButtonTcpClient.Location = new System.Drawing.Point(830, 311);
             this.radioButtonTcpClient.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.radioButtonTcpClient.Name = "radioButtonTcpClient";
             this.radioButtonTcpClient.Size = new System.Drawing.Size(21, 20);
@@ -974,7 +976,7 @@ namespace Dgiot_dtu
             // 
             this.groupBox12.Controls.Add(this.textBoxPLCTopic);
             this.groupBox12.Controls.Add(this.label2);
-            this.groupBox12.Location = new System.Drawing.Point(442, 171);
+            this.groupBox12.Location = new System.Drawing.Point(442, 195);
             this.groupBox12.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox12.Name = "groupBox12";
             this.groupBox12.Padding = new System.Windows.Forms.Padding(4);
@@ -1083,26 +1085,26 @@ namespace Dgiot_dtu
             this.openFileDialog.FileName = "openFileDialog";
             this.openFileDialog.Filter = "(*.txt)|*.txt";
             // 
-            // groupBox1
+            // groupBoxCommonConfig
             // 
-            this.groupBox1.Controls.Add(this.comboBoxDtuAddr);
-            this.groupBox1.Controls.Add(this.label22);
-            this.groupBox1.Controls.Add(this.label30);
-            this.groupBox1.Controls.Add(this.textBoxBridgePort);
-            this.groupBox1.Controls.Add(this.textBoxDgiotSever);
-            this.groupBox1.Controls.Add(this.label21);
-            this.groupBox1.Controls.Add(this.textBoxDgiotPort);
-            this.groupBox1.Controls.Add(this.checkBoxBridge);
-            this.groupBox1.Controls.Add(this.buttonStartStop);
-            this.groupBox1.Controls.Add(this.checkBoxReconnect);
-            this.groupBox1.Location = new System.Drawing.Point(854, 492);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(4);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBox1.Size = new System.Drawing.Size(328, 236);
-            this.groupBox1.TabIndex = 19;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Common Config";
+            this.groupBoxCommonConfig.Controls.Add(this.comboBoxDtuAddr);
+            this.groupBoxCommonConfig.Controls.Add(this.label22);
+            this.groupBoxCommonConfig.Controls.Add(this.label30);
+            this.groupBoxCommonConfig.Controls.Add(this.textBoxBridgePort);
+            this.groupBoxCommonConfig.Controls.Add(this.textBoxDgiotSever);
+            this.groupBoxCommonConfig.Controls.Add(this.label21);
+            this.groupBoxCommonConfig.Controls.Add(this.textBoxDgiotPort);
+            this.groupBoxCommonConfig.Controls.Add(this.checkBoxBridge);
+            this.groupBoxCommonConfig.Controls.Add(this.buttonStartStop);
+            this.groupBoxCommonConfig.Controls.Add(this.checkBoxReconnect);
+            this.groupBoxCommonConfig.Location = new System.Drawing.Point(854, 492);
+            this.groupBoxCommonConfig.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBoxCommonConfig.Name = "groupBoxCommonConfig";
+            this.groupBoxCommonConfig.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBoxCommonConfig.Size = new System.Drawing.Size(328, 236);
+            this.groupBoxCommonConfig.TabIndex = 19;
+            this.groupBoxCommonConfig.TabStop = false;
+            this.groupBoxCommonConfig.Text = "Common Config";
             // 
             // MainForm
             // 
@@ -1110,7 +1112,7 @@ namespace Dgiot_dtu
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(143)))), ((int)(((byte)(178)))));
             this.ClientSize = new System.Drawing.Size(1204, 782);
-            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.groupBoxCommonConfig);
             this.Controls.Add(this.groupBox8);
             this.Controls.Add(this.buttonClear);
             this.Controls.Add(this.groupBox7);
@@ -1168,8 +1170,8 @@ namespace Dgiot_dtu
             this.groupBox12.ResumeLayout(false);
             this.groupBox12.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.groupBoxCommonConfig.ResumeLayout(false);
+            this.groupBoxCommonConfig.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1258,7 +1260,7 @@ namespace Dgiot_dtu
         private Label labelSecond;
         private Label labelOPCDAMonitor;
         private TextBox textBoxOPCDAInterval;
-        private GroupBox groupBox1;
+        private GroupBox groupBoxCommonConfig;
         private Label labelOPCDACount;
         private TextBox textBoxOPCDACount;
     }

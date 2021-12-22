@@ -235,6 +235,7 @@ namespace Da
                     itemDefList.Add(def);
                 }
             }
+
             group.AddItems(itemDefList);
             daGroupKeyPairs.Add(groupKey, group);
             groupKeys.Add(groupKey);
@@ -296,7 +297,8 @@ namespace Da
             {
                 groupFlagCollection[groupKey] = duration;
             }
-            else {
+            else
+            {
                 groupFlagCollection.Add(groupKey, duration);
             }
         }
@@ -373,6 +375,7 @@ namespace Da
             {
                 return;
             }
+
             if (server.OpcDaGroupS.ContainsKey(groupKey) == false)
             {
                 OpcDaGroup group = server.Service.AddGroup(groupKey);  // maybe cost lot of time
@@ -389,6 +392,7 @@ namespace Da
                     };
                     itemDefList.Add(def);
                 }
+
                 group.AddItems(itemDefList);
                 daGroupKeyPairs.Add(groupKey, group);
                 groupKeys.Add(groupKey);
@@ -403,6 +407,7 @@ namespace Da
                     ProgId = server.ServiceId
                 };
                 groupCollection.Add(groupKey, groupEntity);
+
                 // GetUnits(group);
                 // LogHelper.Log("aaaa: " + GetUnits(group), (int)LogHelper.Level.INFO);
             }

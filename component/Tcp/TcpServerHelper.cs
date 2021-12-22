@@ -35,10 +35,10 @@ namespace Dgiot_dtu
             return instance;
         }
 
-        public static void Start(KeyValueConfigurationCollection config)
+        public static void Start()
         {
             bIsRunning = true;
-            Config(config);
+            Config();
             if (bIsCheck)
             {
                 CreateConnect();
@@ -55,17 +55,18 @@ namespace Dgiot_dtu
             }
         }
 
-        public static void Config(KeyValueConfigurationCollection config)
+        public static void Config()
         {
-            if (config["tcpServerIsCheck"] != null)
+            if (DgiotHelper.StrTobool(ConfigHelper.GetConfig("TcpClient_Checked")) && DgiotHelper.StrTobool(ConfigHelper.GetConfig("Bridge_Checked")))
             {
-                TcpServerHelper.bIsCheck = DgiotHelper.StrTobool(config["tcpServerIsCheck"].Value);
+                bIsCheck = true;
+            }
+            else
+            {
+                bIsCheck = false;
             }
 
-            if (config["tcpServerPort"] != null)
-            {
-                TcpServerHelper.port = int.Parse((string)config["tcpServerPort"].Value);
-            }
+            port = int.Parse(ConfigHelper.GetConfig("BridgePort"));
         }
 
         public static void CreateConnect()

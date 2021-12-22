@@ -116,6 +116,7 @@ namespace Dgiot_dtu
             {
                 itemlist.Add((string)v);
             }
+
             OpcDa.StartMonitor(groupid, itemlist.Distinct().ToList(), opcserver);
         }
 

@@ -31,9 +31,9 @@ namespace Dgiot_dtu
             }
         }
 
-        public static void Start(KeyValueConfigurationCollection config)
+        public static void Start()
         {
-            Config(config);
+            Config();
             if (bIsCheck)
             {
                 if (server == null)
@@ -81,7 +81,7 @@ namespace Dgiot_dtu
             }
         }
 
-        public static void Config(KeyValueConfigurationCollection config)
+        public static void Config()
         {
             port = int.Parse(ConfigHelper.GetConfig("DgiotPort"));
             if (DgiotHelper.StrTobool(ConfigHelper.GetConfig("UDPClient_Checked")) && DgiotHelper.StrTobool(ConfigHelper.GetConfig("Bridge_Checked")))

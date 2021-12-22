@@ -40,7 +40,7 @@ namespace Dgiot_dtu
         public static void Start()
         {
             Config();
-            if (bIsCheck)
+            if (DgiotHelper.StrTobool(ConfigHelper.GetConfig("TcpClient_Checked")))
             {
                 CreateConnect();
             }
@@ -64,7 +64,7 @@ namespace Dgiot_dtu
             server = ConfigHelper.GetConfig("DgiotSever");
             port = int.Parse(ConfigHelper.GetConfig("DgiotPort"));
             bAutoReconnect = DgiotHelper.StrTobool(ConfigHelper.GetConfig("ReconnectChecked"));
-            bIsCheck = DgiotHelper.StrTobool(ConfigHelper.GetConfig("TcpClientIsCheck"));
+            bIsCheck = DgiotHelper.StrTobool(ConfigHelper.GetConfig("TcpClient_Checked"));
             login = ConfigHelper.GetConfig("TcpClientLogin");
         }
 
@@ -90,7 +90,7 @@ namespace Dgiot_dtu
 
                     data = LogHelper.Payload(TcpClientHelper.login.ToCharArray());
 
-                    LogHelper.Log("S->N: tcpClient login [" + LogHelper.Logdata(data, 0, data.Length) + "]");
+                    LogHelper.Log("TcpClient: login [" + LogHelper.Logdata(data, 0, data.Length) + "]");
 
                     stream.Write(data, 0, data.Length);
                 }
@@ -101,7 +101,7 @@ namespace Dgiot_dtu
             }
             catch (Exception e)
             {
-                LogHelper.Log("Couldn't connect: " + e.Message);
+                LogHelper.Log("TcpClient Couldn't connect: " + e.Message);
                 OnConnectClosed();
             }
         }
@@ -117,7 +117,7 @@ namespace Dgiot_dtu
                 {
                     stream.BeginRead(tcpdata, 0, tcpdata.Length, Read, null);
 
-                    LogHelper.Log("N->S: tcpClient revc [" + LogHelper.Logdata(tcpdata, offset, rxbytes - offset) + "]");
+                    LogHelper.Log("TcpClient Recv: [" + LogHelper.Logdata(tcpdata, offset, rxbytes - offset) + "]");
 
                     TcpServerHelper.Write(tcpdata, offset, rxbytes - offset);
 
@@ -126,7 +126,7 @@ namespace Dgiot_dtu
 
                 if (rxbytes == 0)
                 {
-                    LogHelper.Log("Client closed");
+                    LogHelper.Log("TcpClient Client closed");
                     OnConnectClosed();
                 }
             }
@@ -134,15 +134,15 @@ namespace Dgiot_dtu
             {
                 if (e is ObjectDisposedException)
                 {
-                    LogHelper.Log("Connection closed");
+                    LogHelper.Log("TcpClient Connection closed");
                 }
                 else if (e is IOException && e.Message.Contains("closed"))
                 {
-                    LogHelper.Log("Connection closed");
+                    LogHelper.Log("TcpClient Connection closed");
                 }
                 else
                 {
-                    LogHelper.Log("Exception: " + e.Message);
+                    LogHelper.Log("TcpClient Exception: " + e.Message);
                 }
 
                 OnConnectClosed();
@@ -162,7 +162,7 @@ namespace Dgiot_dtu
             }
             catch (Exception ex)
             {
-                LogHelper.Log("close client:" + ex.Message);
+                LogHelper.Log("TcpClient close:" + ex.Message);
             }
 
             if (bAutoReconnect && bIsRunning)
@@ -173,7 +173,7 @@ namespace Dgiot_dtu
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.Log("Problem reconnecting:" + ex.Message);
+                    LogHelper.Log("TcpClient Problem reconnecting:" + ex.Message);
                 }
             }
         }
@@ -184,6 +184,7 @@ namespace Dgiot_dtu
             {
                 if (stream.CanWrite)
                 {
+                    LogHelper.Log("TcpClient Send: " + LogHelper.Logdata(data, 0, len) + "]");
                     stream.Write(data, offset, len);
                 }
             }
