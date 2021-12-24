@@ -88,9 +88,9 @@ namespace Dgiot_dtu
 
                     byte[] data = new byte[1024];
 
-                    data = LogHelper.Payload(login.ToCharArray());
+                    data = System.Text.Encoding.UTF8.GetBytes(login.ToCharArray());
 
-                    LogHelper.Log("TcpClient: login [" + LogHelper.Logdata(data, 0, data.Length) + "]");
+                    LogHelper.Log("TcpClient: login [" + login + "]");
 
                     stream.Write(data, 0, data.Length);
                 }

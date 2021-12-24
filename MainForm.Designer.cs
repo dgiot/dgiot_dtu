@@ -311,6 +311,7 @@ namespace Dgiot_dtu
             this.comboBoxBaudRate.Name = "comboBoxBaudRate";
             this.comboBoxBaudRate.Size = new System.Drawing.Size(209, 26);
             this.comboBoxBaudRate.TabIndex = 11;
+            this.comboBoxBaudRate.SelectedIndexChanged += new System.EventHandler(this.ComboBoxBaudRate_SelectedIndexChanged);
             // 
             // labelSerialPort
             // 

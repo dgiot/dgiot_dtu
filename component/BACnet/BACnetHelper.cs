@@ -6,7 +6,6 @@ namespace Dgiot_dtu
 {
     using System;
     using System.Collections.Generic;
-    using System.Configuration;
     using System.IO.BACnet;
     using System.Linq;
     using Newtonsoft.Json;
@@ -39,6 +38,7 @@ namespace Dgiot_dtu
         public static void Start()
         {
             Config();
+            Stop();
             if (bacnetClient == null)
             {
                 // Bacnet on UDP/IP/Ethernet
@@ -62,7 +62,9 @@ namespace Dgiot_dtu
         {
             if (bacnetClient != null)
             {
-               // bacnetClient.Start();
+                devicesList.Clear();
+                bacnetClient.Dispose();
+                bacnetClient = null;
             }
         }
 
@@ -307,7 +309,7 @@ namespace Dgiot_dtu
                                 var pid = (BacnetPropertyIds)bPValue.property.propertyIdentifier;
                                 var bValue = bPValue.value.First();
                                 var strBValue = "" + bValue.Value;
-                                Console.WriteLine(pid + " , " + strBValue + " , " + bValue.Tag);
+                                LogHelper.Log(pid + " , " + strBValue + " , " + bValue.Tag);
                                 switch (pid)
                                 {
                                     case BacnetPropertyIds.PROP_DESCRIPTION: // √Ë ˆ
@@ -335,7 +337,7 @@ namespace Dgiot_dtu
                 }
                 catch (Exception exp)
                 {
-                    Console.WriteLine("Error: " + exp.Message);
+                    LogHelper.Log("Error: " + exp.Message.ToString(), (int)LogHelper.Level.ERROR);
                 }
             }
         }

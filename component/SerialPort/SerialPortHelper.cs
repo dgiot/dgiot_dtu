@@ -35,24 +35,27 @@ namespace Dgiot_dtu
         public static void Start()
         {
             Config();
-            if (!bIsRunning)
-            {
-                try
-                {
-                    port = new SerialPort(portName, baudRate, parity, dataBits, stopBits);
-                    port.DataReceived += Received;
-                    port.ReceivedBytesThreshold = 1;
-                    port.Open();
-                    LogHelper.Log(@"Open open port " + portName);
-                }
-                catch (Exception)
-                {
-                    LogHelper.Log(@"Couldn't open port " + portName);
-                    return;
-                }
 
-                bIsRunning = true;
+            if (bIsRunning)
+            {
+                Stop();
             }
+
+            try
+            {
+                port = new SerialPort(portName, baudRate, parity, dataBits, stopBits);
+                port.DataReceived += Received;
+                port.ReceivedBytesThreshold = 1;
+                port.Open();
+                LogHelper.Log(@"Open open port " + portName);
+            }
+            catch (Exception)
+            {
+                LogHelper.Log(@"Couldn't open port " + portName);
+                return;
+            }
+
+            bIsRunning = true;
         }
 
         public static void Stop()

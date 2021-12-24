@@ -86,7 +86,7 @@ namespace Dgiot_dtu
 
             textBoxLog.Text += text + "\r\n";
             textBoxLog.SelectionStart = textBoxLog.Text.Length - 1;
-            textBoxLog.ScrollToCaret(); 
+            textBoxLog.ScrollToCaret();
         }
 
         private void ToStop()
@@ -97,13 +97,10 @@ namespace Dgiot_dtu
                 bIsRunning = false;
                 MqttClientHelper.Stop();
                 MqttServerHelper.Stop();
-                SerialPortHelper.Stop();
                 TcpClientHelper.Stop();
                 TcpServerHelper.Stop();
                 UDPClientHelper.Stop();
                 UDPServerHelper.Stop();
-                BACnetHelper.Stop();
-                SerialPortHelper.Stop();
             }
             catch (Exception e)
             {
@@ -713,6 +710,11 @@ namespace Dgiot_dtu
         private void ComboBoxSerialPort_SelectedIndexChanged(object sender, EventArgs e)
         {
             ConfigHelper.SetConfig("SerialPort", comboBoxSerialPort.Text);
+        }
+
+        private void ComboBoxBaudRate_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ConfigHelper.SetConfig("BaudRate", comboBoxBaudRate.Text);
         }
 
         private void ComboBoxStopBits_SelectedIndexChanged(object sender, EventArgs e)
