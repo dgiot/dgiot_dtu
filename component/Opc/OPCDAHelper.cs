@@ -76,7 +76,7 @@ namespace Dgiot_dtu
             OpcDa.ScanOPCDa(host, true).ForEach(service =>
             {
                 OpcDaService server = OpcDa.GetOpcDaService(host, service);
-                OPCDAViewHelper.GetTreeNodes(server);
+                // OPCDAViewHelper.GetTreeNodes(server);
             });
         }
 
@@ -92,18 +92,42 @@ namespace Dgiot_dtu
 
             JsonObject properties = new JsonObject();
             List<Item> collection = new List<Item>();
-            values.ToList().ForEach(v =>
+            int flag = 0;
+            if (values.Length == group.Items.Count)
             {
-                Item i = new Item();
-                if (v.Item != null && v.Value != null)
+                values.ToList().ForEach(v =>
                 {
-                    properties.Add(v.Item.ItemId, v.Value);
+                    Item i = new Item();
+                    if (v.Item != null && v.Value != null)
+                    {
+                        properties.Add(v.Item.ItemId, v.Value);
+                        flag++;
+                    }
+                });
+            }
+            else {
+                properties.Clear();
+                flag = 0;
+                OpcDaItemValue[] values2 = group.Read(group.Items, OpcDaDataSource.Device);
+                if (values2.Length == group.Items.Count)
+                {
+                    values2.ToList().ForEach(v =>
+                    {
+                        Item i = new Item();
+                        if (v.Item != null && v.Value != null)
+                        {
+                            properties.Add(v.Item.ItemId, v.Value);
+                            flag++;
+                        }
+                    });
                 }
-            });
-            result.Add("properties", properties);
-            string topic = "/" + productId + "/" + devAddr + "/report/opc/properties";
-            LogHelper.Log(" topic " + topic + " payload: " + result);
-            MqttClientHelper.Publish(topic, Encoding.UTF8.GetBytes(result.ToString()));
+            }
+            if (flag == group.Items.Count) {
+                result.Add("properties", properties);
+                string topic = "/" + productId + "/" + devAddr + "/report/opc/properties";
+                LogHelper.Log(" topic " + topic + " payload: " + result);
+                MqttClientHelper.Publish(topic, Encoding.UTF8.GetBytes(result.ToString()));
+            }
         }
 
         public static void Additems(Dictionary<string, object> json)
