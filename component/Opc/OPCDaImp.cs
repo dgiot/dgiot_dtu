@@ -257,23 +257,26 @@ namespace Da
 
         public void StopMonitoringItems(string groupKey)
         {
-            Thread.Sleep(100);
-            string host = groupCollection[groupKey].Host;
-            string serviceProgId = groupCollection[groupKey].ProgId;
-            OpcDaService server = GetOpcDaService(host, serviceProgId);
-            if (server == null)
+            if (groupCollection.ContainsKey(groupKey))
             {
-                LogHelper.Log("StopMonitoringItems  is null");
-                return;
-            }
+                Thread.Sleep(100);
+                string host = groupCollection[groupKey].Host;
+                string serviceProgId = groupCollection[groupKey].ProgId;
+                OpcDaService server = GetOpcDaService(host, serviceProgId);
+                if (server == null)
+                {
+                    LogHelper.Log("StopMonitoringItems  is null");
+                    return;
+                }
 
-            OpcDaGroup group = daGroupKeyPairs[groupKey];
-            group.ValuesChanged -= MonitorValuesChanged;
-            server.OpcDaGroupS.Remove(groupKey);
-            server.Service.RemoveGroup(group);
-            daGroupKeyPairs.Remove(groupKey);
-            groupCollection.Remove(groupKey);
-            groupFlagCollection.Remove(groupKey);
+                OpcDaGroup group = daGroupKeyPairs[groupKey];
+                group.ValuesChanged -= MonitorValuesChanged;
+                server.OpcDaGroupS.Remove(groupKey);
+                server.Service.RemoveGroup(group);
+                daGroupKeyPairs.Remove(groupKey);
+                groupCollection.Remove(groupKey);
+                groupFlagCollection.Remove(groupKey);
+            }
         }
 
         public void SetItemsValueChangedCallBack(IItemsValueChangedCallBack callBack)
