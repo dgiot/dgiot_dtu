@@ -594,7 +594,7 @@ namespace Dgiot_dtu
             productid = textBoxMqttUserName.Text;
             clientid = DgiotHelper.Md5("Device" + this.textBoxMqttUserName.Text + devaddr).Substring(0, 10);
             textBoxMqttClientId.Text = clientid;
-            textBoxMqttSubTopic.Text = "/" + productid + "/" + devaddr;
+            textBoxMqttSubTopic.Text = "/" + productid + "/" + devaddr + "/device";
             textBoxMqttPubTopic.Text = "/" + productid + "/" + devaddr + "/properties/read/reply";
             textBoxAccessTopic.Text = "/" + productid + "/" + devaddr + "/scan/mdb";
 
@@ -665,11 +665,13 @@ namespace Dgiot_dtu
         private void TextBoxMqttClientId_TextChanged(object sender, EventArgs e)
         {
             ConfigHelper.SetConfig("MqttClientId", textBoxMqttClientId.Text);
+            Resh_Topic();
         }
 
         private void TextBoxMqttUserName_TextChanged(object sender, EventArgs e)
         {
             ConfigHelper.SetConfig("MqttUserName", textBoxMqttUserName.Text);
+            Resh_Topic();
         }
 
         private void TextBoxMqttPassword_TextChanged(object sender, EventArgs e)
@@ -680,11 +682,13 @@ namespace Dgiot_dtu
         private void TextBoxMqttSubTopic_TextChanged(object sender, EventArgs e)
         {
             ConfigHelper.SetConfig("MqttSubTopic", textBoxMqttSubTopic.Text);
+            Resh_Topic();
         }
 
         private void TextBoxMqttPubTopic_TextChanged(object sender, EventArgs e)
         {
             ConfigHelper.SetConfig("MqttPubTopic", textBoxMqttPubTopic.Text);
+            Resh_Topic();
         }
 
         private void TextBoxMqttServerPort_TextChanged(object sender, EventArgs e)
@@ -761,21 +765,25 @@ namespace Dgiot_dtu
         private void TextBoxOPCUATopic_TextChanged(object sender, EventArgs e)
         {
             ConfigHelper.SetConfig("OPCUATopic", textBoxOPCUATopic.Text);
+            Resh_Topic();
         }
 
         private void TextBoxBACnetTopic_TextChanged(object sender, EventArgs e)
         {
             ConfigHelper.SetConfig("BACnetTopic", textBoxBACnetTopic.Text);
+            Resh_Topic();
         }
 
         private void TextBoxControlTopic_TextChanged(object sender, EventArgs e)
         {
             ConfigHelper.SetConfig("ControlTopic", textBoxControlTopic.Text);
+            Resh_Topic();
         }
 
         private void TextBoxAccessTopic_TextChanged(object sender, EventArgs e)
         {
             ConfigHelper.SetConfig("AccessTopic", textBoxAccessTopic.Text);
+            Resh_Topic();
         }
 
         private void ComboBoxLogLevel_SelectedIndexChanged(object sender, EventArgs e)
@@ -1116,6 +1124,11 @@ namespace Dgiot_dtu
                     SetControls(newx, newy, con);
                 }
             }
+        }
+
+        private void openFileDialog_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+
         }
     }
 }

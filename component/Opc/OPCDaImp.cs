@@ -451,11 +451,7 @@ namespace Da
                 if (e.Values.Length > 0)
                 {
                     var opcGroup = sender as OpcDaGroup;
-                    int flag = GetGroupFlag(opcGroup.Name);
-                    if (flag > 0)
-                    {
-                        callBack.ValueChangedCallBack(opcGroup, e.Values);
-                    }
+                    callBack.ValueChangedCallBack(opcGroup, e.Values);
                 }
             }
         }

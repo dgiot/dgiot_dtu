@@ -167,9 +167,9 @@ namespace Dgiot_dtu
         {
             LogHelper.Log("mqtt client:" + clientid + " connected");
 
-            mqttClient.SubscribeAsync(new TopicFilter("/" + username + "/" + dtuAddr + "/#", MqttQualityOfServiceLevel.AtLeastOnce));
+            mqttClient.SubscribeAsync(new TopicFilter("/" + username + "/" + dtuAddr + "/device/#", MqttQualityOfServiceLevel.AtLeastOnce));
 
-            LogHelper.Log("mqtt client subscribe topic: " + "/" + username + "/" + dtuAddr + "/#");
+            LogHelper.Log("mqtt client subscribe topic: " + "/" + username + "/" + dtuAddr + "/device/#");
         }
 
         /// <summary>

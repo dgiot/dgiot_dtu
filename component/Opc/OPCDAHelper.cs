@@ -76,7 +76,7 @@ namespace Dgiot_dtu
             OpcDa.ScanOPCDa(host, true).ForEach(service =>
             {
                 OpcDaService server = OpcDa.GetOpcDaService(host, service);
-                OPCDAViewHelper.GetTreeNodes(server);
+                // OPCDAViewHelper.GetTreeNodes(server);
             });
         }
 
@@ -122,10 +122,20 @@ namespace Dgiot_dtu
                     });
                 }
             }
-            if (flag == group.Items.Count) {
-                result.Add("properties", properties);
-                string topic = "/" + productId + "/" + devAddr + "/report/opc/properties";
-                LogHelper.Log(" topic " + topic + " payload: " + result);
+            string topic = "/" + productId + "/" + devAddr + "/report/opc/properties";
+            int flag1 = OpcDa.GetGroupFlag(group.Name);
+            if (flag1 > 0)
+            {
+                properties.Add("dgiotcollectflag", 0);
+                LogHelper.Log(" topic: " + topic + " payload: " + properties);
+            }
+            else
+            {
+                properties.Add("dgiotcollectflag", 1);
+            }
+            result.Add("properties", properties);
+            if (flag == group.Items.Count)
+            {
                 MqttClientHelper.Publish(topic, Encoding.UTF8.GetBytes(result.ToString()));
             }
         }
