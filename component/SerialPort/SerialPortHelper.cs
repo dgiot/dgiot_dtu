@@ -83,7 +83,7 @@ namespace Dgiot_dtu
         {
             if (port != null && port.IsOpen)
             {
-                LogHelper.Log("SerialPort Send: [" + LogHelper.Logdata(payload, 0, len) + "]");
+                // LogHelper.Log("SerialPort Send: [" + LogHelper.Logdata(payload, 0, len) + "]");
                 port.Write(payload, offset, len);
             }
         }

@@ -1,7 +1,7 @@
 ﻿[*.cs]
 
 # SA1204: Static elements must appear before instance elements
-dotnet_diagnostic.SA1204.severity = silent
+dotnet_diagnostic.SA1204.severity = none
 
 # SA1201: Elements must appear in the correct order
 dotnet_diagnostic.SA1201.severity = silent
@@ -47,3 +47,6 @@ dotnet_diagnostic.SA1604.severity = none
 
 # CS0252: 可能非有意的引用比较；左侧需要强制转换
 dotnet_diagnostic.CS0252.severity = none
+
+# Default severity for all analyzer diagnostics
+dotnet_analyzer_diagnostic.severity = none

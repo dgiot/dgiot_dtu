@@ -385,7 +385,7 @@ namespace Dgiot_dtu
             this.textBoxMqttUserName.Name = "textBoxMqttUserName";
             this.textBoxMqttUserName.Size = new System.Drawing.Size(131, 21);
             this.textBoxMqttUserName.TabIndex = 16;
-            this.textBoxMqttUserName.Text = "ecfd3a227c";
+            this.textBoxMqttUserName.Text = "d037f3709f";
             this.textBoxMqttUserName.TextChanged += new System.EventHandler(this.TextBoxMqttUserName_TextChanged);
             // 
             // label9
@@ -578,7 +578,7 @@ namespace Dgiot_dtu
             this.textBoxDgiotSever.Name = "textBoxDgiotSever";
             this.textBoxDgiotSever.Size = new System.Drawing.Size(133, 21);
             this.textBoxDgiotSever.TabIndex = 5;
-            this.textBoxDgiotSever.Text = "prod.iotn2n.com";
+            this.textBoxDgiotSever.Text = "pump.dgiotcloud.com";
             this.textBoxDgiotSever.TextChanged += new System.EventHandler(this.TextBoxDgiotSever_TextChanged);
             // 
             // label22
@@ -656,7 +656,7 @@ namespace Dgiot_dtu
             // 
             this.checkBoxOPCDA.AutoSize = true;
             this.checkBoxOPCDA.Location = new System.Drawing.Point(137, 22);
-            this.checkBoxOPCDA.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.checkBoxOPCDA.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxOPCDA.Name = "checkBoxOPCDA";
             this.checkBoxOPCDA.Size = new System.Drawing.Size(66, 16);
             this.checkBoxOPCDA.TabIndex = 47;
@@ -982,7 +982,7 @@ namespace Dgiot_dtu
             this.treeView.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.treeView.LabelEdit = true;
             this.treeView.Location = new System.Drawing.Point(3, 24);
-            this.treeView.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.treeView.Margin = new System.Windows.Forms.Padding(2);
             this.treeView.Name = "treeView";
             this.treeView.Size = new System.Drawing.Size(287, 210);
             this.treeView.TabIndex = 0;

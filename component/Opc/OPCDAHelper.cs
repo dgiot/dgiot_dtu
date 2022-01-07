@@ -76,6 +76,7 @@ namespace Dgiot_dtu
             OpcDa.ScanOPCDa(host, true).ForEach(service =>
             {
                 OpcDaService server = OpcDa.GetOpcDaService(host, service);
+
                 // OPCDAViewHelper.GetTreeNodes(server);
             });
         }
@@ -105,7 +106,8 @@ namespace Dgiot_dtu
                     }
                 });
             }
-            else {
+            else
+            {
                 properties.Clear();
                 flag = 0;
                 OpcDaItemValue[] values2 = group.Read(group.Items, OpcDaDataSource.Device);
@@ -133,6 +135,7 @@ namespace Dgiot_dtu
             {
                 properties.Add("dgiotcollectflag", 1);
             }
+
             result.Add("properties", properties);
             if (flag == group.Items.Count)
             {
@@ -150,7 +153,8 @@ namespace Dgiot_dtu
             {
                 itemlist.Add((string)v);
             }
-            OpcDa.StopMonitoringItems(groupid);
+
+            OpcDa.StopGroup();
             OpcDa.StartMonitor(groupid, itemlist.Distinct().ToList(), opcserver);
         }
 

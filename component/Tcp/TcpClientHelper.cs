@@ -184,7 +184,7 @@ namespace Dgiot_dtu
             {
                 if (stream.CanWrite)
                 {
-                    LogHelper.Log("TcpClient Send: " + LogHelper.Logdata(data, 0, len) + "]");
+                    LogHelper.Log("TcpClient Send: [" + LogHelper.Logdata(data, 0, len) + "]");
                     stream.Write(data, offset, len);
                 }
             }
