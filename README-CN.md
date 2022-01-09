@@ -1,6 +1,6 @@
 `# dgiot_dtu
 
-  [dgiot_dtu.exe](http://dgiot-1253666439.cos.ap-shanghai-fsi.myqcloud.com/dgiot_release/dgiot_dtu.exe) 是dgiot工业物联网整体解决方案中边缘侧的桌面实用工具
+  [dgiot_dtu.exe](https://dgiot-release-1306147891.cos.ap-nanjing.myqcloud.com/v4.4.0/dgiot_dtu.exe) 是dgiot工业物联网整体解决方案中边缘侧的桌面实用工具
  + 可以部署在企业内网,通过多个dgiot_dtu的mqtt/tcp/udp等级联的方式,打通企业内网与云端服务器的通讯通道
  + 将企业内网中的串口/PLC/OPC/BACNet/UI/Access/SqlServer等老的工业系统中的数据汇聚到云端dgiot服务中
  + 对OPC/OPC/BACNet/UI/Access/SqlServer等实现自动扫描工具，实现远程施工与运维服务
@@ -41,10 +41,14 @@ dgiot_dtu 用[vc2019](https://dgiot-dev-1306147891.cos.ap-nanjing.myqcloud.com/d
 
 + [opcclient](https://dgiot-dev-1306147891.cos.ap-nanjing.myqcloud.com/dgiot_dtu/MatrikonOPCSimulationV_1.5.zip)
 
+ [OPC设备通过dgiot_dtu接入dgiot物联网平台实战教程](https://gitee.com/dgiiot/dgiot/wikis/%E5%AE%9E%E6%88%98%E6%8E%A5%E5%85%A5/OPC%E8%AE%BE%E5%A4%87%E6%8E%A5%E5%85%A5/dgiot_dtu%E9%85%8D%E7%BD%AE)
+
 ## 串口模拟测试
 
 + [虚拟电表](https://gitee.com/dgiiot/dgiot/wikis/%E5%AE%9E%E6%88%98%E6%8E%A5%E5%85%A5/%E7%94%B5%E8%A1%A8%E6%8E%A5%E5%85%A5/%E6%A6%82%E8%BF%B0)
-+ [虚拟modbus](http://tech.iotn2n.com/w/docs/details?id=9)
++ [虚拟modbus](http://tech.iotn2n.com/w/docs/details?id=9
+
+[DLT645虚拟电表通过dgiot_dtu接入dgiot物联网平台实战教程](https://gitee.com/dgiiot/dgiot/wikis/%E5%AE%9E%E6%88%98%E6%8E%A5%E5%85%A5/%E7%94%B5%E8%A1%A8%E6%8E%A5%E5%85%A5/dgiot_DTU)
 
 ## Bacnet模拟测试
 
