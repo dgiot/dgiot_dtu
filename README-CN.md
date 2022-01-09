@@ -1,4 +1,4 @@
-`# dgiot_dtu
+# dgiot_dtu
 
   [dgiot_dtu.exe](https://dgiot-release-1306147891.cos.ap-nanjing.myqcloud.com/v4.4.0/dgiot_dtu.exe) 是dgiot工业物联网整体解决方案中边缘侧的桌面实用工具
  + 可以部署在企业内网,通过多个dgiot_dtu的mqtt/tcp/udp等级联的方式,打通企业内网与云端服务器的通讯通道
