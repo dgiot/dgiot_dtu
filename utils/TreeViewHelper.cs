@@ -8,6 +8,7 @@ namespace Dgiot_dtu
     using System.Configuration;
     using System.Windows.Forms;
 
+
     public class TreeViewHelper
     {
         private static readonly string[] NodeTypeValue = new string[]
@@ -151,6 +152,7 @@ namespace Dgiot_dtu
             else if (buttons == MouseButtons.Left && node.Checked) // 双击鼠标左键读
             {
                 LogHelper.Log("Left node " + node.Text + " ToolTipText " + node.ToolTipText + " Level " + node.Level.ToString());
+                OPCDAHelper.GetTreeNodes(node.Text);
             }
         }
 

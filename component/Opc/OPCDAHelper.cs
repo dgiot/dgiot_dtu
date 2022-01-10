@@ -76,9 +76,14 @@ namespace Dgiot_dtu
             OpcDa.ScanOPCDa(host, true).ForEach(service =>
             {
                 OpcDaService server = OpcDa.GetOpcDaService(host, service);
-
-                // OPCDAViewHelper.GetTreeNodes(server);
+                //OPCDAViewHelper.GetTreeNodes(server);
             });
+        }
+
+        public static void GetTreeNodes(string service)
+        {
+                OpcDaService server = OpcDa.GetOpcDaService(host, service);
+                OPCDAViewHelper.GetTreeNodes(server);
         }
 
         public void ValueChangedCallBack(OpcDaGroup group, OpcDaItemValue[] values)
