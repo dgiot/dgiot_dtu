@@ -41,14 +41,14 @@ dgiot_dtu 用[vc2019](https://dgiot-dev-1306147891.cos.ap-nanjing.myqcloud.com/d
 
 + [opcclient](https://dgiot-dev-1306147891.cos.ap-nanjing.myqcloud.com/dgiot_dtu/MatrikonOPCSimulationV_1.5.zip)
 
- [OPC设备通过dgiot_dtu接入dgiot物联网平台实战教程](https://gitee.com/dgiiot/dgiot/wikis/%E5%AE%9E%E6%88%98%E6%8E%A5%E5%85%A5/OPC%E8%AE%BE%E5%A4%87%E6%8E%A5%E5%85%A5/dgiot_dtu%E9%85%8D%E7%BD%AE)
+ [OPC设备通过dgiot_dtu接入dgiot物联网平台实战教程](https://gitee.com/dgiiot/dgiot/wikis/%E5%BF%AB%E9%80%9F%E6%8E%A5%E5%85%A5/OPC%E8%AE%BE%E5%A4%87%E6%8E%A5%E5%85%A5/%E6%A6%82%E8%BF%B0)
 
 ## 串口模拟测试
 
 + [虚拟电表](https://gitee.com/dgiiot/dgiot/wikis/%E5%AE%9E%E6%88%98%E6%8E%A5%E5%85%A5/%E7%94%B5%E8%A1%A8%E6%8E%A5%E5%85%A5/%E6%A6%82%E8%BF%B0)
 + [虚拟modbus](http://tech.iotn2n.com/w/docs/details?id=9)
 
-[DLT645虚拟电表通过dgiot_dtu接入dgiot物联网平台实战教程](https://gitee.com/dgiiot/dgiot/wikis/%E5%AE%9E%E6%88%98%E6%8E%A5%E5%85%A5/%E7%94%B5%E8%A1%A8%E6%8E%A5%E5%85%A5/dgiot_DTU)
+[DLT645虚拟电表通过dgiot_dtu接入dgiot物联网平台实战教程](https://gitee.com/dgiiot/dgiot/wikis/%E5%BF%AB%E9%80%9F%E6%8E%A5%E5%85%A5/%E7%94%B5%E8%A1%A8%E6%8E%A5%E5%85%A5/%E6%A6%82%E8%BF%B0)
 
 ## Bacnet模拟测试
 
