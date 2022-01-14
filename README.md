@@ -15,7 +15,7 @@
 ![dgiot_dtu_demo.png](http://dgiot-1253666439.cos.ap-shanghai-fsi.myqcloud.com/dgiot4.0/dgiot_dtu_demo.png)
 
 # Operating environment
-dgiot_dtu depends on [.net4.5](https://dgiot-dev-1306147891.cos.ap-nanjing.myqcloud.com/dgiot_dtu/dotNetFx45.rar) operating environment,
+dgiot_dtu depends on [.net4.5](https://dgiot-dev-1306147891.cos.ap-nanjing.myqcloud.com/dgiot_dtu/dotnetfx45.zip) operating environment,
 Need to install .net4.5 in the environment of window7 and below
 
 # Compiler Environment
