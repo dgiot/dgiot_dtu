@@ -13,7 +13,6 @@ namespace Dgiot_dtu
     using System.Windows.Forms;
     using System.Drawing.Printing;
     using System.Runtime.InteropServices;
-
     public partial class MainForm : Form
     {
         private delegate void LogHandler(string text);
