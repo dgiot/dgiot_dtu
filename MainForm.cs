@@ -593,11 +593,11 @@ namespace Dgiot_dtu
 
         private void Resh_Topic()
         {
-            devaddr = textBoxMqttClientId.Text;
+            devaddr = comboBoxDtuAddr.Text;
             productid = textBoxMqttUserName.Text;
-            // clientid = DgiotHelper.Md5("Device" + this.textBoxMqttUserName.Text + devaddr).Substring(0, 10);
-            // textBoxMqttClientId.Text = textBoxMqttClientId.Text;
-            textBoxMqttSubTopic.Text = "$dg/device/" + productid + "/" + devaddr + "/#";
+            clientid = DgiotHelper.Md5("Device" + this.textBoxMqttUserName.Text + devaddr).Substring(0, 10);
+            textBoxMqttClientId.Text = clientid;
+            textBoxMqttSubTopic.Text = "/" + productid + "/" + devaddr + "/device";
             textBoxMqttPubTopic.Text = "/" + productid + "/" + devaddr + "/properties/read/reply";
             textBoxAccessTopic.Text = "/" + productid + "/" + devaddr + "/scan/mdb";
 
@@ -817,7 +817,7 @@ namespace Dgiot_dtu
 
         private void ComboBoxDtuAddr_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ConfigHelper.SetConfig("DtuAddr", textBoxMqttClientId.Text);
+            ConfigHelper.SetConfig("DtuAddr", comboBoxDtuAddr.Text);
         }
 
         private void CheckBoxBridge_CheckedChanged(object sender, EventArgs e)

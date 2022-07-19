@@ -25,6 +25,7 @@ namespace Dgiot_dtu
         private static bool bIsRunning = false;
 
         private static string textData = "C01010100005DGF0100189";
+        private static PrintDocument fPrintDocument = new PrintDocument();
 
 
         public static void Start(MqttClient mqttClient)
@@ -92,22 +93,22 @@ namespace Dgiot_dtu
 
         }
 
-        private static PrintDocument fPrintDocument = new PrintDocument();
+    
         public static void PrintPage(string data)
         {
             SetTextData(data);
             PrintDialog PD = new PrintDialog();
             PageSettings pageSettings = new PageSettings();
-            pageSettings.PaperSize= new PaperSize("Custom", 300, 400);
+            //pageSettings.PaperSize = new PaperSize("Size", 30, 40);
             string Name = fPrintDocument.PrinterSettings.PrinterName;
             System.Drawing.Printing.PrinterSettings Ps = new System.Drawing.Printing.PrinterSettings();
             //SetDefaultPrinter("Deli DL-888B(NEW)");
+            fPrintDocument.DefaultPageSettings.PaperSize = new PaperSize("Size", 157, 118); //单位1/100英寸
             SetDefaultPrinter(Name);
             PD.PrinterSettings = Ps;
-            var document = new PrintDocument();
-            document.PrintPage += document_PrintPage;
-            PD.Document = document;
-            document.Print();
+            fPrintDocument.PrintPage += document_PrintPage;
+            PD.Document = fPrintDocument;
+            fPrintDocument.Print();
         }
 
         static void document_PrintPage(object sender, PrintPageEventArgs e)
@@ -131,7 +132,6 @@ namespace Dgiot_dtu
             CodeLib.AlignmentPositions Align = CodeLib.AlignmentPositions.CENTER;
             b.Alignment = Align;
             b.LabelPosition = CodeLib.LabelPositions.BOTTOMCENTER;
-            b.Encode(type, textData, 523, 200).Save("./one.png");
             return b.Encode(type, textData, 523, 200);  
         }
     }
