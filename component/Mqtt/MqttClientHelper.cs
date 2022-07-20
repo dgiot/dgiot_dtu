@@ -19,6 +19,7 @@ namespace Dgiot_dtu
 
     public class MqttClientHelper
     {
+     
         private MqttClientHelper()
         {
         }
@@ -169,7 +170,7 @@ namespace Dgiot_dtu
 
             mqttClient.SubscribeAsync(new TopicFilter("/" + username + "/" + dtuAddr + "/device/#", MqttQualityOfServiceLevel.AtLeastOnce));
 
-            LogHelper.Log("mqtt client subscribe topic: " + "/" + username + "/" + dtuAddr + "/device/#");
+            PrinterHelper.Start(mqttClient);
         }
 
         /// <summary>
@@ -199,7 +200,11 @@ namespace Dgiot_dtu
             Dictionary<string, object> json = Get_payload(e.ApplicationMessage.Payload);
             string topic = e.ApplicationMessage.Topic;
             string data = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
-            LogHelper.Log("mqtt recv:topic: " + e.ApplicationMessage.Topic.ToString() + " payload: " + data);
+         //   LogHelper.Log("mqtt:topic: "+ topic);
+         //   foreach (var item in json)
+          //  {
+          //      LogHelper.Log("mqtt:json: " + " key :" + item.Key + " value " +  item.Value.ToString());
+         //   }
 
             Regex r_subtopic = new Regex(subtopic); // 定义一个Regex对象实例
             Match m_subtopic = r_subtopic.Match(e.ApplicationMessage.Topic); // 在字符串中匹配
@@ -219,6 +224,16 @@ namespace Dgiot_dtu
                     else if (json["cmd"].ToString() == "opc_report")
                     {
                         OPCDAHelper.Publishvalues(json);
+                    }
+                }
+            }
+            if (topic.IndexOf("device/printer") == 0)
+            {
+                if (json.ContainsKey("barcode"))
+                {
+                       if (json["DtuNum"].ToString() == "1")      //判断电脑编号进行打印
+                         {
+                        Dgiot_dtu.PrinterHelper.PrintPage(json["barcode"].ToString());
                     }
                 }
             }

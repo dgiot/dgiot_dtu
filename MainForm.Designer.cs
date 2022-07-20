@@ -699,6 +699,7 @@ namespace Dgiot_dtu
             this.groupBox5.TabIndex = 19;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "OPC_UA Capture";
+            this.groupBox5.Enter += new System.EventHandler(this.groupBox5_Enter);
             // 
             // textBoxOPCUATopic
             // 
@@ -729,6 +730,7 @@ namespace Dgiot_dtu
             this.groupBox6.TabIndex = 20;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "BACnet Capture";
+            this.groupBox6.Enter += new System.EventHandler(this.groupBox6_Enter);
             // 
             // textBoxBACnetTopic
             // 
@@ -823,6 +825,7 @@ namespace Dgiot_dtu
             this.groupBox8.TabIndex = 22;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Access Capture";
+            this.groupBox8.Enter += new System.EventHandler(this.groupBox8_Enter);
             // 
             // textBoxAccessTopic
             // 
@@ -1153,6 +1156,7 @@ namespace Dgiot_dtu
         private System.Windows.Forms.Label label23;
         private System.Windows.Forms.GroupBox groupBox7;
         private System.Windows.Forms.TextBox textBoxControlTopic;
+        private System.Windows.Forms.TextBox textBoxprinterTopic;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.ComboBox comboBoxBridge;
         private System.Windows.Forms.Label label7;

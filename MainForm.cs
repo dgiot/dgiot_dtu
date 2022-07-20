@@ -11,7 +11,8 @@ namespace Dgiot_dtu
     using System.Drawing;
     using System.Text.RegularExpressions;
     using System.Windows.Forms;
-
+    using System.Drawing.Printing;
+    using System.Runtime.InteropServices;
     public partial class MainForm : Form
     {
         private delegate void LogHandler(string text);
@@ -24,6 +25,7 @@ namespace Dgiot_dtu
         private static OPCDAViewHelper oPCDAViewHelper = OPCDAViewHelper.GetInstance();
         private static TcpClientHelper tcpClientHelper = TcpClientHelper.GetInstance();
         private static TcpServerHelper tcpServerHelper = TcpServerHelper.GetInstance();
+        private static PrinterHelper printerHelper = PrinterHelper.GetInstance();
         private bool bIsRunning = false;
         private float x = 0; // 当前窗体的宽度
         private float y = 0; // 当前窗体的高度
@@ -43,6 +45,7 @@ namespace Dgiot_dtu
             "Control",
             "Access",
             "SqlServer",
+            "Barcode_Printer"
         };
 
         private Configuration config;
@@ -826,11 +829,16 @@ namespace Dgiot_dtu
         {
             byte[] payload = LogHelper.Payload(textToPayload.Text.ToCharArray());
             LogHelper.Log(bridges[comboBoxBridge.SelectedIndex] + " send  [" + LogHelper.Logdata(payload, 0, payload.Length) + "]");
-
+           // PrinterHelper.SetTextData(textToPayload.Text);
+            PrinterHelper.PrintPage(textToPayload.Text);
             if (bridges[comboBoxBridge.SelectedIndex] == "SerialPort")
             {
             }
             else if (bridges[comboBoxBridge.SelectedIndex] == "TcpServer")
+            {
+                TcpServerHelper.Write(payload, 0, payload.Length);
+            }
+            else if (bridges[comboBoxBridge.SelectedIndex] == "Barcode_Printer")
             {
                 TcpServerHelper.Write(payload, 0, payload.Length);
             }
@@ -1127,6 +1135,26 @@ namespace Dgiot_dtu
         }
 
         private void openFileDialog_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+
+        }
+
+        private void textBoxLog_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void groupBox5_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void groupBox6_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void groupBox8_Enter(object sender, EventArgs e)
         {
 
         }
