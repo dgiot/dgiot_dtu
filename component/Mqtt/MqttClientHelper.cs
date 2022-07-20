@@ -19,7 +19,6 @@ namespace Dgiot_dtu
 
     public class MqttClientHelper
     {
-     
         private MqttClientHelper()
         {
         }
@@ -27,9 +26,9 @@ namespace Dgiot_dtu
         private static MqttClient mqttClient = null;
         private static string server = "prod.iotn2n.com";
         private static int port = 1883;
-        private static string subtopic = "thing/com/";
-        private static string pubtopic = "thing/com/post/";
-        private static string clientid = Guid.NewGuid().ToString().Substring(0, 5);
+        private static string subtopic = "$dg/device/";
+        private static string pubtopic = "$dg/thing/";
+        private static string clientid = "";
         private static string username = "dgiot";
         private static string password = "dgiot";
         private static MqttClientHelper instance = null;
@@ -168,9 +167,9 @@ namespace Dgiot_dtu
         {
             LogHelper.Log("mqtt client:" + clientid + " connected");
 
-            mqttClient.SubscribeAsync(new TopicFilter("/" + username + "/" + dtuAddr + "/device/#", MqttQualityOfServiceLevel.AtLeastOnce));
+            mqttClient.SubscribeAsync(new TopicFilter(subtopic, MqttQualityOfServiceLevel.AtLeastOnce));
 
-            PrinterHelper.Start(mqttClient);
+            LogHelper.Log("mqtt client subscribe topic: " + subtopic);
         }
 
         /// <summary>
@@ -200,11 +199,7 @@ namespace Dgiot_dtu
             Dictionary<string, object> json = Get_payload(e.ApplicationMessage.Payload);
             string topic = e.ApplicationMessage.Topic;
             string data = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
-         //   LogHelper.Log("mqtt:topic: "+ topic);
-         //   foreach (var item in json)
-          //  {
-          //      LogHelper.Log("mqtt:json: " + " key :" + item.Key + " value " +  item.Value.ToString());
-         //   }
+            LogHelper.Log("mqtt recv:topic: " + e.ApplicationMessage.Topic.ToString() + " payload: " + data);
 
             Regex r_subtopic = new Regex(subtopic); // 定义一个Regex对象实例
             Match m_subtopic = r_subtopic.Match(e.ApplicationMessage.Topic); // 在字符串中匹配
@@ -212,28 +207,21 @@ namespace Dgiot_dtu
             {
                 SerialPortHelper.Write(e.ApplicationMessage.Payload, 0, e.ApplicationMessage.Payload.Length);
             }
-
-            if (topic.IndexOf("/" + username + "/" + dtuAddr + "/device/event") == 0)
+            if (topic.IndexOf("$dg/device/" + username + "/" + dtuAddr + "/properties") == 0)
             {
                 if (json.ContainsKey("cmd"))
                 {
                     if (json["cmd"].ToString() == "opc_items")
                     {
-                        OPCDAHelper.Additems(json);
+                        OPCDAHelper.Readitems(json);
                     }
                     else if (json["cmd"].ToString() == "opc_report")
                     {
                         OPCDAHelper.Publishvalues(json);
                     }
-                }
-            }
-            if (topic.IndexOf("device/printer") == 0)
-            {
-                if (json.ContainsKey("barcode"))
-                {
-                       if (json["DtuNum"].ToString() == "1")      //判断电脑编号进行打印
-                         {
-                        Dgiot_dtu.PrinterHelper.PrintPage(json["barcode"].ToString());
+                    else if (json["cmd"].ToString() == "printer")
+                    {
+                        PrinterHelper.PrintPage(json);
                     }
                 }
             }

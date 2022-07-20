@@ -6,12 +6,10 @@
 // https://github.com/chkr1011/MQTTnet
 namespace Dgiot_dtu
 {
+    using Da;
     using System.Collections.Generic;
-    using System.Configuration;
     using System.Linq;
     using System.Text;
-    using System.Windows.Forms;
-    using Da;
     using TitaniumAS.Opc.Client.Da;
 
     public class OPCDAHelper : IItemsValueChangedCallBack
@@ -82,70 +80,47 @@ namespace Dgiot_dtu
 
         public static void GetTreeNodes(string service)
         {
-                OpcDaService server = OpcDa.GetOpcDaService(host, service);
-                OPCDAViewHelper.GetTreeNodes(server);
+            OpcDaService server = OpcDa.GetOpcDaService(host, service);
+            OPCDAViewHelper.GetTreeNodes(server);
         }
 
         public void ValueChangedCallBack(OpcDaGroup group, OpcDaItemValue[] values)
         {
             JsonObject result = new JsonObject();
             result.Add("timestamp", DgiotHelper.Now());
-            if (group.UserData != null)
-            {
-                TreeNode node = group.UserData as TreeNode;
-                result.Add("deviceId", DgiotHelper.Now());
-            }
-
+            string groupKey = "";
+        
             JsonObject properties = new JsonObject();
             List<Item> collection = new List<Item>();
-            int flag = 0;
-            if (values.Length == group.Items.Count)
-            {
-                values.ToList().ForEach(v =>
-                {
-                    Item i = new Item();
-                    if (v.Item != null && v.Value != null)
-                    {
-                        properties.Add(v.Item.ItemId, v.Value);
-                        flag++;
-                    }
-                });
-            }
-            else
-            {
-                properties.Clear();
-                flag = 0;
-                OpcDaItemValue[] values2 = group.Read(group.Items, OpcDaDataSource.Device);
-                if (values2.Length == group.Items.Count)
-                {
-                    values2.ToList().ForEach(v =>
-                    {
-                        Item i = new Item();
-                        if (v.Item != null && v.Value != null)
-                        {
-                            properties.Add(v.Item.ItemId, v.Value);
-                            flag++;
-                        }
-                    });
-                }
-            }
-            string topic = "/" + productId + "/" + devAddr + "/report/opc/properties";
-            int flag1 = OpcDa.GetGroupFlag(group.Name);
-            if (flag1 > 0)
-            {
-                properties.Add("dgiotcollectflag", 0);
-                LogHelper.Log(" topic: " + topic + " payload: " + properties);
-            }
-            else
-            {
-                properties.Add("dgiotcollectflag", 1);
-            }
 
-            result.Add("properties", properties);
-            if (flag == group.Items.Count)
+            values.ToList().ForEach(v =>
             {
-                MqttClientHelper.Publish(topic, Encoding.UTF8.GetBytes(result.ToString()));
-            }
+                if (v.Item != null && v.Value != null)
+                {
+                    properties.Add(v.Item.ItemId, v.Value);
+                    groupKey = v.Item.UserData as string;
+                    OpcDa.setItems(groupKey, v.Item.ItemId, properties);
+                }
+            });
+            int i = OpcDa.getItemsCount(groupKey);
+            if (i <= 0)
+            {
+                properties = OpcDa.getItems(group,groupKey);
+                string topic = "$dg/thing/" + productId + "/" + devAddr + "/properties/report";
+                int flag1 = OpcDa.GetGroupFlag(groupKey);
+                if (flag1 > 0)
+                {
+                    properties.Add("dgiotcollectflag", 0);
+                    LogHelper.Log(" topic: " + topic + " payload: " + properties);
+                }
+                else
+                {
+                    properties.Add("dgiotcollectflag", 1);
+                }
+                result.Add("properties", properties);
+                MqttClientHelper.Publish(topic, Encoding.UTF8.GetBytes(properties.ToString()));
+                LogHelper.Log("properties: " + properties.ToString());
+            }   
         }
 
         public static void Additems(Dictionary<string, object> json)
@@ -163,6 +138,26 @@ namespace Dgiot_dtu
             OpcDa.StartMonitor(groupid, itemlist.Distinct().ToList(), opcserver);
         }
 
+
+        public static void Readitems(Dictionary<string, object> json)
+        {
+            string groupid = json["groupid"].ToString();
+            string opcserver = json["opcserver"].ToString();
+            object[] items = (object[])json["items"];
+
+
+            List<string> itemlist = new List<string> { };
+            foreach (object v in items)
+            {
+                itemlist.Add((string)v);
+            }
+
+            // OpcDa.StopGroup();
+            OpcDa.StartMonitor(groupid, itemlist.Distinct().ToList(), opcserver);
+            // OpcDa.ReadItemsValues1(opcserver, itemlist.Distinct().ToList(), groupid);
+            // OpcDa.read_group(opcserver, groupid, itemlist.Distinct().ToList());
+        }
+
         public static void Publishvalues(Dictionary<string, object> json)
         {
             string groupid = json["groupid"].ToString();
@@ -170,4 +165,4 @@ namespace Dgiot_dtu
             OpcDa.SetGroupFlag(groupid, duration);
         }
     }
- }
+}

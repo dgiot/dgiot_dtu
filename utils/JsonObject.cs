@@ -55,6 +55,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
 using Dgiot_dtu.Reflection;
+using System.Threading;
 
 // ReSharper disable LoopCanBeConvertedToQuery
 // ReSharper disable RedundantExplicitArrayCreation
@@ -141,6 +142,10 @@ namespace Dgiot_dtu
         /// <param name="value">The value.</param>
         public void Add(string key, object value)
         {
+            if (members.ContainsKey(key)) {
+                members.Remove(key);
+                Thread.Sleep(200);
+            }
             members.Add(key, value);
         }
 

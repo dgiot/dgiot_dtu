@@ -339,7 +339,7 @@ namespace Dgiot_dtu
             }
             else
             {
-                ConfigHelper.SetConfig("MqttClientId", textBoxMqttClientId.Text);
+                ConfigHelper.SetConfig("MqttClientId", comboBoxDtuAddr.Text);
             }
 
             if (ConfigHelper.Check("MqttPubTopic"))
@@ -595,16 +595,17 @@ namespace Dgiot_dtu
         {
             devaddr = comboBoxDtuAddr.Text;
             productid = textBoxMqttUserName.Text;
-            clientid = DgiotHelper.Md5("Device" + this.textBoxMqttUserName.Text + devaddr).Substring(0, 10);
+            // clientid = DgiotHelper.Md5("Device" + this.textBoxMqttUserName.Text + devaddr).Substring(0, 10);
+            clientid = comboBoxDtuAddr.Text;
             textBoxMqttClientId.Text = clientid;
-            textBoxMqttSubTopic.Text = "/" + productid + "/" + devaddr + "/device";
-            textBoxMqttPubTopic.Text = "/" + productid + "/" + devaddr + "/properties/read/reply";
-            textBoxAccessTopic.Text = "/" + productid + "/" + devaddr + "/scan/mdb";
+            textBoxMqttSubTopic.Text = "$dg/device/" + productid + "/" + devaddr + "/properties";
+            textBoxMqttPubTopic.Text = "$dg/thing/" + productid + "/" + devaddr + "/properties/report";
 
-            textBoxOPCUATopic.Text = "/" + productid + "/" + devaddr + "/scan/opcua/reply";
-            textBoxPLCTopic.Text = "/" + productid + "/" + devaddr + "/scan/plc/reply";
-            textBoxBACnetTopic.Text = "/" + productid + "/" + devaddr + "/scan/bacnet/reply";
-            textBoxControlTopic.Text = "/" + productid + "/" + devaddr + "/scan/control/reply";
+            textBoxAccessTopic.Text = "$dg/thing/" + productid + "/" + devaddr + "/properties/report";
+            textBoxOPCUATopic.Text = "$dg/thing/" + productid + "/" + devaddr + "/properties/report";
+            textBoxPLCTopic.Text = "$dg/thing/" + productid + "/" + devaddr + "/properties/report";
+            textBoxBACnetTopic.Text = "$dg/thing/" + productid + "/" + devaddr + "/properties/report";
+            textBoxControlTopic.Text = "$dg/thing/" + productid + "/" + devaddr + "/properties/report";
         }
 
         private void LinkLabel1LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -667,7 +668,7 @@ namespace Dgiot_dtu
 
         private void TextBoxMqttClientId_TextChanged(object sender, EventArgs e)
         {
-            ConfigHelper.SetConfig("MqttClientId", textBoxMqttClientId.Text);
+            ConfigHelper.SetConfig("MqttClientId", comboBoxDtuAddr.Text);
             Resh_Topic();
         }
 
@@ -1135,26 +1136,6 @@ namespace Dgiot_dtu
         }
 
         private void openFileDialog_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-
-        }
-
-        private void textBoxLog_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void groupBox5_Enter(object sender, EventArgs e)
-        {
-
-        }
-
-        private void groupBox6_Enter(object sender, EventArgs e)
-        {
-
-        }
-
-        private void groupBox8_Enter(object sender, EventArgs e)
         {
 
         }

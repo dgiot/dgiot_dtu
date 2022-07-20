@@ -17,9 +17,11 @@ namespace Da
     public class OPCDaImp : IOPCDa
     {
         private OpcServerEnumeratorAuto serverEnumerator = new OpcServerEnumeratorAuto();
-        private Dictionary<string, OpcDaGroup> daGroupKeyPairs = new Dictionary<string, OpcDaGroup>();
         private List<HostCollection> hostCollection = new List<HostCollection>();
         private Dictionary<string, GroupEntity> groupCollection = new Dictionary<string, GroupEntity>();
+        private Dictionary<string, int> itemstotalCollection = new Dictionary<string, int>();
+        private Dictionary<string, int> itemscountCollection = new Dictionary<string, int>();
+        private Dictionary<string, JsonObject> itemsCollection = new Dictionary<string, JsonObject>();
         private static Dictionary<string, int> groupFlagCollection = new Dictionary<string, int>();
         private IItemsValueChangedCallBack callBack;
         private List<OpcDaService> opcDaServices = new List<OpcDaService>();
@@ -183,9 +185,9 @@ namespace Da
 
         public void StopGroup()
         {
-            groupKeys.ForEach(groupKey =>
+            groupKeys.ForEach(md5Str =>
             {
-                StopMonitoringItems(groupKey);
+                StopMonitoringItems(md5Str);
             });
             groupKeys.Clear();
         }
@@ -200,13 +202,86 @@ namespace Da
                 return null;
             }
 
-            if (server.OpcDaGroupS.Count == 0 || !server.OpcDaGroupS.ContainsKey(groupKey))
-            {
+            // if (server.OpcDaGroupS.Count == 0 || !server.OpcDaGroupS.ContainsKey(groupKey))
+            // {
                 LogHelper.Log("StartMonitoringItems  is host opcda://" + host + "/" + serviceProgId);
                 AddGroup(server, groupKey, groupNode, interval, count);
-            }
+           // }
 
             return groupKey;
+        }
+
+        public void StopMonitoringItems(string md5Str)
+        {
+            if (groupCollection.ContainsKey(md5Str))
+            {
+                LogHelper.Log("StopMonitoringItems: " + md5Str);
+                Thread.Sleep(100);
+                string host = groupCollection[md5Str].Host;
+                string serviceProgId = groupCollection[md5Str].ProgId;
+                OpcDaService server = GetOpcDaService(host, serviceProgId);
+                if (server == null)
+                {
+                    LogHelper.Log("StopMonitoringItems  is null");
+                    return;
+                }
+
+                // OpcDaGroup group = server.OpcDaGroupS[groupKey];
+                OpcDaGroup group = server.OpcDaGroupS[md5Str];
+                group.ValuesChanged -= MonitorValuesChanged;
+                // server.OpcDaGroupS.Remove(groupKey);
+                // server.Service.RemoveGroup(group);
+                // groupCollection.Remove(groupKey);
+                // groupFlagCollection.Remove(groupKey);
+            }
+        }
+
+        public void StartMonitor(string groupKey, List<string> items, string serverID, string host = "127.0.0.1")
+        {
+            JsonArray properties = new JsonArray();
+
+            OpcDaService server = GetOpcDaService(host, serverID);
+            if (server == null)
+            {
+                return;
+            }
+            foreach (string item in items)
+            {
+                string md5Str = groupKey + item;
+                if (server.OpcDaGroupS.ContainsKey(md5Str) == false)
+                {
+                    OpcDaGroup group = server.Service.AddGroup(md5Str);  // maybe cost lot of time
+                    group.IsActive = true;
+                    server.OpcDaGroupS.Add(md5Str, group);
+                    List<OpcDaItemDefinition> itemDefList = new List<OpcDaItemDefinition>();
+                    var def = new OpcDaItemDefinition
+                    {
+                        ItemId = item,
+                        UserData = groupKey,
+                        IsActive = true
+                    };
+                    itemDefList.Add(def);
+                
+                    group.AddItems(itemDefList);
+                    groupKeys.Add(md5Str);
+                    SetGroupFlag(groupKey, 0);
+                    LogHelper.Log("StartMonitoring  is groupId " + md5Str + " interval " + "1000  ms", (int)LogHelper.Level.INFO);
+                    setItemsCount(groupKey, group);
+                    group.UpdateRate = TimeSpan.FromMilliseconds(1000); // 1000毫秒触发一次
+                    group.ValuesChanged += MonitorValuesChanged;
+                    if (!groupCollection.ContainsKey(md5Str))
+                    {
+                        GroupEntity groupEntity = new GroupEntity()
+                        {
+                            Host = server.Host,
+                            ProgId = server.ServiceId
+                        };
+                        groupCollection.Add(md5Str, groupEntity);
+                    }
+                    LogHelper.Log("groupKeygroupKeygroupKey: " + groupKey);
+                    // LogHelper.Log("aaaa: " + GetUnits(group), (int)LogHelper.Level.INFO);
+                }
+            }
         }
 
         public void AddGroup(OpcDaService server, string groupKey, TreeNode groupNode, int interval, int count)
@@ -216,66 +291,87 @@ namespace Da
                 return;
             }
 
-            OpcDaGroup group = server.Service.AddGroup(groupKey);  // maybe cost lot of time
-            group.IsActive = true;
-            group.UserData = groupNode;
-            server.OpcDaGroupS.Add(groupKey, group);
-
-            List<OpcDaItemDefinition> itemDefList = new List<OpcDaItemDefinition>();
             foreach (TreeNode tmpNode in groupNode.Nodes)
             {
                 if (tmpNode.Checked)
                 {
-                    var def = new OpcDaItemDefinition
+                    string md5Str = groupKey + tmpNode.Text;
+                    OpcDaGroup group = null;
+                    if (server.OpcDaGroupS.ContainsKey(md5Str) == false)
                     {
-                        ItemId = tmpNode.Text,
-                        UserData = tmpNode,
-                        IsActive = true
-                    };
-                    itemDefList.Add(def);
+                        group = server.Service.AddGroup(md5Str);  // maybe cost lot of time
+                        server.OpcDaGroupS.Add(md5Str, group);
+                        group.IsActive = true;
+                        group.UserData = groupNode;
+
+                        List<OpcDaItemDefinition> itemDefList = new List<OpcDaItemDefinition>();
+
+                        var def = new OpcDaItemDefinition
+                        {
+                            ItemId = tmpNode.Text,
+                            UserData = groupKey,
+                            IsActive = true
+                        };
+                        itemDefList.Add(def);
+
+                        group.AddItems(itemDefList);
+
+                        GroupEntity groupEntity = new GroupEntity()
+                        {
+                            Host = server.Host,
+                            ProgId = server.ServiceId
+                        };
+                        groupCollection.Add(md5Str, groupEntity);
+                        group.UpdateRate = TimeSpan.FromMilliseconds(interval); // 1000毫秒触发一次
+                    }
+                    else
+                    {
+                        group = server.OpcDaGroupS[md5Str];
+                    }
+                    groupKeys.Add(md5Str);
+                    group.ValuesChanged += MonitorValuesChanged;
+                    SetGroupFlag(groupKey, count);
+                    // LogHelper.Log("GroupFlag " + GetGroupFlag(groupKey).ToString(), (int)LogHelper.Level.INFO);
                 }
+                // GetUnits(group);
+                // LogHelper.Log("aaa: " + GetUnits(group), (int)LogHelper.Level.INFO);
             }
-
-            group.AddItems(itemDefList);
-            daGroupKeyPairs.Add(groupKey, group);
-            groupKeys.Add(groupKey);
-
-            group.UpdateRate = TimeSpan.FromMilliseconds(interval); // 1000毫秒触发一次
-            group.ValuesChanged += MonitorValuesChanged;
-            GroupEntity groupEntity = new GroupEntity()
-            {
-                Host = server.Host,
-                ProgId = server.ServiceId
-            };
-            groupCollection.Add(groupKey, groupEntity);
-            SetGroupFlag(groupKey, count);
-            LogHelper.Log("GroupFlag " + GetGroupFlag(groupKey).ToString(), (int)LogHelper.Level.INFO);
-
-            // GetUnits(group);
-            // LogHelper.Log("aaa: " + GetUnits(group), (int)LogHelper.Level.INFO);
         }
 
-        public void StopMonitoringItems(string groupKey)
+        public void read_group(string opcserver, string group_name, List<string> items)
         {
-            if (groupCollection.ContainsKey(groupKey))
-            {
-                Thread.Sleep(100);
-                string host = groupCollection[groupKey].Host;
-                string serviceProgId = groupCollection[groupKey].ProgId;
-                OpcDaService server = GetOpcDaService(host, serviceProgId);
-                if (server == null)
+            Uri url = UrlBuilder.Build(opcserver);    
+            using (var server = new OpcDaServer(url))   
+            {  
+                // Connect to the server first.   
+                server.Connect();  
+                // Create a group with items.  
+                OpcDaGroup group = server.AddGroup(group_name);     
+                IList<OpcDaItemDefinition> definitions = new List<OpcDaItemDefinition>();  
+                int i = 0;   
+                foreach (string id in items)
                 {
-                    LogHelper.Log("StopMonitoringItems  is null");
-                    return;
-                }
-
-                OpcDaGroup group = daGroupKeyPairs[groupKey];
-                group.ValuesChanged -= MonitorValuesChanged;
-                server.OpcDaGroupS.Remove(groupKey);
-                server.Service.RemoveGroup(group);
-                daGroupKeyPairs.Remove(groupKey);
-                groupCollection.Remove(groupKey);
-                groupFlagCollection.Remove(groupKey);
+                    LogHelper.Log("id: " + id);
+                    var definition = new OpcDaItemDefinition  
+                    {     
+                        ItemId = id,   
+                        IsActive = true
+                    };
+                    definitions.Insert(i++, definition);
+                }    
+                group.IsActive = true;  
+                OpcDaItemResult[] results = group.AddItems(definitions);    
+                OpcDaItemValue[] itemValues = group.Read(group.Items, OpcDaDataSource.Device);                  
+                // Handle adding results.    
+                JsonObject data = new JsonObject();       
+                foreach (OpcDaItemValue item in itemValues)        
+                {
+                    if (item.Item != null && item.Value != null)
+                    {
+                        data.Add(item.Item.ItemId, item.Value);
+                    }    
+                }               
+                server.Disconnect(); 
             }
         }
 
@@ -330,6 +426,102 @@ namespace Da
             return units;
         }
 
+
+        public void setItemsCount(string groupKey, OpcDaGroup group)
+        {
+            try
+            {
+                OpcDaItemValue[] values = group.Read(group.Items, OpcDaDataSource.Device);
+                if (values.Length == group.Items.Count)
+                {
+                    for (int i = 0; i < values.Length; ++i)
+                    {
+                        if (values[i].Value != null)
+                        {
+                            if (itemscountCollection.ContainsKey(groupKey) == false)
+                            {
+                                itemscountCollection.Add(groupKey, 1);
+                                itemstotalCollection.Add(groupKey, 1);
+                            }
+                            else
+                            {
+                                itemscountCollection[groupKey] = itemscountCollection[groupKey] + 1;
+                                itemstotalCollection[groupKey] = itemstotalCollection[groupKey] + 1;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                LogHelper.Log("Exception: " + e.ToString());
+            }  
+        }
+
+        public int getItemsCount(string groupKey)
+        {
+            if (itemscountCollection.ContainsKey(groupKey) == false)
+            {
+                if (itemstotalCollection.ContainsKey(groupKey) == true)
+                {
+                    return itemstotalCollection[groupKey];
+                }
+                else
+                {
+                    return -100;
+                }
+            }
+            else
+            {
+                itemscountCollection[groupKey] = itemscountCollection[groupKey] - 1;
+                return itemscountCollection[groupKey];
+            }
+        }
+
+        public void setItems(string groupKey, string key, JsonObject item)
+        {
+            if (!itemsCollection.ContainsKey(groupKey))
+            {
+                JsonObject json = new JsonObject();
+                json.Add(key, item[key]);
+                itemsCollection.Add(groupKey, json);
+            }
+            else
+            {
+                JsonObject json = itemsCollection[groupKey];      
+                if (!json.ContainsKey(key))
+                {
+                    json.Add(key, item[key]);
+                }
+                itemsCollection[groupKey] = json;
+            }
+        }
+
+        public JsonObject getItems(OpcDaGroup group, string groupKey)
+        {
+            
+            if (itemstotalCollection.ContainsKey(groupKey) == true) {
+                if (itemscountCollection.ContainsKey(groupKey) == true)
+                {
+                    itemscountCollection[groupKey] = itemstotalCollection[groupKey];
+                }
+                else
+                {
+                    itemscountCollection.Add(groupKey, itemstotalCollection[groupKey]);
+                }
+            }
+            if (itemsCollection.ContainsKey(groupKey) == false)
+            {
+                return new JsonObject();
+            }
+            else
+            {
+                JsonObject json = itemsCollection[groupKey];
+                itemsCollection[groupKey] = new JsonObject();
+                return json;
+            }
+        }
+
         public List<Item> ReadItemsValues(string host, string serverID, string groupKey)
         {
             OpcDaService server = GetOpcDaService(host, serverID);
@@ -341,7 +533,7 @@ namespace Da
             if (server.OpcDaGroupS.ContainsKey(groupKey) == true)
             {
                 OpcDaGroup group = server.OpcDaGroupS[groupKey];
-                OpcDaItemValue[] values = group.Read(group.Items, OpcDaDataSource.Cache);
+                OpcDaItemValue[] values = group.Read(group.Items, OpcDaDataSource.Device);
 
                 if (values.Length != group.Items.Count)
                 {
@@ -367,53 +559,6 @@ namespace Da
             }
 
             return null;
-        }
-
-        public void StartMonitor(string groupKey, List<string> items, string serverID, string host = "127.0.0.1")
-        {
-            JsonArray properties = new JsonArray();
-
-            OpcDaService server = GetOpcDaService(host, serverID);
-            if (server == null)
-            {
-                return;
-            }
-
-            if (server.OpcDaGroupS.ContainsKey(groupKey) == false)
-            {
-                OpcDaGroup group = server.Service.AddGroup(groupKey);  // maybe cost lot of time
-               // Thread.Sleep(100);
-                group.IsActive = true;
-                server.OpcDaGroupS.Add(groupKey, group);
-                List<OpcDaItemDefinition> itemDefList = new List<OpcDaItemDefinition>();
-                foreach (string item in items)
-                {
-                    var def = new OpcDaItemDefinition
-                    {
-                        ItemId = item,
-                        IsActive = true
-                    };
-                    itemDefList.Add(def);
-                }
-
-                group.AddItems(itemDefList);
-                daGroupKeyPairs.Add(groupKey, group);
-                groupKeys.Add(groupKey);
-                SetGroupFlag(groupKey, 0);
-                LogHelper.Log("StartMonitoring  is groupId " + groupKey + " interval " + "1000  ms", (int)LogHelper.Level.INFO);
-
-                group.UpdateRate = TimeSpan.FromMilliseconds(1000); // 1000毫秒触发一次
-                group.ValuesChanged += MonitorValuesChanged;
-                GroupEntity groupEntity = new GroupEntity()
-                {
-                    Host = server.Host,
-                    ProgId = server.ServiceId
-                };
-                groupCollection.Add(groupKey, groupEntity);
-
-                // GetUnits(group);
-                // LogHelper.Log("aaaa: " + GetUnits(group), (int)LogHelper.Level.INFO);
-            }
         }
 
         public void WriteValues(string host, string serviceProgId, string groupKey, Dictionary<string, object> itemValuePairs)

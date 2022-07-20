@@ -14,6 +14,7 @@ namespace Dgiot_dtu
     using MQTTnet.Core.Client;
     using MQTTnet.Core.Packets;
     using MQTTnet.Core.Protocol;
+    using System.Collections.Generic;
 
     internal class PrinterHelper
     {
@@ -94,9 +95,9 @@ namespace Dgiot_dtu
         }
 
     
-        public static void PrintPage(string data)
+        public static void PrintPage(Dictionary<string, object> json)
         {
-            SetTextData(data);
+            SetTextData(json["barcode"].ToString());
             PrintDialog PD = new PrintDialog();
             PageSettings pageSettings = new PageSettings();
             //pageSettings.PaperSize = new PaperSize("Size", 30, 40);

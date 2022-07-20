@@ -331,7 +331,7 @@ namespace Dgiot_dtu
             this.textBoxMqttPubTopic.Name = "textBoxMqttPubTopic";
             this.textBoxMqttPubTopic.Size = new System.Drawing.Size(132, 21);
             this.textBoxMqttPubTopic.TabIndex = 22;
-            this.textBoxMqttPubTopic.Text = "/{productid}/{devaddr}/properties/read/reply";
+            this.textBoxMqttPubTopic.Text = "$dg/thing/{productId}/{deviceAddr}/properties/report";
             this.textBoxMqttPubTopic.TextChanged += new System.EventHandler(this.TextBoxMqttPubTopic_TextChanged);
             // 
             // label12
@@ -349,7 +349,7 @@ namespace Dgiot_dtu
             this.textBoxMqttSubTopic.Name = "textBoxMqttSubTopic";
             this.textBoxMqttSubTopic.Size = new System.Drawing.Size(132, 21);
             this.textBoxMqttSubTopic.TabIndex = 20;
-            this.textBoxMqttSubTopic.Text = "/{productid}/{devaddr}/device/#";
+            this.textBoxMqttSubTopic.Text = "$dg/device/{productId}/{deviceAddr}/properties";
             this.textBoxMqttSubTopic.TextChanged += new System.EventHandler(this.TextBoxMqttSubTopic_TextChanged);
             // 
             // label11
@@ -367,7 +367,7 @@ namespace Dgiot_dtu
             this.textBoxMqttPassword.Name = "textBoxMqttPassword";
             this.textBoxMqttPassword.Size = new System.Drawing.Size(131, 21);
             this.textBoxMqttPassword.TabIndex = 18;
-            this.textBoxMqttPassword.Text = "TTY0Mzg3OTAxNjM4NDIyMjUyMTkw";
+            this.textBoxMqttPassword.Text = "SzQ3MDU4ODMxNjQwNjYyNjkwOTg4";
             this.textBoxMqttPassword.TextChanged += new System.EventHandler(this.TextBoxMqttPassword_TextChanged);
             // 
             // label10
@@ -385,7 +385,7 @@ namespace Dgiot_dtu
             this.textBoxMqttUserName.Name = "textBoxMqttUserName";
             this.textBoxMqttUserName.Size = new System.Drawing.Size(131, 21);
             this.textBoxMqttUserName.TabIndex = 16;
-            this.textBoxMqttUserName.Text = "d037f3709f";
+            this.textBoxMqttUserName.Text = "fa82a59201";
             this.textBoxMqttUserName.TextChanged += new System.EventHandler(this.TextBoxMqttUserName_TextChanged);
             // 
             // label9
@@ -433,7 +433,7 @@ namespace Dgiot_dtu
             this.textBoxMqttClientId.Name = "textBoxMqttClientId";
             this.textBoxMqttClientId.Size = new System.Drawing.Size(131, 21);
             this.textBoxMqttClientId.TabIndex = 12;
-            this.textBoxMqttClientId.Text = "clientid";
+            this.textBoxMqttClientId.Text = "devaddr";
             this.textBoxMqttClientId.TextChanged += new System.EventHandler(this.TextBoxMqttClientId_TextChanged);
             // 
             // textBoxDgiotPort
@@ -708,7 +708,7 @@ namespace Dgiot_dtu
             this.textBoxOPCUATopic.ReadOnly = true;
             this.textBoxOPCUATopic.Size = new System.Drawing.Size(168, 21);
             this.textBoxOPCUATopic.TabIndex = 5;
-            this.textBoxOPCUATopic.Text = "/{productid}/{devaddr}/scan/opdua";
+            this.textBoxOPCUATopic.Text = "$dg/thing/{productId}/{deviceAddr}/properties/report";
             this.textBoxOPCUATopic.TextChanged += new System.EventHandler(this.TextBoxOPCUATopic_TextChanged);
             // 
             // labelopcua
@@ -739,7 +739,7 @@ namespace Dgiot_dtu
             this.textBoxBACnetTopic.ReadOnly = true;
             this.textBoxBACnetTopic.Size = new System.Drawing.Size(169, 21);
             this.textBoxBACnetTopic.TabIndex = 5;
-            this.textBoxBACnetTopic.Text = "/{productid}/{devaddr}/scan/bacnet";
+            this.textBoxBACnetTopic.Text = "$dg/thing/{productId}/{deviceAddr}/properties/report";
             this.textBoxBACnetTopic.TextChanged += new System.EventHandler(this.TextBoxBACnetTopic_TextChanged);
             // 
             // label23
@@ -769,7 +769,7 @@ namespace Dgiot_dtu
             this.textBoxControlTopic.ReadOnly = true;
             this.textBoxControlTopic.Size = new System.Drawing.Size(170, 21);
             this.textBoxControlTopic.TabIndex = 5;
-            this.textBoxControlTopic.Text = "/{productid}/{devaddr}/scan/control";
+            this.textBoxControlTopic.Text = "$dg/thing/{productId}/{deviceAddr}/properties/report";
             this.textBoxControlTopic.TextChanged += new System.EventHandler(this.TextBoxControlTopic_TextChanged);
             // 
             // label8
@@ -834,7 +834,7 @@ namespace Dgiot_dtu
             this.textBoxAccessTopic.ReadOnly = true;
             this.textBoxAccessTopic.Size = new System.Drawing.Size(170, 21);
             this.textBoxAccessTopic.TabIndex = 5;
-            this.textBoxAccessTopic.Text = "/{productid}/{devaddr}/scan/mdb";
+            this.textBoxAccessTopic.Text = "$dg/thing/{productId}/{deviceAddr}/properties/report";
             this.textBoxAccessTopic.TextChanged += new System.EventHandler(this.TextBoxAccessTopic_TextChanged);
             // 
             // label6
@@ -919,7 +919,7 @@ namespace Dgiot_dtu
             this.textBoxPLCTopic.ReadOnly = true;
             this.textBoxPLCTopic.Size = new System.Drawing.Size(165, 21);
             this.textBoxPLCTopic.TabIndex = 5;
-            this.textBoxPLCTopic.Text = "/{productid}/{devaddr}/scan/plc";
+            this.textBoxPLCTopic.Text = "$dg/thing/{productId}/{deviceAddr}/properties/report";
             this.textBoxPLCTopic.TextChanged += new System.EventHandler(this.TextBoxPLCTopic_TextChanged);
             // 
             // label2
