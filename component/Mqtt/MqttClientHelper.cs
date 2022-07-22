@@ -169,6 +169,7 @@ namespace Dgiot_dtu
 
             mqttClient.SubscribeAsync(new TopicFilter(subtopic, MqttQualityOfServiceLevel.AtLeastOnce));
 
+
             LogHelper.Log("mqtt client subscribe topic: " + subtopic);
         }
 
@@ -207,7 +208,7 @@ namespace Dgiot_dtu
             {
                 SerialPortHelper.Write(e.ApplicationMessage.Payload, 0, e.ApplicationMessage.Payload.Length);
             }
-            if (topic.IndexOf("$dg/device/" + username + "/" + dtuAddr + "/properties") == 0)
+            if (topic.IndexOf("$dg/device/" + username + "/" + dtuAddr) == 0)
             {
                 if (json.ContainsKey("cmd"))
                 {
@@ -221,7 +222,7 @@ namespace Dgiot_dtu
                     }
                     else if (json["cmd"].ToString() == "printer")
                     {
-                        PrinterHelper.PrintPage(json);
+                        PrinterHelper.PrintPage(json["data"].ToString());
                     }
                 }
             }

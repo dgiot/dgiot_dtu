@@ -598,7 +598,7 @@ namespace Dgiot_dtu
             // clientid = DgiotHelper.Md5("Device" + this.textBoxMqttUserName.Text + devaddr).Substring(0, 10);
             clientid = comboBoxDtuAddr.Text;
             textBoxMqttClientId.Text = clientid;
-            textBoxMqttSubTopic.Text = "$dg/device/" + productid + "/" + devaddr + "/properties";
+            textBoxMqttSubTopic.Text = "$dg/device/" + productid + "/" + devaddr + "/#";
             textBoxMqttPubTopic.Text = "$dg/thing/" + productid + "/" + devaddr + "/properties/report";
 
             textBoxAccessTopic.Text = "$dg/thing/" + productid + "/" + devaddr + "/properties/report";
@@ -828,10 +828,11 @@ namespace Dgiot_dtu
 
         private void SendBridge_Click(object sender, EventArgs e)
         {
+          
             byte[] payload = LogHelper.Payload(textToPayload.Text.ToCharArray());
             LogHelper.Log(bridges[comboBoxBridge.SelectedIndex] + " send  [" + LogHelper.Logdata(payload, 0, payload.Length) + "]");
-            // PrinterHelper.SetTextData(textToPayload.Text);
-            // PrinterHelper.PrintPage(textToPayload.Text);
+           // PrinterHelper.SetTextData(textToPayload.Text);
+            PrinterHelper.PrintPage(textToPayload.Text);
             if (bridges[comboBoxBridge.SelectedIndex] == "SerialPort")
             {
             }
@@ -1136,6 +1137,26 @@ namespace Dgiot_dtu
         }
 
         private void openFileDialog_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+
+        }
+
+        private void textBoxLog_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void groupBox5_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void groupBox6_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void groupBox8_Enter(object sender, EventArgs e)
         {
 
         }

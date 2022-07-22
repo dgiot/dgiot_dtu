@@ -94,9 +94,9 @@ namespace Dgiot_dtu
         }
 
     
-        public static void PrintPage(Dictionary<string, object> json)
+        public static void PrintPage(string json)
         {
-            SetTextData(json["barcode"].ToString());
+            SetTextData(json);
             PrintDialog PD = new PrintDialog();
             PageSettings pageSettings = new PageSettings();
             //pageSettings.PaperSize = new PaperSize("Size", 30, 40);
