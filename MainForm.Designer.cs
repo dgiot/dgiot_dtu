@@ -150,6 +150,7 @@ namespace Dgiot_dtu
             this.textBoxLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.textBoxLog.Size = new System.Drawing.Size(289, 253);
             this.textBoxLog.TabIndex = 9;
+            this.textBoxLog.TextChanged += new System.EventHandler(this.textBoxLog_TextChanged);
             // 
             // checkBoxReconnect
             // 
@@ -1156,7 +1157,6 @@ namespace Dgiot_dtu
         private System.Windows.Forms.Label label23;
         private System.Windows.Forms.GroupBox groupBox7;
         private System.Windows.Forms.TextBox textBoxControlTopic;
-        private System.Windows.Forms.TextBox textBoxprinterTopic;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.ComboBox comboBoxBridge;
         private System.Windows.Forms.Label label7;
