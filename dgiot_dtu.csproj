@@ -46,6 +46,9 @@
       <HintPath>packages\Portable.BouncyCastle.1.8.1.2\lib\net4\BouncyCastle.Crypto.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="CodeLib">
+      <HintPath>lib\CodeLib.dll</HintPath>
+    </Reference>
     <Reference Include="Common.Logging, Version=3.4.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
       <HintPath>packages\Common.Logging.3.4.1\lib\net40\Common.Logging.dll</HintPath>
       <Private>True</Private>
@@ -207,6 +210,7 @@
     <Compile Include="component\Opc\Protocol\WriteNodesValuesReq.cs" />
     <Compile Include="component\Opc\View\OPCDAViewHelper.cs" />
     <Compile Include="component\Plc\PLCHelper.cs" />
+    <Compile Include="component\Printer\PrinterHelper.cs" />
     <Compile Include="component\SerialPort\SerialPortHelper.cs" />
     <Compile Include="component\Sqlserver\SqlServerHelper.cs" />
     <Compile Include="component\Tcp\TcpClientHelper.cs" />
@@ -265,6 +269,7 @@
   <ItemGroup>
     <Content Include="DD-All.ico" />
     <Content Include="FodyWeavers.xml" />
+    <Content Include="lib\CodeLib.dll" />
     <Content Include="Resources\bridge.jpg" />
   </ItemGroup>
   <ItemGroup>

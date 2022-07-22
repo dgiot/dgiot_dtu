@@ -119,7 +119,7 @@ namespace Dgiot_dtu
                 }
                 result.Add("properties", properties);
                 MqttClientHelper.Publish(topic, Encoding.UTF8.GetBytes(properties.ToString()));
-                LogHelper.Log("properties: " + properties.ToString());
+                // LogHelper.Log("properties: " + properties.ToString());
             }   
         }
 
@@ -144,7 +144,6 @@ namespace Dgiot_dtu
             string groupid = json["groupid"].ToString();
             string opcserver = json["opcserver"].ToString();
             object[] items = (object[])json["items"];
-
 
             List<string> itemlist = new List<string> { };
             foreach (object v in items)

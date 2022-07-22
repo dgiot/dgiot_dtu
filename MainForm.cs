@@ -830,8 +830,8 @@ namespace Dgiot_dtu
         {
             byte[] payload = LogHelper.Payload(textToPayload.Text.ToCharArray());
             LogHelper.Log(bridges[comboBoxBridge.SelectedIndex] + " send  [" + LogHelper.Logdata(payload, 0, payload.Length) + "]");
-           // PrinterHelper.SetTextData(textToPayload.Text);
-            PrinterHelper.PrintPage(textToPayload.Text);
+            // PrinterHelper.SetTextData(textToPayload.Text);
+            // PrinterHelper.PrintPage(textToPayload.Text);
             if (bridges[comboBoxBridge.SelectedIndex] == "SerialPort")
             {
             }

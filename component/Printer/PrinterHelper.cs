@@ -10,7 +10,6 @@ namespace Dgiot_dtu
     using System.Drawing.Printing;
     using System.Runtime.InteropServices;
     using System.Windows.Forms;
-    using System.Drawing.Printing;
     using MQTTnet.Core.Client;
     using MQTTnet.Core.Packets;
     using MQTTnet.Core.Protocol;
