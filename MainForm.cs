@@ -968,7 +968,7 @@ namespace Dgiot_dtu
             labelOPCDAHost.Text = "主机";
             checkBoxOPCDA.Text = "主动上报";
             labelOPCDAMonitor.Text = "采集间隔";
-            labelSecond.Text = "秒";
+            labelSecond.Text = "毫秒";
             labelOPCDACount.Text = "采集次数";
             groupBox5.Text = "OPC_UA扫描";
             groupBox6.Text = "BACnet扫描";
@@ -1026,7 +1026,7 @@ namespace Dgiot_dtu
             labelOPCDAHost.Text = "Host";
             checkBoxOPCDA.Text = "Monitor";
             labelOPCDAMonitor.Text = "Interval";
-            labelSecond.Text = "Second";
+            labelSecond.Text = "Ms";
             labelOPCDACount.Text = "Count";
 
             groupBox5.Text = "OPC_UA Capture";
@@ -1157,6 +1157,11 @@ namespace Dgiot_dtu
         }
 
         private void groupBox8_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void labelSecond_Click(object sender, EventArgs e)
         {
 
         }

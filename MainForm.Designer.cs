@@ -610,7 +610,7 @@ namespace Dgiot_dtu
             // 
             // textBoxOPCDACount
             // 
-            this.textBoxOPCDACount.Location = new System.Drawing.Point(181, 47);
+            this.textBoxOPCDACount.Location = new System.Drawing.Point(172, 47);
             this.textBoxOPCDACount.Name = "textBoxOPCDACount";
             this.textBoxOPCDACount.Size = new System.Drawing.Size(27, 21);
             this.textBoxOPCDACount.TabIndex = 52;
@@ -620,7 +620,7 @@ namespace Dgiot_dtu
             // labelOPCDACount
             // 
             this.labelOPCDACount.AutoSize = true;
-            this.labelOPCDACount.Location = new System.Drawing.Point(129, 50);
+            this.labelOPCDACount.Location = new System.Drawing.Point(133, 50);
             this.labelOPCDACount.Name = "labelOPCDACount";
             this.labelOPCDACount.Size = new System.Drawing.Size(35, 12);
             this.labelOPCDACount.TabIndex = 51;
@@ -629,16 +629,17 @@ namespace Dgiot_dtu
             // labelSecond
             // 
             this.labelSecond.AutoSize = true;
-            this.labelSecond.Location = new System.Drawing.Point(86, 50);
+            this.labelSecond.Location = new System.Drawing.Point(99, 50);
             this.labelSecond.Name = "labelSecond";
-            this.labelSecond.Size = new System.Drawing.Size(41, 12);
+            this.labelSecond.Size = new System.Drawing.Size(17, 12);
             this.labelSecond.TabIndex = 50;
-            this.labelSecond.Text = "Second";
+            this.labelSecond.Text = "ms";
+            this.labelSecond.Click += new System.EventHandler(this.labelSecond_Click);
             // 
             // labelOPCDAMonitor
             // 
             this.labelOPCDAMonitor.AutoSize = true;
-            this.labelOPCDAMonitor.Location = new System.Drawing.Point(3, 49);
+            this.labelOPCDAMonitor.Location = new System.Drawing.Point(1, 49);
             this.labelOPCDAMonitor.Name = "labelOPCDAMonitor";
             this.labelOPCDAMonitor.Size = new System.Drawing.Size(53, 12);
             this.labelOPCDAMonitor.TabIndex = 49;
@@ -646,7 +647,7 @@ namespace Dgiot_dtu
             // 
             // textBoxOPCDAInterval
             // 
-            this.textBoxOPCDAInterval.Location = new System.Drawing.Point(58, 46);
+            this.textBoxOPCDAInterval.Location = new System.Drawing.Point(60, 46);
             this.textBoxOPCDAInterval.Name = "textBoxOPCDAInterval";
             this.textBoxOPCDAInterval.Size = new System.Drawing.Size(29, 21);
             this.textBoxOPCDAInterval.TabIndex = 48;

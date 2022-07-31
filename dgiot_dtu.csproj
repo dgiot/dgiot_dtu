@@ -123,6 +123,9 @@
     <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data.SQLite">
+      <HintPath>lib\System.Data.SQLite.dll</HintPath>
+    </Reference>
     <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
@@ -212,6 +215,8 @@
     <Compile Include="component\Plc\PLCHelper.cs" />
     <Compile Include="component\Printer\PrinterHelper.cs" />
     <Compile Include="component\SerialPort\SerialPortHelper.cs" />
+    <Compile Include="component\sqlite\ManagerInfoDal.cs" />
+    <Compile Include="component\sqlite\SqliteHelper.cs" />
     <Compile Include="component\Sqlserver\SqlServerHelper.cs" />
     <Compile Include="component\Tcp\TcpClientHelper.cs" />
     <Compile Include="component\Tcp\TcpServerHelper.cs" />
@@ -264,12 +269,21 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="README-CN.md" />
+    <None Include="README-JP.md" />
+    <None Include="README-RU.md" />
+    <None Include="README.md" />
+    <None Include="renovate.json" />
     <None Include="stylecop.json" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="DD-All.ico" />
     <Content Include="FodyWeavers.xml" />
     <Content Include="lib\CodeLib.dll" />
+    <Content Include="lib\System.Data.SQLite.dll" />
+    <Content Include="lib\System.Data.SQLite.EF6.dll" />
+    <Content Include="lib\System.Data.SQLite.Linq.dll" />
+    <Content Include="opcda.txt" />
     <Content Include="Resources\bridge.jpg" />
   </ItemGroup>
   <ItemGroup>

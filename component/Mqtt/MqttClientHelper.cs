@@ -208,7 +208,8 @@ namespace Dgiot_dtu
             {
                 SerialPortHelper.Write(e.ApplicationMessage.Payload, 0, e.ApplicationMessage.Payload.Length);
             }
-            if (topic.IndexOf("$dg/device/" + username + "/" + dtuAddr) == 0)
+            //if (topic.IndexOf("$dg/device/" + username + "/" + dtuAddr + "/properties") == 0)
+            if (topic.IndexOf("$dg/device/" + username + "/" + dtuAddr + "/profile") == 0)
             {
                 if (json.ContainsKey("cmd"))
                 {

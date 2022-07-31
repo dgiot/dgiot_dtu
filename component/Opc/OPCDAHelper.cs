@@ -7,6 +7,7 @@
 namespace Dgiot_dtu
 {
     using Da;
+    using dgiot_dtu.component.sqlite;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
@@ -41,6 +42,7 @@ namespace Dgiot_dtu
             Config();
             OPCDAViewHelper.View();
             View();
+            //SqliteHelper.Init("(id,name)");
         }
 
         public static void Stop()
@@ -50,7 +52,7 @@ namespace Dgiot_dtu
         public static void Config()
         {
             host = ConfigHelper.GetConfig("OPCDAHost");
-            interval = int.Parse(ConfigHelper.GetConfig("OPCDAInterval")) * 1000;
+            interval = int.Parse(ConfigHelper.GetConfig("OPCDAInterval"));
             productId = ConfigHelper.GetConfig("MqttUserName");
             devAddr = ConfigHelper.GetConfig("DtuAddr");
         }
@@ -59,7 +61,7 @@ namespace Dgiot_dtu
         {
             if (DgiotHelper.StrTobool(ConfigHelper.GetConfig("OPCDACheck")))
             {
-                interval = int.Parse(ConfigHelper.GetConfig("OPCDAInterval")) * 1000;
+                interval = int.Parse(ConfigHelper.GetConfig("OPCDAInterval"));
                 int count = int.Parse(ConfigHelper.GetConfig("OPCDACount"));
                 OpcDa.StartGroup(OPCDAViewHelper.GetRootNode(), interval, count);
             }
@@ -119,6 +121,7 @@ namespace Dgiot_dtu
                 }
                 result.Add("properties", properties);
                 MqttClientHelper.Publish(topic, Encoding.UTF8.GetBytes(properties.ToString()));
+               // SqliteHelper.Insert(result.ToString());
                 // LogHelper.Log("properties: " + properties.ToString());
             }   
         }

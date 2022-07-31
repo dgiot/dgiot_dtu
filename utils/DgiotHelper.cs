@@ -219,5 +219,9 @@ namespace Dgiot_dtu
         {
             return (TimeZone.CurrentTimeZone.ToUniversalTime(DateTime.Now).Ticks - BaseTime.Ticks) / 10000000;
         }
+        public static long Ms()
+        {
+            return (TimeZone.CurrentTimeZone.ToUniversalTime(DateTime.Now).Ticks - BaseTime.Ticks) / 10000;
+        }
     }
 }
