@@ -26,6 +26,7 @@ namespace Dgiot_dtu
         private static TcpClientHelper tcpClientHelper = TcpClientHelper.GetInstance();
         private static TcpServerHelper tcpServerHelper = TcpServerHelper.GetInstance();
         private static PrinterHelper printerHelper = PrinterHelper.GetInstance();
+        private static DgiotHelper dgiotHelper = DgiotHelper.GetInstance();
         private bool bIsRunning = false;
         private float x = 0; // 当前窗体的宽度
         private float y = 0; // 当前窗体的高度
@@ -45,7 +46,8 @@ namespace Dgiot_dtu
             "Control",
             "Access",
             "SqlServer",
-            "Barcode_Printer"
+            "Barcode_Printer",
+            "Dgiot"
         };
 
         private Configuration config;
@@ -831,16 +833,10 @@ namespace Dgiot_dtu
           
             byte[] payload = LogHelper.Payload(textToPayload.Text.ToCharArray());
             LogHelper.Log(bridges[comboBoxBridge.SelectedIndex] + " send  [" + LogHelper.Logdata(payload, 0, payload.Length) + "]");
-           // PrinterHelper.SetTextData(textToPayload.Text);
-            PrinterHelper.PrintPage(textToPayload.Text);
             if (bridges[comboBoxBridge.SelectedIndex] == "SerialPort")
             {
             }
             else if (bridges[comboBoxBridge.SelectedIndex] == "TcpServer")
-            {
-                TcpServerHelper.Write(payload, 0, payload.Length);
-            }
-            else if (bridges[comboBoxBridge.SelectedIndex] == "Barcode_Printer")
             {
                 TcpServerHelper.Write(payload, 0, payload.Length);
             }
@@ -877,6 +873,14 @@ namespace Dgiot_dtu
             }
             else if (bridges[comboBoxBridge.SelectedIndex] == "UdpClient")
             {
+            }
+            else if (bridges[comboBoxBridge.SelectedIndex] == "Barcode_Printer")
+            {
+                PrinterHelper.PrintPage(textToPayload.Text);
+            }
+            else if (bridges[comboBoxBridge.SelectedIndex] == "Dgiot")
+            {
+                DgiotHelper.DgiotHub(textToPayload.Text);
             }
             else
             {
@@ -1114,7 +1118,7 @@ namespace Dgiot_dtu
             // 遍历窗体中的控件，重新设置控件的值
             foreach (Control con in cons.Controls)
             {
-                if (con.Tag != null && con.Tag != "")
+                if (con.Tag != null && con.Tag != string.Empty)
                 {
                     string[] mytag = con.Tag.ToString().Split(new char[] { ':' }); // 获取控件的Tag属性值，并分割后存储字符串数组
                     float a = Convert.ToSingle(mytag[0]) * newx; // 根据窗体缩放比例确定控件的值，宽度

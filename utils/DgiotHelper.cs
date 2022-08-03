@@ -6,15 +6,35 @@ namespace Dgiot_dtu
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.IO;
     using System.Management;
     using System.Net;
     using System.Net.NetworkInformation;
     using System.Net.Sockets;
     using System.Security.Cryptography;
     using System.Text;
+    using System.Threading;
 
     public class DgiotHelper
     {
+
+        private static DgiotHelper instance = null;
+
+        private DgiotHelper()
+        {
+        }
+
+        public static DgiotHelper GetInstance()
+        {
+            if (instance == null)
+            {
+                instance = new DgiotHelper();
+            }
+
+            return instance;
+        }
+
         public static List<string> GetIps()
         {
             var host = Dns.GetHostEntry(Dns.GetHostName());
@@ -219,9 +239,142 @@ namespace Dgiot_dtu
         {
             return (TimeZone.CurrentTimeZone.ToUniversalTime(DateTime.Now).Ticks - BaseTime.Ticks) / 10000000;
         }
+
         public static long Ms()
         {
             return (TimeZone.CurrentTimeZone.ToUniversalTime(DateTime.Now).Ticks - BaseTime.Ticks) / 10000;
+        }
+
+        public static void DgiotHub(string cmdType)
+        {
+            Process[] process1 = Process.GetProcesses();
+            foreach (Process prc in process1)
+            {
+                if (prc.ProcessName == "erl")
+                    prc.Kill();
+            }
+
+            foreach (Process prc in process1)
+            {
+                if (prc.ProcessName == "node")
+                    prc.Kill();
+            }
+
+            LogHelper.Log("DgiotHub: " + cmdType);
+
+            string AppPath = System.Environment.CurrentDirectory;
+            string PgCmd = AppPath + "/postgres/bin/pg_ctl.exe";
+            string ParseCmd = AppPath + "/node/pm2.cmd";
+            string NSSMCmd = AppPath + "/node/nssm.exe";
+
+            switch (cmdType)
+            {
+                case "install":
+                    InstallPostgres(AppPath);
+                    break;
+                case "start":
+                    string[] pgStartArgs = new string[] { "start", "\"pgsql\"" };
+                    StartProcess("net", pgStartArgs);
+
+                    string[] filesInstallArgs = new string[] { "install", "\"gofastd\"", AppPath + "/datacenter/file/file.exe" };
+                    StartProcess(NSSMCmd, filesInstallArgs);
+
+                    string[] filesStartArgs = new string[] { "start", "\"gofastd\"" };
+                    StartProcess("net", filesStartArgs);
+
+                    string[] parseStartArgs = new string[] { "start", AppPath + "/parse/server/index.js" };
+                    StartProcess(ParseCmd, parseStartArgs);
+
+                    //string FilePath = System.Environment.CurrentDirectory + "/emqx/bin/emqx.cmd";
+                    // StartProcess(FilePath, args);
+
+                    // System.Diagnostics.Process.Start("http://127.0.0.1:5080");
+                    break;
+
+                case "stop":
+                    string[] parseStopArgs = new string[] { "delete", "index" };
+                    StartProcess(ParseCmd, parseStopArgs);
+
+                    string[] filesStopArgs = new string[] { "stop", "\"gofastd\"" };
+                    StartProcess("net", filesStopArgs);
+
+                    string[] pgStopArgs = new string[] { "stop", "\"pgsql\"" };
+                    StartProcess("net", pgStopArgs);
+
+                    string[] filesRemoveArgs = new string[] { "remove", "\"gofastd\"", "confirm" };
+                    StartProcess(NSSMCmd, filesRemoveArgs);
+
+                    string[] pgUnregisterArgs = new string[] { "unregister", "-N", "\"pgsql\"" };
+                    StartProcess(PgCmd, pgUnregisterArgs);
+
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        static public void InstallPostgres(string AppPath)
+        {
+            string PgData = AppPath + "/datacenter/pgdata";
+            string ParseSql = AppPath + "/datacenter/parsesql/parse_4.0.sql";
+            string PgInit = AppPath + "/postgres/bin/initdb.exe";
+            string PgCmd = AppPath + "/postgres/bin/pg_ctl.exe";
+            string PgDump = AppPath + "/postgres/bin/pg_dump.exe";
+            string PgSql = AppPath + "/postgres/bin/psql.exe";
+            if (Directory.Exists(PgData) == false)
+            {
+                string[] pgInitArgs = new string[] { "-D", PgData, "-E", "UTF8", "-U", "postgres" };
+                StartProcess(PgInit, pgInitArgs);
+            };
+
+            Thread.Sleep(6000);
+
+            string[] pgInstallArgs = new string[] { "register", "-N", "\"pgsql\"", "-D", PgData };
+            StartProcess(PgCmd, pgInstallArgs);
+
+            string[] pgStartArgs = new string[] { "start", "\"pgsql\"" };
+            StartProcess("net", pgStartArgs);
+
+            //psql - U postgres - c "ALTER USER postgres WITH PASSWORD '${pg_pwd}';"
+            string[] pgchangePwdArgs = new string[] { "-U", "postgres", "-c", "\"ALTER USER postgres WITH PASSWORD \"dgiot1344\"\"" };
+            StartProcess(PgSql, pgchangePwdArgs);
+
+            //psql - U postgres - c "CREATE DATABASE parse;"
+            string[] CreateDataBaseArgs = new string[] { "-U", "postgres", "-c", "\"CREATE DATABASE parse;\"" };
+            StartProcess(PgSql, CreateDataBaseArgs);
+
+            //pg_dump - F p - f  ${ backup_dir}/ dgiot_pg_writer / parse_4.0_backup.sql - C - E  UTF8 - h 127.0.0.1 - U postgres parse
+
+            //psql - U postgres -f /datacenter/parsesql/parse_4.0.sql parse
+            string[] ImportSqlArgs = new string[] { "-U", "postgres", "-f",  ParseSql, "parse"};
+            StartProcess(PgSql, ImportSqlArgs);
+        }
+        
+        static public bool StartProcess(string filename, string[] args)
+        {
+            Thread.Sleep(1000);
+            try
+            {
+                string s = "";
+                foreach (string arg in args)
+                {
+                    s = s + arg + " ";
+                }
+                s = s.Trim();
+                Process myprocess = new Process();
+                ProcessStartInfo startInfo = new ProcessStartInfo(filename, s);
+                myprocess.StartInfo = startInfo;
+
+                //通过以下参数可以控制exe的启动方式，具体参照 myprocess.StartInfo.下面的参数，如以无界面方式启动exe等
+                myprocess.StartInfo.UseShellExecute = false;
+                myprocess.Start();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Log("启动应用程序时出错！原因：" + ex.Message);
+            }
+            return false;
         }
     }
 }
