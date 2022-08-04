@@ -273,15 +273,19 @@ namespace Dgiot_dtu
                     InstallPostgres(AppPath);
                     break;
                 case "start":
+                    // net start pgsql
                     string[] pgStartArgs = new string[] { "start", "\"pgsql\"" };
                     StartProcess("net", pgStartArgs);
 
+                    //nssm install gofastd ./datacenter/file/file.exe
                     string[] filesInstallArgs = new string[] { "install", "\"gofastd\"", AppPath + "/datacenter/file/file.exe" };
                     StartProcess(NSSMCmd, filesInstallArgs);
 
+                    // net start gofastd 
                     string[] filesStartArgs = new string[] { "start", "\"gofastd\"" };
                     StartProcess("net", filesStartArgs);
 
+                    // pm2 start ./parse/server/index.js 
                     string[] parseStartArgs = new string[] { "start", AppPath + "/parse/server/index.js" };
                     StartProcess(ParseCmd, parseStartArgs);
 
@@ -292,18 +296,24 @@ namespace Dgiot_dtu
                     break;
 
                 case "stop":
+
+                    //pm2 delete index 
                     string[] parseStopArgs = new string[] { "delete", "index" };
                     StartProcess(ParseCmd, parseStopArgs);
 
+                    //net stop gofastd 
                     string[] filesStopArgs = new string[] { "stop", "\"gofastd\"" };
                     StartProcess("net", filesStopArgs);
 
+                    //net stop pgsql 
                     string[] pgStopArgs = new string[] { "stop", "\"pgsql\"" };
                     StartProcess("net", pgStopArgs);
 
+                    //nssm remove gofastd confirm
                     string[] filesRemoveArgs = new string[] { "remove", "\"gofastd\"", "confirm" };
                     StartProcess(NSSMCmd, filesRemoveArgs);
 
+                    //pg_ctl unregister -N pgsql
                     string[] pgUnregisterArgs = new string[] { "unregister", "-N", "\"pgsql\"" };
                     StartProcess(PgCmd, pgUnregisterArgs);
 
@@ -323,15 +333,18 @@ namespace Dgiot_dtu
             string PgSql = AppPath + "/postgres/bin/psql.exe";
             if (Directory.Exists(PgData) == false)
             {
+                // initdb -D /data/dgiot/dgiot_pg_writer/data/
                 string[] pgInitArgs = new string[] { "-D", PgData, "-E", "UTF8", "-U", "postgres" };
                 StartProcess(PgInit, pgInitArgs);
             };
 
             Thread.Sleep(6000);
 
+            // pg_ctl register  -N pgsql  -D ./datacenter/pgdata
             string[] pgInstallArgs = new string[] { "register", "-N", "\"pgsql\"", "-D", PgData };
             StartProcess(PgCmd, pgInstallArgs);
 
+            // net start pgsql
             string[] pgStartArgs = new string[] { "start", "\"pgsql\"" };
             StartProcess("net", pgStartArgs);
 
