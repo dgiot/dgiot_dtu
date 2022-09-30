@@ -223,7 +223,10 @@ namespace Dgiot_dtu
                     }
                     else if (json["cmd"].ToString() == "printer")
                     {
-                        PrinterHelper.PrintPage(json["data"].ToString());
+                       
+         
+
+                        PrinterHelper.PrintPage((Dictionary<string, object>) json["data"]);
                     }
                 }
             }
