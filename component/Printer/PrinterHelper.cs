@@ -108,25 +108,21 @@ namespace Dgiot_dtu
      
             foreach (string key in json.Keys)
             {
-          if(int.Parse(key)> num)
+          if ( int.Parse(key) > num)
                 {
                     num = int.Parse(key);
                 }
             }
-            for (int x=1; x<=num;x++)
+
+            for (int x = 1; x <= num; x ++)
             {
                 scoreList.Add((Dictionary<string, object>)json[x.ToString()]);
             }
 
-
-
             num = 0;
-
-
 
             PrintDialog PD = new PrintDialog();
             PageSettings pageSettings = new PageSettings();
-            //pageSettings.PaperSize = new PaperSize("Size", 30, 40);
             string Name = fPrintDocument.PrinterSettings.PrinterName;
             LogHelper.Log("PrinterName: " + Name.ToString());
             System.Drawing.Printing.PrinterSettings Ps = new System.Drawing.Printing.PrinterSettings();
@@ -141,12 +137,6 @@ namespace Dgiot_dtu
 
         static void document_PrintPage(object sender, PrintPageEventArgs e)
         {
-            int x1 = -5;
-            int y1 = 15;
-            double x2= (260 * 0.63)+x1;
-            double y2 = (140 * 0.63) + y1;
-
-        
             foreach (Dictionary<string, object> body in scoreList) {
                 if (body["name"].ToString() == "barcode") {
                     e.Graphics.DrawImage(PrinterHelper.Get_image(body["label"].ToString()), int.Parse(body["x"].ToString()), int.Parse(body["y"].ToString()), int.Parse(body["height"].ToString()), int.Parse(body["width"].ToString()));
@@ -155,15 +145,7 @@ namespace Dgiot_dtu
                 {
                     e.Graphics.DrawString(body["label"].ToString(), new Font(new FontFamily(body["font"].ToString()), int.Parse(body["size"].ToString())), System.Drawing.Brushes.Black, int.Parse(body["x"].ToString()), int.Parse(body["y"].ToString()));
                 }
-
-
             }
-            
-            
- 
-
-           
-
             e.HasMorePages = false;
         }
 
@@ -185,9 +167,9 @@ namespace Dgiot_dtu
        // public static Image GetImagetable(string url, out string imageStrCookie)
         public static Image GetImageTable(string url)
         {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://121.5.171.21/dgiot_file/device/topo/");
+           // HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://121.5.171.21/dgiot_file/device/topo/");
 
-            //HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = "GET";
             WebResponse response = request.GetResponse();
 
