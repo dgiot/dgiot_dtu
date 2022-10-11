@@ -17,6 +17,8 @@ namespace Dgiot_dtu
     using System.Net;
     using System.Text.RegularExpressions;
     using Newtonsoft.Json.Linq;
+    using Spire.License;
+    using Spire.Pdf;
 
     internal class PrinterHelper
     {
@@ -27,14 +29,17 @@ namespace Dgiot_dtu
         private static PrinterHelper instance = null;
         private static bool bIsRunning = false;
 
-        private static int  num = 0;
         private static List<Dictionary<string, object>> scoreList = new List<Dictionary<string, object>>();
         private static Dictionary<string, string> dictionary = new Dictionary<string, string>();
         private static PrintDocument fPrintDocument = new PrintDocument();
 
-
-
-
+        //创建PdfDocument类的对象，并加载PDF文档
+        private static PdfDocument doc = new PdfDocument();
+       // doc.LoadFromFile(cjdFile);
+       //此行代码为选择打印机名称来打印
+       //doc.PrintSettings.PrinterName="打印机名称";
+       //直接打印会调用电脑的默认打印机进行打印，请在控制面板->设备的打印机中配置默认打印机
+       //doc.Print();
 
         public static PrinterHelper GetInstance()
         {
