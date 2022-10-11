@@ -66,9 +66,6 @@ namespace Dgiot_dtu
         {
         }
 
-
-
-
         Brush brushHeaderFont = new SolidBrush(Color.Black);
         Pen LinePen = new Pen(Color.Black, 1);
         public PrinterHelper()
@@ -247,6 +244,14 @@ namespace Dgiot_dtu
         public static int pxToInch(float px)
         {
             return (int)(px / 96 * 100);
+        }
+
+        //英寸换算到厘米
+        public static decimal FromInchToCM(decimal inch)
+        {
+
+            return Math.Round((System.Convert.ToDecimal((inch / 100)) * System.Convert.ToDecimal(2.5400)), 2);  //Math.Round取两位小数
+
         }
     }
   }
