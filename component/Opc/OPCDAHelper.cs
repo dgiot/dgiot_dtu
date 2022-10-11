@@ -88,13 +88,9 @@ namespace Dgiot_dtu
 
         public void ValueChangedCallBack(OpcDaGroup group, OpcDaItemValue[] values)
         {
-            JsonObject result = new JsonObject();
-            result.Add("timestamp", DgiotHelper.Now());
             string groupKey = "";
-        
-            JsonObject properties = new JsonObject();
-            List<Item> collection = new List<Item>();
 
+            JsonObject properties = new JsonObject();
             values.ToList().ForEach(v =>
             {
                 if (v.Item != null && v.Value != null)
@@ -107,23 +103,22 @@ namespace Dgiot_dtu
             int i = OpcDa.getItemsCount(groupKey);
             if (i <= 0)
             {
-                properties = OpcDa.getItems(group,groupKey);
-                string topic = "$dg/thing/" + productId + "/" + devAddr + "/properties/report";
+                properties = OpcDa.getItems(group, groupKey);
                 int flag1 = OpcDa.GetGroupFlag(groupKey);
                 if (flag1 > 0)
                 {
                     properties.Add("dgiotcollectflag", 0);
-                    LogHelper.Log(" topic: " + topic + " payload: " + properties);
+                    // LogHelper.Log(" topic: " + topic + " payload: " + properties);
                 }
                 else
                 {
                     properties.Add("dgiotcollectflag", 1);
                 }
-                result.Add("properties", properties);
+                properties.Add("groupid", groupKey);
+                LogHelper.Log("send properties: " + properties.ToString());
+                string topic = "$dg/thing/" + productId + "/" + devAddr + "/properties/report";
                 MqttClientHelper.Publish(topic, Encoding.UTF8.GetBytes(properties.ToString()));
-               // SqliteHelper.Insert(result.ToString());
-                // LogHelper.Log("properties: " + properties.ToString());
-            }   
+            }
         }
 
         public static void Additems(Dictionary<string, object> json)

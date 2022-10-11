@@ -64,7 +64,7 @@ namespace Dgiot_dtu
         /// <param name="strFilePath">txt等文件的路径</param>
         /// <param name="strIndex">索引的字符串，定位到某一行</param>
         /// <param name="newValue">替换新值</param>
-        public void ReplaceValue(string strFilePath, string strIndex, string newValue)
+        public static void ReplaceValue(string strFilePath, string strIndex, string newValue)
         {
             if (File.Exists(strFilePath))
             {

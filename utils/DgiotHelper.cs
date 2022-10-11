@@ -53,9 +53,8 @@ namespace Dgiot_dtu
                     }
                 }
             }
-
-            localIps.Clear();
-            localIps.Add("127.0.0.1");
+            //localIps.Clear();
+            //localIps.Add("127.0.0.1");
             return localIps;
         }
 
@@ -289,7 +288,7 @@ namespace Dgiot_dtu
                     string[] parseStartArgs = new string[] { "start", AppPath + "/parse/server/index.js" };
                     StartProcess(ParseCmd, parseStartArgs);
 
-                    //string FilePath = System.Environment.CurrentDirectory + "/emqx/bin/emqx.cmd";
+                    // string FilePath = AppPath + "/emqx/bin/emqx.cmd";
                     // StartProcess(FilePath, args);
 
                     // System.Diagnostics.Process.Start("http://127.0.0.1:5080");
@@ -310,12 +309,12 @@ namespace Dgiot_dtu
                     StartProcess("net", pgStopArgs);
 
                     //nssm remove gofastd confirm
-                    string[] filesRemoveArgs = new string[] { "remove", "\"gofastd\"", "confirm" };
-                    StartProcess(NSSMCmd, filesRemoveArgs);
+                    // string[] filesRemoveArgs = new string[] { "remove", "\"gofastd\"", "confirm" };
+                    // StartProcess(NSSMCmd, filesRemoveArgs);
 
                     //pg_ctl unregister -N pgsql
-                    string[] pgUnregisterArgs = new string[] { "unregister", "-N", "\"pgsql\"" };
-                    StartProcess(PgCmd, pgUnregisterArgs);
+                    // string[] pgUnregisterArgs = new string[] { "unregister", "-N", "\"pgsql\"" };
+                    // StartProcess(PgCmd, pgUnregisterArgs);
 
                     break;
                 default:
@@ -331,6 +330,16 @@ namespace Dgiot_dtu
             string PgCmd = AppPath + "/postgres/bin/pg_ctl.exe";
             string PgDump = AppPath + "/postgres/bin/pg_dump.exe";
             string PgSql = AppPath + "/postgres/bin/psql.exe";
+
+            string strFilePath = AppPath + "/parse/script/.env";
+
+            List<string> Ips = GetIps();
+            String Ip = Ips[0].ToString();
+            // parse .env 替换本地ip
+            FileHelper.ReplaceValue(strFilePath, "SERVER_DOMAIN", "http://"+ Ip + ":1337");
+            FileHelper.ReplaceValue(strFilePath, "SERVER_PUBLIC", "http://"+ Ip + ":1337");
+            FileHelper.ReplaceValue(strFilePath, "GRAPHQL_PATH", "http://"+ Ip + ":1337/graphql");
+
             if (Directory.Exists(PgData) == false)
             {
                 // initdb -D /data/dgiot/dgiot_pg_writer/data/
