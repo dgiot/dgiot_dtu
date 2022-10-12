@@ -876,7 +876,7 @@ namespace Dgiot_dtu
             }
             else if (bridges[comboBoxBridge.SelectedIndex] == "Barcode_Printer")
             {
-              //  PrinterHelper.PrintPage(textToPayload.Text);
+               PrinterHelper.PdfPrinter(textToPayload.Text);
             }
             else if (bridges[comboBoxBridge.SelectedIndex] == "Dgiot")
             {

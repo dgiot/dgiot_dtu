@@ -33,14 +33,6 @@ namespace Dgiot_dtu
         private static Dictionary<string, string> dictionary = new Dictionary<string, string>();
         private static PrintDocument fPrintDocument = new PrintDocument();
 
-        //创建PdfDocument类的对象，并加载PDF文档
-        private static PdfDocument doc = new PdfDocument();
-       // doc.LoadFromFile(cjdFile);
-       //此行代码为选择打印机名称来打印
-       //doc.PrintSettings.PrinterName="打印机名称";
-       //直接打印会调用电脑的默认打印机进行打印，请在控制面板->设备的打印机中配置默认打印机
-       //doc.Print();
-
         public static PrinterHelper GetInstance()
         {
             if (instance == null)
@@ -158,6 +150,13 @@ namespace Dgiot_dtu
             e.HasMorePages = false;
         }
 
+        public static void PdfPrinter(string cjdFile)
+        {
+            LogHelper.Log("pdffile: " + cjdFile);
+            PdfDocument doc = new PdfDocument();
+            doc.LoadFromFile(@"D:\1.pdf");
+            doc.PrintDocument.Print();
+        }
         public static Image Get_image(String Data, float FontSize, int Width, int Height, String familyName)
         {
             // LogHelper.Log("Data: " + Data);
@@ -249,7 +248,6 @@ namespace Dgiot_dtu
         //英寸换算到厘米
         public static decimal FromInchToCM(decimal inch)
         {
-
             return Math.Round((System.Convert.ToDecimal((inch / 100)) * System.Convert.ToDecimal(2.5400)), 2);  //Math.Round取两位小数
 
         }
