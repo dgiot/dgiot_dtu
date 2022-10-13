@@ -62,9 +62,9 @@ namespace dgiot_dtu.component.Printer
                 if (!m_bUseDefaultPaperSetting)
                 {
                     //如果不适用缺省纸张则创建一个自定义纸张，注意，必须使用这个版本的构造函数才是自定义的纸张
-                    PaperSize ps = new PaperSize("Custom Size 1", 827, 1169);
+                    //PaperSize ps = new PaperSize("Custom Size 1", 827, 1169);
                     //将缺省的纸张设置为新建的自定义纸张
-                    iSPriner.DefaultPageSettings.PaperSize = ps;
+                    //iSPriner.DefaultPageSettings.PaperSize = ps;
                 }
             }
         }
@@ -75,6 +75,8 @@ namespace dgiot_dtu.component.Printer
             get { return iSPriner.DefaultPageSettings.PaperSize.Width / 100f * 25.4f; }
             set
             {
+                LogHelper.Log("codeX: " + value);
+                LogHelper.Log("Kind: " + iSPriner.DefaultPageSettings.PaperSize.Kind);
                 //注意，只有自定义纸张才能修改该属性，否则将导致异常
                 if (iSPriner.DefaultPageSettings.PaperSize.Kind == PaperKind.Custom)
                     iSPriner.DefaultPageSettings.PaperSize.Width = (int)(value / 25.4 * 100);
@@ -114,24 +116,15 @@ namespace dgiot_dtu.component.Printer
                     float x = float.Parse(item["x"].ToJson());
                     float y = float.Parse(item["y"].ToJson());
                     float width = float.Parse(item["width"].ToJson());
-                    float height = float.Parse(item["width"].ToJson());
-                    
-                    if (type == "paper")
+                    float height = float.Parse(item["height"].ToJson());
+
+                    if (type == "paper" || type == "printer" || type.Equals("scancodetext"))
                     {
-                        m_bUseDefaultPaperSetting = false;
-                        PaperWidth = width;
-                        PaperHeight = height;
-                        DocumentName = text;
-                        SetDefaultPrinter(DocumentName);
                     }
                     else if (type == "scancode")
                     {
-                       // LogHelper.Log("item: " + item.ToJson());
                         Image image = GetBarCode(text, fontSize, (int)width, (int)height, fontFamily);
-                        ev.Graphics.DrawImage(image, x, y, width, height); //单位1/100英寸
-                    }
-                    else if (type.Equals("scancodetext"))
-                    {
+                        ev.Graphics.DrawImage(image, x + 10, y + 10, width, height); //单位1/100英寸
                     }
                     else
                     {
@@ -154,9 +147,6 @@ namespace dgiot_dtu.component.Printer
             b.LabelFont = Label;
             b.Alignment = Align;
             b.LabelPosition = LabelPositions.BOTTOMCENTER;
-            LogHelper.Log("barcodestring: " + Data);
-            LogHelper.Log("Width: " + Width);
-            LogHelper.Log("Width: " + Height);
             b.Encode(type, Data, Width * 4, Height * 4).Save("./test.jpg", ImageFormat.Jpeg);
             return b.Encode(type, Data, Width * 4, Height * 4); //像素
         }
@@ -171,7 +161,29 @@ namespace dgiot_dtu.component.Printer
         /* 开始打印*/
         public void doPrint()
         {
-                this.iSPriner.Print();
+            this.SetPaperSize();
+            this.iSPriner.Print();
+        }
+
+        /* 设置纸大小*/
+        public void SetPaperSize()
+        {
+            
+            foreach (JsonData item in PrinterHelper.GetJson())
+            {
+                String type = item["type"].ToString();
+                String text = item["text"].ToString();
+                if (type == "paper")
+                {
+                    int paperwidth = Knova.pxToInch(int.Parse(item["width"].ToJson()));
+                    int paperheight = Knova.pxToInch(int.Parse(item["height"].ToJson()));
+                    iSPriner.DefaultPageSettings.PaperSize = new PaperSize("Size", paperwidth, paperheight); //单位1/100英寸
+                }else if(type == "printer")
+                {
+                    LogHelper.Log("printer: " + text);
+                    SetDefaultPrinter(text);
+                }
+            }
         }
     }
 }

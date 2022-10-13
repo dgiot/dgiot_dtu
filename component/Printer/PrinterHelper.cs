@@ -11,6 +11,8 @@ namespace Dgiot_dtu
     using Spire.Pdf;
     using dgiot_dtu.component.Printer;
     using System.Drawing.Printing;
+    using static System.Drawing.Printing.PrinterSettings;
+    using System.Text;
 
     internal partial class PrinterHelper
     {
@@ -19,6 +21,8 @@ namespace Dgiot_dtu
         private static PdfPrinter pdfPriner = null;
         private static BarCodePrinter barCodePriner = null;
         private static JsonData json = new JsonData();
+        private static string productId = string.Empty;
+        private static string devAddr = string.Empty;
 
         public static PrinterHelper GetInstance()
         {
@@ -26,7 +30,6 @@ namespace Dgiot_dtu
             {
                 instance = new PrinterHelper();
                 pdfPriner = new PdfPrinter();
-                barCodePriner = new BarCodePrinter();
             }
             return instance;
         }
@@ -60,8 +63,9 @@ namespace Dgiot_dtu
         public static void PrintBarCode(JsonData jsonData)
         {
             SetJson(jsonData);
+            barCodePriner = new BarCodePrinter();
             barCodePriner.doPrint();
-            }
+        }
 
         public static void PrintPdf(JsonData jsonData)
         {
@@ -72,11 +76,20 @@ namespace Dgiot_dtu
 
         public static void GetPrinter()
         {
+            productId = ConfigHelper.GetConfig("MqttUserName");
+            devAddr = ConfigHelper.GetConfig("DtuAddr");
             //sDefault = sys.print_machine;//获取设置的默认打印机
+            JsonObject Printers = new JsonObject();
+           
             foreach (string sPrint in PrinterSettings.InstalledPrinters)//获取所有打印机名称
             {
-                LogHelper.Log("Data: " + sPrint);
+                // LogHelper.Log("Printers: " + sPrint);
+                Printers.Add(sPrint, sPrint);
             }
+            StringCollection Printer = PrinterSettings.InstalledPrinters;
+            
+            string topic = "$dg/thing/" + productId + "/" + devAddr + "/firmware/report";
+            MqttClientHelper.Publish(topic, Encoding.UTF8.GetBytes(Printers.ToString()));
         }
     }
 }

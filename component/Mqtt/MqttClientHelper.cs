@@ -170,7 +170,6 @@ namespace Dgiot_dtu
 
             mqttClient.SubscribeAsync(new TopicFilter(subtopic, MqttQualityOfServiceLevel.AtLeastOnce));
 
-
             LogHelper.Log("mqtt client subscribe topic: " + subtopic);
         }
 
@@ -222,6 +221,10 @@ namespace Dgiot_dtu
                     else if (json["cmd"].ToString() == "opc_report")
                     {
                         OPCDAHelper.Publishvalues(json);
+                    }
+                    else if (json["cmd"].ToString() == "scan_printer")
+                    {
+                        PrinterHelper.GetPrinter();
                     }
                     else if (json["cmd"].ToString() == "printer_barcode")
                     {
