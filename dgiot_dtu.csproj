@@ -70,6 +70,9 @@
     <Reference Include="LiteNetLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\LiteNetLib.0.9.5.2\lib\net35\LiteNetLib.dll</HintPath>
     </Reference>
+    <Reference Include="LitJSON, Version=0.18.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\LitJson.0.18.0\lib\net45\LitJSON.dll</HintPath>
+    </Reference>
     <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
@@ -222,6 +225,9 @@
     <Compile Include="component\Opc\Protocol\WriteNodesValuesReq.cs" />
     <Compile Include="component\Opc\View\OPCDAViewHelper.cs" />
     <Compile Include="component\Plc\PLCHelper.cs" />
+    <Compile Include="component\Printer\BarCodePrinter.cs" />
+    <Compile Include="component\Printer\PdfPrinter.cs" />
+    <Compile Include="component\Printer\Knova.cs" />
     <Compile Include="component\Printer\PrinterHelper.cs" />
     <Compile Include="component\SerialPort\SerialPortHelper.cs" />
     <Compile Include="component\sqlite\ManagerInfoDal.cs" />

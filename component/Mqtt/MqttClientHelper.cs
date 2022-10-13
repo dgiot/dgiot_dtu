@@ -11,6 +11,7 @@ namespace Dgiot_dtu
     using System.Threading;
     using System.Threading.Tasks;
     using System.Web.Script.Serialization;
+    using LitJson;
     using MQTTnet;
     using MQTTnet.Core;
     using MQTTnet.Core.Client;
@@ -24,7 +25,7 @@ namespace Dgiot_dtu
         }
 
         private static MqttClient mqttClient = null;
-        private static string server = "prod.iotn2n.com";
+        private static string server = "prod.cloud.com";
         private static int port = 1883;
         private static string subtopic = "$dg/device/";
         private static string pubtopic = "$dg/thing/";
@@ -199,9 +200,7 @@ namespace Dgiot_dtu
         {
             Dictionary<string, object> json = Get_payload(e.ApplicationMessage.Payload);
             string topic = e.ApplicationMessage.Topic;
-            string data = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
-            LogHelper.Log("mqtt recv:topic: " + e.ApplicationMessage.Topic.ToString() + " payload: " + data);
-
+            LogHelper.Log("mqtt recv:topic: " + topic);
             Regex r_subtopic = new Regex(subtopic); // 定义一个Regex对象实例
             Match m_subtopic = r_subtopic.Match(e.ApplicationMessage.Topic); // 在字符串中匹配
             if (m_subtopic.Success)
@@ -212,6 +211,10 @@ namespace Dgiot_dtu
             {
                 if (json.ContainsKey("cmd"))
                 {
+                    string payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
+                    JsonData jsonPayload = JsonMapper.ToObject<JsonData>(payload);//obj是json格式的string
+                    LogHelper.Log("cmd: " + jsonPayload["cmd"].ToJson());
+                    JsonData jsonData = JsonMapper.ToObject<JsonData>(jsonPayload["data"].ToJson());
                     if (json["cmd"].ToString() == "opc_items")
                     {
                         OPCDAHelper.Readitems(json);
@@ -220,10 +223,14 @@ namespace Dgiot_dtu
                     {
                         OPCDAHelper.Publishvalues(json);
                     }
-                    else if (json["cmd"].ToString() == "printer")
+                    else if (json["cmd"].ToString() == "printer_barcode")
                     {
-                        // PrinterHelper.PrintPage((Dictionary<string, object>) json["data"]);
-                        PrinterHelper.PrintPage((object[])json["data"]);
+                        PrinterHelper.PrintBarCode(jsonData);
+                    }
+                    else if (json["cmd"].ToString() == "printer_pdf")
+                    {
+                        LogHelper.Log("data: " + jsonPayload["data"].ToJson());
+                        PrinterHelper.PrintPdf(jsonData);
                     }
                 }
             }
