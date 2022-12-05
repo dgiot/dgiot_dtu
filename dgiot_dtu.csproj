@@ -253,6 +253,7 @@
     <Compile Include="utils\ConfigHelper.cs" />
     <Compile Include="utils\DgiotHelper.cs" />
     <Compile Include="utils\FileHelper.cs" />
+    <Compile Include="utils\IPScanHelper.cs" />
     <Compile Include="utils\JsonArray.cs" />
     <Compile Include="utils\JsonObject.cs" />
     <Compile Include="utils\LogHelper.cs" />

@@ -787,6 +787,7 @@ namespace Dgiot_dtu
             // 
             this.comboBoxBridge.FormattingEnabled = true;
             this.comboBoxBridge.Items.AddRange(new object[] {
+            "IP,",
             "SerialPort,",
             "TcpServer,",
             "BACnet,",

@@ -32,6 +32,7 @@ namespace Dgiot_dtu
         private float y = 0; // 当前窗体的高度
         private readonly string[] bridges = new string[]
         {
+            "IP",
             "SerialPort",
             "TcpServer",
             "BACnet",
@@ -147,9 +148,18 @@ namespace Dgiot_dtu
 
         private void ButtonScan_Click(object sender, EventArgs e)
         {
-            OPCDAHelper.Start();
-            BACnetHelper.Start();
-            SerialPortHelper.Start();
+            if (bridges[comboBoxBridge.SelectedIndex] == "IP")
+            {
+                LogHelper.Log("Start scanning " + bridges[comboBoxBridge.SelectedIndex]);
+                LogHelper.Log("MAC地址              IP");
+                IPScanHelper.IPScan();
+            }
+            else
+            {
+                OPCDAHelper.Start();
+                BACnetHelper.Start();
+                SerialPortHelper.Start();
+            }
         }
 
         private void SetComboBox()
