@@ -228,6 +228,7 @@ namespace Dgiot_dtu
                     }
                     else if (json["cmd"].ToString() == "printer_barcode")
                     {
+                        LogHelper.Log("data: " + jsonPayload["data"].ToJson());
                         PrinterHelper.PrintBarCode(jsonData);
                     }
                     else if (json["cmd"].ToString() == "printer_pdf")

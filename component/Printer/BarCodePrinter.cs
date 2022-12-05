@@ -109,29 +109,44 @@ namespace dgiot_dtu.component.Printer
             {
                 foreach (JsonData item in PrinterHelper.GetJson())
                 {
-                    String type = item["type"].ToString();
-                    String text = item["text"].ToString();
-                    String fontFamily = item["fontFamily"].ToString();
-                    int fontSize = int.Parse(item["fontSize"].ToJson());
-                    float x = float.Parse(item["x"].ToJson());
-                    float y = float.Parse(item["y"].ToJson());
-                    float width = float.Parse(item["width"].ToJson());
-                    float height = float.Parse(item["height"].ToJson());
+                    if (item.ContainsKey("type"))
+                    {
+                        String type = item["type"].ToString();
+                        if (type == "paper" || type == "printer" || type.Equals("scancodetext"))
+                        {
+                        }
+                        else if (item.ContainsKey("text")
+                            && item.ContainsKey("fontFamily")
+                            && item.ContainsKey("fontSize")
+                            && item.ContainsKey("x")
+                            && item.ContainsKey("y")
+                            && item.ContainsKey("width")
+                            && item.ContainsKey("height"))
+                        {
+                            String text = item["text"].ToString();
+                            String fontFamily = item["fontFamily"].ToString();
+                            int fontSize = int.Parse(item["fontSize"].ToJson());
+                            float x = float.Parse(item["x"].ToJson());
+                            float y = float.Parse(item["y"].ToJson());
+                            float width = float.Parse(item["width"].ToJson());
+                            float height = float.Parse(item["height"].ToJson());
+                            if (type == "scancode")
+                            {
+                                Image image = GetBarCode(text, fontSize, (int)width, (int)height, fontFamily);
+                                ev.Graphics.DrawImage(image, x + 10, y + 10, width, height); //单位1/100英寸
+                            }
+                            else
+                            {
+                                //LogHelper.Log("type11: " + type);
+                                Font font = new Font(new FontFamily(fontFamily), fontSize);
+                                ev.Graphics.DrawString(text, font, Brushes.Black, x, y);
+                            }
+                        }
+                        else
+                        {
 
-                    if (type == "paper" || type == "printer" || type.Equals("scancodetext"))
-                    {
-                    }
-                    else if (type == "scancode")
-                    {
-                        Image image = GetBarCode(text, fontSize, (int)width, (int)height, fontFamily);
-                        ev.Graphics.DrawImage(image, x + 10, y + 10, width, height); //单位1/100英寸
-                    }
-                    else
-                    {
-                        //LogHelper.Log("type11: " + type);
-                        Font font = new Font(new FontFamily(fontFamily), fontSize);
-                        ev.Graphics.DrawString(text, font, Brushes.Black, x, y);
-                    }
+                        }
+                    }      
                 }
                 ev.HasMorePages = false;
             }
@@ -167,22 +182,32 @@ namespace dgiot_dtu.component.Printer
 
         /* 设置纸大小*/
         public void SetPaperSize()
-        {
-            
+        {  
             foreach (JsonData item in PrinterHelper.GetJson())
             {
-                String type = item["type"].ToString();
-                String text = item["text"].ToString();
-                if (type == "paper")
+                if (item.ContainsKey("type"))
                 {
-                    int paperwidth = Knova.pxToInch(int.Parse(item["width"].ToJson()));
-                    int paperheight = Knova.pxToInch(int.Parse(item["height"].ToJson()));
-                    iSPriner.DefaultPageSettings.PaperSize = new PaperSize("Size", paperwidth, paperheight); //单位1/100英寸
-                }else if(type == "printer")
-                {
-                    LogHelper.Log("printer: " + text);
-                    SetDefaultPrinter(text);
-                }
+                    String type = item["type"].ToString();
+                    if (type == "paper")
+                    {
+                        if (item.ContainsKey("width") && item.ContainsKey("height"))
+                        {
+                            int paperwidth = Knova.pxToInch(int.Parse(item["width"].ToJson()));
+                            int paperheight = Knova.pxToInch(int.Parse(item["height"].ToJson()));
+                            iSPriner.DefaultPageSettings.PaperSize = new PaperSize("Size", paperwidth, paperheight); //单位1/100英寸
+                        }                        
+                    }
+                    else if (type == "printer")
+                    {
+                        if (item.ContainsKey("text"))
+                        {
+                            String text = item["text"].ToString();
+                            LogHelper.Log("printer: " + text);
+                            SetDefaultPrinter(text);
+                        }
+                    }
+
+                }             
             }
         }
     }
