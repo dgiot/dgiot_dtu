@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- plcType 1:200系列，2：300/400/1200/1500系列；-->
+<Device name ="S7-TCP" ip="192.168.1.199" PLCType="1" cpuSlotNO="02" localTASP ="02 00" remoteTASP="02 01"  >
+<!-- readCount 不易过大，200之内,单位是字节数-->
+
+  <TagGroup name="Group_M01" mmtype="M" block="" beginAddress="0" readCount="200"  >
+    <Tag name="a01" address="0.0" dataType="bool" desc="自动运行"/>
+    <Tag name="a02" address="1" dataType="byte" desc="运行时间2"/>
+    <Tag name="a03" address="2" dataType="short" desc="运行时间2"/>
+    <Tag name="a04" address="4" dataType="int" desc="排泥选择"/>
+    <Tag name="a05" address="24" dataType="float" desc="TSS高"/>
+    <Tag name="a06" address="26" dataType="float" desc="TSS1高"/>
+  </TagGroup>
+
+  <TagGroup name="Group_M02" mmtype="M" block="" beginAddress="50" readCount="40"  >
+    <Tag name="a01" address="50.0" dataType="bool" desc=""/>
+    <Tag name="a02" address="51" dataType="byte" desc=""/>
+    <Tag name="a03" address="51" dataType="short" desc=""/>
+    <Tag name="a04" address="54" dataType="int" desc=""/>
+    <Tag name="a05" address="74" dataType="float" desc=""/>
+  </TagGroup>
+
+  <TagGroup name="Group_I01" mmtype="I" block="" beginAddress="0" readCount="1" >
+    <Tag name="a01" address="0.0" dataType="bool" desc="1#混合液流泵远程"/>
+    <Tag name="a02" address="0.1" dataType="bool" desc="1#混合液流泵运行"/>
+    <Tag name="a03" address="0.3" dataType="bool" desc="1#混合液流泵远程"/>
+    <Tag name="a04" address="0.4" dataType="bool" desc="1#混合液流泵运行"/>
+    <Tag name="a05" address="0.5" dataType="bool" desc="1#混合液流泵运行33"/>
+  </TagGroup>
+
+  <TagGroup name="Group_Q01" mmtype="Q" block="" beginAddress="0" readCount="1" >
+    <Tag name="a01" address="0.0" dataType="bool" desc=""/>
+    <Tag name="a02" address="0.1" dataType="bool" desc=""/>
+  </TagGroup>
+
+
+<!-- 以下可以根据实际情况进行测试，取消注释即可，前提是在PLC里面要新建DB100，长度大于20个byte-->
+
+<!--<TagGroup name="Group_DB01" mmtype="DB" block="100" beginAddress="0" readCount="20" >
+    <Tag name="a01" address="4" dataType="int" desc=""/>
+    <Tag name="a02" address="8" dataType="float" desc=""/>
+  </TagGroup>
+
+  <TagGroup name="Group_DB100" mmtype="DB" block="100" beginAddress="4" readCount="20" >
+    <Tag name="a01" address="4" dataType="short" desc=""/>
+    <Tag name="a02" address="6" dataType="short" desc=""/>
+    <Tag name="a03" address="6.1" dataType="bool" desc=""/>
+    <Tag name="a04" address="6" dataType="int" desc=""/>
+  </TagGroup>-->
+
+
+</Device>

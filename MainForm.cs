@@ -26,6 +26,7 @@ namespace Dgiot_dtu
         private static TcpClientHelper tcpClientHelper = TcpClientHelper.GetInstance();
         private static TcpServerHelper tcpServerHelper = TcpServerHelper.GetInstance();
         private static PrinterHelper printerHelper = PrinterHelper.GetInstance();
+        private static PLCHelper pLCHelper = PLCHelper.GetInstance();
         private static DgiotHelper dgiotHelper = DgiotHelper.GetInstance();
         private bool bIsRunning = false;
         private float x = 0; // 当前窗体的宽度
@@ -852,6 +853,7 @@ namespace Dgiot_dtu
             }
             else if (bridges[comboBoxBridge.SelectedIndex] == "PLC")
             {
+                PLCHelper.Start(textToPayload.Text);
             }
             else if (bridges[comboBoxBridge.SelectedIndex] == "OPCUA")
             {
