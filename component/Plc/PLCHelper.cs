@@ -42,9 +42,8 @@ namespace Dgiot_dtu
         {
             PLCHelper.bIsRunning = true;
             
-            m_PLCComHelper.IP = "192.168.1.190";
 
-            LogHelper.Log("value " + setValue);
+            LogHelper.Log("value " + m_PLCComHelper.IP);
             // 0：未连接，1：TCP连接成功，2：PLC握手成功，3：读取过程中
             bool res = true;
             switch (m_PLCComHelper.CommStatus)
@@ -105,22 +104,22 @@ namespace Dgiot_dtu
                         switch (ta.CheckDataType())
                         {
                             case e_PLC_DATA_TYPE.TYPE_INT:
-                                m_PLCComHelper.WriteData(name, Convert.ToInt32(setValue));
+                               // m_PLCComHelper.WriteData(name, Convert.ToInt32(setValue));
                                 break;
                             case e_PLC_DATA_TYPE.TYPE_BYTE:
-                                m_PLCComHelper.WriteData(name, Convert.ToInt32(setValue)); 
+                               // m_PLCComHelper.WriteData(name, Convert.ToInt32(setValue)); 
                                 break;
 
                             case e_PLC_DATA_TYPE.TYPE_FLOAT:
-                                m_PLCComHelper.WriteData(name, Convert.ToDouble(setValue));               
+                                //m_PLCComHelper.WriteData(name, Convert.ToDouble(setValue));               
                                 break;
 
                             case e_PLC_DATA_TYPE.TYPE_SHORT:
-                                m_PLCComHelper.WriteData(name, Convert.ToInt32(setValue));
+                               // m_PLCComHelper.WriteData(name, Convert.ToInt32(setValue));
                                 break;
 
                             case e_PLC_DATA_TYPE.TYPE_BOOL:
-                                m_PLCComHelper.WriteData(name, Convert.ToInt32(setValue));
+                               // m_PLCComHelper.WriteData(name, Convert.ToInt32(setValue));
                                 break;
 
                             default:
