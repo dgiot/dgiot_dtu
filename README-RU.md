@@ -31,8 +31,8 @@ dgiot_dtu компилируется и отлаживается с помощь
 
 ## Тест имитации последовательного порта
 
-+ [Виртуальный счетчик](http://tech.iotn2n.com/w/docs/details?id=9)
-+ [Виртуальный Modbus](http://tech.iotn2n.com/w/docs/details?id=9)
++ [Виртуальный счетчик](https://gitee.com/dgiiot/dgiot/wikis/%E5%BF%AB%E9%80%9F%E6%8E%A5%E5%85%A5/%E8%99%9A%E6%8B%9F%E7%94%B5%E8%A1%A8%E6%8E%A5%E5%85%A5/%E6%A6%82%E8%BF%B0)
++ [Виртуальный Modbus](https://gitee.com/dgiiot/dgiot/wikis/%E5%BF%AB%E9%80%9F%E6%8E%A5%E5%85%A5/Modbus%E8%AE%BE%E5%A4%87%E6%8E%A5%E5%85%A5/modbus%20slave%E9%85%8D%E7%BD%AE)
 
 ## Тест имитации бакнета
 
